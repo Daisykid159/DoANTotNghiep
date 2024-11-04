@@ -1,0 +1,40 @@
+package org.example.ims_backend.entity;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.example.ims_backend.common.StatusProject;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDate;
+
+@Entity
+@Table(name = "project")
+@Getter
+@Setter
+public class Project {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ProjectId")
+    private Long id;
+    @Column(name = "ProjectName")
+    private String name;
+    @Column(name = "Content")
+    private String content;
+    @Column(name = "NumberTask")
+    private int numberTask;
+    @Column(name = "NumberUser")
+    private int numberUser;
+    @Column(name = "Status")
+    private int status;
+    @CreationTimestamp
+    @Column(name = "CreatedDate")
+    private LocalDate createdDate;
+    @Column(name = "DeletedDate")
+    private LocalDate deletedDate;
+    @Column(name = "ExpiredDate")
+    private LocalDate ExpiredDate;
+    @Column(name = "CompletedDate")
+    private LocalDate CompletedDate;
+
+}
