@@ -6,10 +6,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.example.ims_backend.common.Active;
 import org.example.ims_backend.common.Gender;
+import org.example.ims_backend.common.RoleLogin;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
@@ -18,8 +18,9 @@ import java.util.List;
 
 @Entity
 @Table(name = "user")
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,8 +53,8 @@ public class User {
     private LocalDate createdDate;
     @Column(name = "DeletedDate")
     private LocalDate deletedDate;
-    @Column(name = "IsAdmin")
-    private int isAdmin;
+    @Column(nullable = false, name = "Role")
+    private RoleLogin role;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<RefreshToken> refreshTokens;
