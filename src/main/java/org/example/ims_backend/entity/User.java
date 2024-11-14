@@ -1,26 +1,22 @@
 package org.example.ims_backend.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.*;
 import lombok.*;
-import org.example.ims_backend.common.Active;
-import org.example.ims_backend.common.Gender;
-import org.example.ims_backend.common.RoleLogin;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Table(name = "user")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,10 +49,7 @@ public class User {
     private LocalDate createdDate;
     @Column(name = "DeletedDate")
     private LocalDate deletedDate;
-    @Column(nullable = false, name = "Role")
-    private RoleLogin role;
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<RefreshToken> refreshTokens;
+    @Column( name = "IsAdmin")
+    private int IsAdmin;
 
 }

@@ -1,63 +1,59 @@
 package org.example.ims_backend.controller;
 
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
+import com.nimbusds.jose.JOSEException;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.example.ims_backend.dto.UserRegistrationDTO;
-import org.example.ims_backend.service.AuthService;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import lombok.experimental.FieldDefaults;
+import org.example.ims_backend.dto.request.AuthenticationRequest;
+import org.example.ims_backend.dto.request.IntrospectRequest;
+import org.example.ims_backend.dto.request.LogoutRequest;
+import org.example.ims_backend.dto.request.RefreshRequest;
+import org.example.ims_backend.dto.response.ApiReponse;
+import org.example.ims_backend.dto.response.AuthenticationResponse;
+import org.example.ims_backend.dto.response.IntrospectResponse;
+import org.example.ims_backend.service.AuthenticationService;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.text.ParseException;
 
 @RestController
+@RequestMapping("/auth")
 @RequiredArgsConstructor
-@RequestMapping("/api/auth")
-@Slf4j
+@FieldDefaults(makeFinal = true , level = AccessLevel.PRIVATE)
 public class AuthenticationController {
+    AuthenticationService authenticationService;
+    @PostMapping("/login")
+    ApiReponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request){
+        var result = authenticationService.authenticate(request);
+        return ApiReponse.<AuthenticationResponse>builder()
+                .result(result)
+                .build();
 
-    private final AuthService authService;
-
-    @PostMapping("/sign-in")
-    public ResponseEntity<?> authenticateUser(Authentication authentication, HttpServletResponse response) {
-        log.info("[AuthController:authenticateUser] Attempting to authenticate user: {}", authentication.getName());
-        return ResponseEntity.ok(authService.getJwtTokensAfterAuthentication(authentication, response));
     }
-
-    @PostMapping("/refresh-token")
-    public ResponseEntity<?> getAccessToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
-        log.info("[AuthController:getAccessToken] Attempting to refresh token.");
-        return ResponseEntity.ok(authService.getAccessTokenUsingRefreshToken(authorizationHeader));
+    @PostMapping("/introspect")
+    ApiReponse<IntrospectResponse>authenticate(@RequestBody IntrospectRequest request) throws ParseException, JOSEException {
+        var result = authenticationService.introspect(request);
+        return ApiReponse.<IntrospectResponse>builder()
+                .result(result)
+                .build();
     }
+    @PostMapping("/logout")
+    ApiReponse<Void> logout(@RequestBody LogoutRequest request)
+            throws ParseException, JOSEException {
+       authenticationService.logout(request);
+        return ApiReponse.<Void>builder()
+                .build();
+    }
+    @PostMapping("/refresh")
+    ApiReponse<AuthenticationResponse> authenticate(@RequestBody RefreshRequest request)
+            throws ParseException, JOSEException {
+        var result = authenticationService.refreshToken(request);
+        return ApiReponse.<AuthenticationResponse>builder()
+                .result(result)
+                .build();
 
-    @PostMapping("/sign-up")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody UserRegistrationDTO userRegistrationDto,
-                                          BindingResult bindingResult, HttpServletResponse httpServletResponse) {
-        log.info("[AuthController:registerUser] Signup process started for user: {}", userRegistrationDto.username());
-
-        // Kiểm tra lỗi từ BindingResult
-        if (bindingResult.hasErrors()) {
-            List<String> errorMessages = bindingResult.getAllErrors().stream()
-                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                    .toList();
-            log.error("[AuthController:registerUser] Errors in user registration: {}", errorMessages);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessages);
-        }
-
-        // Tiến hành đăng ký người dùng
-        try {
-            var responseEntity = authService.registerUser(userRegistrationDto, httpServletResponse);
-            log.info("[AuthController:registerUser] User registered successfully: {}", userRegistrationDto.username());
-            return ResponseEntity.ok(responseEntity);
-        } catch (Exception e) {
-            log.error("[AuthController:registerUser] Error registering user: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
-        }
     }
 }
