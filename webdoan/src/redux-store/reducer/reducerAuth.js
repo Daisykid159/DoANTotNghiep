@@ -1,6 +1,6 @@
 const INITIAL_STATE = {
     isLogin: false,
-    admin: false,
+    isAdmin: false,
     decoded: {},
     token: '',
 };
