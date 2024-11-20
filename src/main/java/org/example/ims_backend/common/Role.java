@@ -1,7 +1,9 @@
 package org.example.ims_backend.common;
 
-public enum Role {
-    ADMIN,
-    USER
+import lombok.Getter;
 
+@Getter
+public enum Role {
+    ADMIN, // ADMIN
+    USER; // USER
 }

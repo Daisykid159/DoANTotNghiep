@@ -6,8 +6,10 @@ import lombok.experimental.FieldDefaults;
 import org.example.ims_backend.common.Active;
 import org.example.ims_backend.common.Gender;
 import org.example.ims_backend.common.Role;
+import org.example.ims_backend.dto.response.DepartmentResponse;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -18,10 +20,6 @@ public class UserUpdateRequest {
      Long id;
      @Size(min = 4,message = "USERNAME_INVALID")
      String username;
-     @Size(min = 4,message = "PASSWORD_INVALID")
-     String password;
-
-     String firstname;
      String lastname;
      String fullname;
      Gender gender;
@@ -29,8 +27,7 @@ public class UserUpdateRequest {
      String hometown;
      Date dateofbirth;
      Active active;
-     String email;
      Role role;
-
+     List<DepartmentRequest> departments;
 
 }

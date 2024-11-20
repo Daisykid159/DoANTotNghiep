@@ -29,4 +29,6 @@ public class DepartmentUser {
     @CreationTimestamp
     @Column(name = "CreatedDate")
     private LocalDate createdDate;
+    @Column(name = "DepartmentMain")
+    private int departmentMain;
 }

@@ -10,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "user")
@@ -51,5 +52,7 @@ public class User {
     private LocalDate deletedDate;
     @Column( name = "IsAdmin")
     private int IsAdmin;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<DepartmentUser> departmentUsers;
 
 }

@@ -31,7 +31,7 @@ import java.util.List;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final String[] AuthorizedUrls = new String[] {"/users", "/auth/login", "/auth/introspect", "/auth/logout", "/auth/refresh"};
+    private final String[] AuthorizedUrls = new String[] {"/auth/login", "/auth/introspect", "/auth/logout", "/auth/refresh"};
 
     @Autowired
     private CustomJwtDecoder customJwtDecoder;
