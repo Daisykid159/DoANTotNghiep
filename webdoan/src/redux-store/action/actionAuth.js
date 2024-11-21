@@ -11,29 +11,25 @@ export function updateData(data) {
 export function actionLogin (username, password, nextToScreen) {
     return async (dispatch, getState) => {
         try {
-            dispatch(updateData({
-                isLogin: true,
-                isAdmin: true
-            }))
-            // const response = await Api().getTokenLogin(username, password);
-            // if (response && response.data){
-            //     const decoded = jwtDecode(response.data.accessToken);
-            //
-            //     dispatch(updateData({
-            //         isLogin: true,
-            //         decoded: decoded,
-            //         token: response.data.accessToken,
-            //     }))
-            //
-            //     localStorage.setItem('username', username);
-            //     localStorage.setItem('password', password);
-            // } else {
-            //     dispatch(updateData({
-            //         isLogin: false,
-            //         token: '',
-            //     }))
-            //     alert("Đăng nhập thất bại!");
-            // }
+            const response = await Api().getTokenLogin(username, password);
+            if (response && response.data){
+                const decoded = jwtDecode(response.data.result.token);
+
+                dispatch(updateData({
+                    isLogin: true,
+                    decoded: decoded,
+                    token: response.data.result.token,
+                }))
+
+                localStorage.setItem('username', username);
+                localStorage.setItem('password', password);
+            } else {
+                dispatch(updateData({
+                    isLogin: false,
+                    token: '',
+                }))
+                alert("Đăng nhập thất bại!");
+            }
         } catch (error) {
             alert("Đăng nhập thất bại!");
             dispatch(updateData({
