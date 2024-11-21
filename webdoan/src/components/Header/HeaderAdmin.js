@@ -7,19 +7,23 @@ import PersonnelManagementScreen from "../../screen/admin/PersonnelManagement/Pe
 import IconUsers from "../../icon/iconUsers";
 import DepartmentManagementScreen from "../../screen/admin/DepartmentManagement/DepartmentManagementScreen";
 import DetailUserScreen from "../../screen/admin/DetailUser/DetailUserScreen";
+import {useDispatch} from "react-redux";
+import {actionLogout} from "../../redux-store/action/actionAuth";
 
 const cx = classNames.bind(styles);
 
 function HeaderAdmin () {
 
+    const dispatch = useDispatch();
+
     return (
         <Router>
             <div className={cx('HeaderAdmin', 'flex')}>
                 <div className={cx('flex', 'list_management')}>
-                    <Link to="/admin/PersonnelManagementScreen" className={cx('text-center', 'text_name_he_thong')}>HỆ THỐNG QUẢN LÝ DỰ ÁN</Link>
+                    <Link to="/" className={cx('text-center', 'text_name_he_thong')}>HỆ THỐNG QUẢN LÝ DỰ ÁN</Link>
 
                     <div className={cx('flex', 'margin_left_50')}>
-                        <Link to="/admin/PersonnelManagementScreen" className={cx('row_list_management')}>
+                        <Link to="/" className={cx('row_list_management')}>
                             <i className={cx('bx bxs-user-account', 'icon_header_admin')}></i>
                             <div>Quản lý nhân viên</div>
                         </Link>
@@ -43,13 +47,16 @@ function HeaderAdmin () {
 
                 <div className={cx('flex', 'align-items-center')}>
                     <div className={cx('text_name_user')}>text_name_user</div>
-                    <div className={cx('btn_logout')}>Đăng xuất</div>
+                    <div
+                        className={cx('btn_logout')}
+                        onClick={() => dispatch(actionLogout())}
+                    >Đăng xuất</div>
                 </div>
             </div>
 
             <div className={cx('screen')}>
                 <Routes>
-                    <Route path="/admin/PersonnelManagementScreen" element={<PersonnelManagementScreen />} />
+                    <Route path="/" element={<PersonnelManagementScreen />} />
                     <Route path="/admin/DepartmentManagementScreen" element={<DepartmentManagementScreen />} />
                     <Route path="/admin/DetailUserScreen" element={<DetailUserScreen />} />
                     <Route path="*" element={<NoPage />} />

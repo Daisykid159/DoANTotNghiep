@@ -1,19 +1,42 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import classNames from "classnames/bind";
-import {useLocation} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import Select from 'react-select';
 import styles from "./DetailUserStyle.module.scss";
+import {useDispatch, useSelector} from "react-redux";
+import {
+    actionCreatePersonnel,
+    actionGetPersonnel,
+    actionResetPasswordPersonnel
+} from "../../../redux-store/action/actionPersonnelManagement";
 
 const cx = classNames.bind(styles);
 
 const DetailUserScreen = () => {
 
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const token = useSelector(state => state.reducerAuth.token);
     const location = useLocation();
     const userSelect = location?.state.userSelect;
     const isCreate = location?.state.isCreate;
 
+    const detailUser = useSelector(state => state.reducerPersonnelManagement.userSelected);
+
     const [selectedDepartment, setSelectedDepartment] = useState(null);
     const [listSelectedDepartment, setListSelectedDepartment] = useState([])
+    const [newPassword, setNewPassword] = useState('');
+
+    const [userName, setUserName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [fullName, setFullName] = useState('');
+    const [gender, setGender] = useState('');
+    const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
+    const [address, setAddress] = useState('');
+    const [isActive, setIsActive] = useState('');
+    const [isAdminActive, setIsAdminActive] = useState('');
+    const [password, setPassword] = useState('');
 
     const handleDepartmentChange = (item) => {
         setSelectedDepartment(item);
@@ -44,7 +67,46 @@ const DetailUserScreen = () => {
         { value: '8', label: 'Sở Thông Tin Và Truyền Thông Tỉnh Tây Ninh\\eGov\\Văn phòng Tỉnh ủy' },
     ];
 
-    console.log("userSelect", userSelect);
+    const handleCreateUser = () => {
+        const userNew = {
+            username: userName,
+            lastname: lastName,
+            fullname: fullName,
+            gender: gender,
+            email: email,
+            phone: phone,
+            address: address,
+            active: isActive,
+            role: isAdminActive,
+        }
+        dispatch(actionCreatePersonnel(token, userNew, navigate))
+    }
+
+    const handleResetPassword = () => {
+        dispatch(actionResetPasswordPersonnel(token, detailUser.id, newPassword))
+    }
+
+    useEffect(() => {
+        if(userSelect) {
+            dispatch(actionGetPersonnel(token, userSelect.id));
+        } else {
+            dispatch(actionGetPersonnel(token));
+        }
+    }, []);
+
+    useEffect(() => {
+        if(detailUser) {
+            setUserName(detailUser.username);
+            setLastName(detailUser.lastName);
+            setFullName(detailUser.fullName);
+            setGender(detailUser.gender);
+            setEmail(detailUser.email);
+            setPhone(detailUser.phone);
+            setAddress(detailUser.address);
+            setIsActive(detailUser.active);
+            setIsAdminActive(detailUser.role);
+        }
+    }, [detailUser]);
 
     return (
         <div className={cx('DetailUserScreen', 'container')}>
@@ -56,8 +118,15 @@ const DetailUserScreen = () => {
                     </div>
 
                     {isCreate ?
-                        (<button type="button" className="btn btn-success col-md-2 margin_left_20">Thêm mới</button>) :
-                        (<button type="button" className="btn btn-success col-md-2 margin_left_20">Cập nhật</button>)
+                        (<button
+                            type="button"
+                            className="btn btn-success col-md-2 margin_left_20"
+                            onClick={handleCreateUser}
+                        >Thêm mới</button>) :
+                        (<button
+                            type="button"
+                            className="btn btn-success col-md-2 margin_left_20"
+                        >Cập nhật</button>)
                     }
                 </div>
             </div>
@@ -70,17 +139,31 @@ const DetailUserScreen = () => {
                         className="form-control"
                         placeholder={"Nhập tên đăng nhập"}
                         readOnly={!isCreate}
+                        value={userName}
+                        onChange={e => setUserName(e.target.value)}
                     />
                 </div>
 
                 <div className="mb-3 d-flex align-items-center">
                     <label className="col-md-2">Tên <span className="text-danger">*</span>:</label>
-                    <input type="text" className="form-control" placeholder="Nhập tên" />
+                    <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Nhập tên"
+                        value={lastName}
+                        onChange={e => setLastName(e.target.value)}
+                    />
                 </div>
 
                 <div className="mb-3 d-flex align-items-center">
                     <label className="col-md-2">Họ và tên <span className="text-danger">*</span>:</label>
-                    <input type="text" className="form-control" placeholder="Nhập họ và tên" />
+                    <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Nhập họ và tên"
+                        value={fullName}
+                        onChange={e => setFullName(e.target.value)}
+                    />
                 </div>
 
                 <div className="mb-3 d-flex align-items-center">
@@ -97,12 +180,24 @@ const DetailUserScreen = () => {
 
                 <div className="mb-3 d-flex align-items-center">
                     <label className="col-md-2">Số điện thoại:</label>
-                    <input type="text" className="form-control" placeholder={"Nhập tên số địa thoại"} />
+                    <input
+                        type="text"
+                        className="form-control"
+                        placeholder={"Nhập tên số địa thoại"}
+                        value={phone}
+                        onChange={e => setPhone(e.target.value)}
+                    />
                 </div>
 
                 <div className="mb-3 d-flex align-items-center">
                     <label className="col-md-2">Địa chỉ:</label>
-                    <input type="text" className="form-control" placeholder="Nhập địa chỉ" />
+                    <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Nhập địa chỉ"
+                        value={address}
+                        onChange={e => setAddress(e.target.value)}
+                    />
                 </div>
 
                 <div className="mb-3 d-flex align-items-center">
@@ -148,20 +243,39 @@ const DetailUserScreen = () => {
 
                 <div className="mb-3 d-flex align-items-center">
                     <div className={cx('col-md-3')}>
-                        <input type="checkbox" className="form-check-input me-2" id="active" checked={true} />
+                        <input type="checkbox" className="form-check-input me-2" id="active" checked={isActive === 'ACTIVE'} />
                         <label className="form-check-label" htmlFor="active">Hoạt động</label>
                     </div>
 
                     <div className={cx('col-md-3')}>
-                        <input type="checkbox" className="form-check-input me-2" id="active" />
+                        <input type="checkbox" className="form-check-input me-2" id="active" checked={isAdminActive === 'ADMIN'} />
                         <label className="form-check-label" htmlFor="active">Quản trị viên hệ thống</label>
                     </div>
                 </div>
 
-                {!isCreate && (<div className="mb-3 d-flex align-items-center">
+                {!isCreate ? (<div className="mb-3 d-flex align-items-center">
                     <label className="col-md-2">Mật khẩu reset mặc định:</label>
-                    <input type="text" className="form-control" placeholder="Bỏ trống để tạo mật khẩu ngẫu nhiên"/>
-                    <button type="button" className="btn btn-info col-md-2 margin_left_20">Reset mật khẩu</button>
+                    <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Bỏ trống để tạo mật khẩu ngẫu nhiên"
+                        value={newPassword}
+                        onChange={e => setNewPassword(e.target.value)}
+                    />
+                    <button
+                        type="button"
+                        className="btn btn-info col-md-2 margin_left_20"
+                        onClick={handleResetPassword}
+                    >Reset mật khẩu</button>
+                </div>) : (<div className="mb-3 d-flex align-items-center">
+                    <label className="col-md-2">Mật khẩu:</label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Bỏ trống để tạo mật khẩu ngẫu nhiên"
+                        value={password}
+                        onChange={e => setPassword(e.target.value)}
+                    />
                 </div>)}
             </div>
         </div>

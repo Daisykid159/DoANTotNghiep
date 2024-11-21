@@ -1,12 +1,9 @@
 const INITIAL_STATE = {
-    isLogin: false,
-    isAdmin: false,
-    decoded: {},
-    token: '',
-    overViewAdmin: {},
+    listPersonnelManagementResponse: {},
+    userSelect: {},
 };
 
-const reducerAuth = (state = INITIAL_STATE, action) => {
+const reducerPersonnelManagement = (state = INITIAL_STATE, action) => {
     let newState = { ...state };
     switch (action.type) {
         case 'UPDATE_DATA': {
@@ -21,4 +18,4 @@ const reducerAuth = (state = INITIAL_STATE, action) => {
     }
 };
 
-export default reducerAuth;
+export default reducerPersonnelManagement;

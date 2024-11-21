@@ -106,6 +106,8 @@ const DepartmentManagementScreen = () => {
         // Thêm các dòng dữ liệu khác
     ];
 
+    const [activeModuleDepartment, setActiveModuleDepartment] = useState(false);
+
     return (
         <div className={cx('DepartmentManagementScreen', 'container')}>
             <div className="col-md-12">
@@ -118,6 +120,7 @@ const DepartmentManagementScreen = () => {
                     <div className="d-flex justify-content-between">
                         <button
                             className="btn btn-success d-flex align-items-center me-2"
+                            onClick={() => setActiveModuleDepartment(true)}
                         >
                             <i className="bx bx-plus me-1"></i>
                             TẠO MỚI
@@ -159,6 +162,77 @@ const DepartmentManagementScreen = () => {
                         <div className="mb-3 d-flex align-items-center">
                             <label className="col-md-3">Thêm người dùng vào phòng ban:</label>
                             <input type="text" className="form-control" placeholder="Nhập phòng ban" value={'eGov - Beta'} />
+                        </div>
+                    </div>
+                    <div>
+                        <div>Danh sách cán bộ thuộc phòng ban</div>
+                        <table className={cx('w-100', 'table')}>
+                            <thead>
+                            <tr className={cx('text-center', 'table_row')}>
+                                <th>STT</th>
+                                <th>Tên nhân viên</th>
+                                <th>Chức danh</th>
+                                <th>Chức vụ</th>
+                                <th>Phòng ban chính</th>
+                                <th>Xoá</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {listUsers.map((item, index) => (
+                                <tr className={cx('text-center', 'table_row')} key={index}>
+                                    <td>{index + 1}</td>
+                                    <td className='text_left'>{item.fullname}</td>
+                                    <td>Chuyên viên</td>
+                                    <td>Ban lãnh đạo</td>
+                                    <td>
+                                        <input type="checkbox" className="form-check-input" id="active"/>
+                                    </td>
+                                    <td className={cx('text_red')}>Xoá</td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div className={cx('moduleCreateDepartment', (activeModuleDepartment ? 'active' : 'inactive'))}>
+                <div className={cx("col-md-7", 'bodyModuleCreateDepartment')}>
+                    <div>
+                        <button
+                            className={cx("btn btn-close", 'closeModuleDepartment')}
+                            onClick={() => setActiveModuleDepartment(false)}
+                        ></button>
+                    </div>
+                    <div className="d-flex justify-content-between align-items-center mb-4">
+                        <h4>Thông tin phòng ban</h4>
+
+                        <button
+                            className="btn btn-info d-flex align-items-center"
+                        >
+                            Thêm phòng ban
+                        </button>
+                    </div>
+
+                    <div>
+                        <div className="mb-3 d-flex align-items-center">
+                            <label className="col-md-3">Tên Phòng ban <span className="text-danger">*</span>:</label>
+                            <input type="text" className="form-control" placeholder="Nhập phòng ban"/>
+                        </div>
+
+                        <div className="mb-3 d-flex align-items-center">
+                            <label className="col-md-3">Thuộc phòng ban:</label>
+                            <input type="text" className="form-control" placeholder="Nhập phòng ban"
+                                   value={'eGov - Beta'}/>
+                        </div>
+                        <div className={cx('col-md-3', 'mb-3')}>
+                            <input type="checkbox" className="form-check-input me-2" id="active" checked={true}/>
+                            <label className="form-check-label" htmlFor="active">Hoạt động</label>
+                        </div>
+                        <div className="mb-3 d-flex align-items-center">
+                            <label className="col-md-3">Thêm người dùng vào phòng ban:</label>
+                            <input type="text" className="form-control" placeholder="Nhập phòng ban"
+                                   value={'eGov - Beta'}/>
                         </div>
                     </div>
                     <div>

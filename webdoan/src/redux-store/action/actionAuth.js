@@ -18,9 +18,15 @@ export function actionLogin (username, password, nextToScreen) {
                 dispatch(updateData({
                     isLogin: true,
                     decoded: decoded,
+                    isAdmin: decoded.scope === 'ADMIN',
                     token: response.data.result.token,
                 }))
 
+                if(decoded.scope === 'ADMIN') {
+                    dispatch(actionGetGeneralAdmin(response.data.result.token));
+                }
+
+                localStorage.setItem('token', response.data.result.token);
                 localStorage.setItem('username', username);
                 localStorage.setItem('password', password);
             } else {
@@ -43,11 +49,10 @@ export function actionLogin (username, password, nextToScreen) {
 export function actionLogout () {
     return (dispatch, getState) => {
         try {
-            localStorage.removeItem('username');
-            localStorage.removeItem('password');
+            localStorage.removeItem('token');
             dispatch(updateData({
                 isLogin: false,
-                admin: false,
+                isAdmin: false,
                 userName: '',
                 token: '',
             }))
@@ -60,8 +65,25 @@ export function actionLogout () {
     };
 }
 
+export function actionGetGeneralAdmin (token) {
+    return async (dispatch, getState) => {
+        try {
+            const response = await Api(token).getGeneralAdmin();
+            if (response && response.data){
+                dispatch(updateData({
+                    overViewAdmin: response.data,
+                }))
+            } else {
+                console.log("Loi api actionGetGeneralAdmin");
+            }
+        } catch (error) {
+            console.log("Loi api actionGetGeneralAdmin", error)
+        }
+    };
+}
 
 export default {
     actionLogin,
     actionLogout,
+    actionGetGeneralAdmin,
 };

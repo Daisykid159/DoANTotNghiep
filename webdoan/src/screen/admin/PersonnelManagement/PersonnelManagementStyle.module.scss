@@ -17,13 +17,20 @@
 
 .btn_page_number {
   padding: 8px 16px;
+  cursor: pointer;
 }
 
 .btn_page {
   border: 1px solid #dcdcdc;
+  cursor: pointer;
 }
 
 .table_row {
   height: 50px;
   border-bottom: 1px solid #cecdcd;
+}
+
+.active {
+  background-color: #338BEB;
+  color: white;
 }

@@ -60,3 +60,33 @@
   cursor: pointer;
 }
 
+.moduleCreateDepartment {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(83, 83, 83, 0.8);
+}
+
+.closeModuleDepartment {
+  position: absolute;
+  top: 20px;
+  right: 50px;
+}
+
+.bodyModuleCreateDepartment {
+  position: relative;
+  background-color: white;
+  padding: 70px 50px 50px 50px;
+  border-radius: 20px;
+  margin: 5% auto;
+}
+
+.active {
+  display: block;
+}
+
+.inactive {
+  display: none;
+}

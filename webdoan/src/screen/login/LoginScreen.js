@@ -11,8 +11,12 @@ const cx = classNames.bind(styles);
 const LoginScreen = () => {
     const dispatch = useDispatch();
 
-    const [valueUsername, setValueUsername] = useState('');
-    const [valuePassword, setValuePassword] = useState('');
+    const token = localStorage.getItem('token');
+    const username = localStorage.getItem('username');
+    const password = localStorage.getItem('password');
+
+    const [valueUsername, setValueUsername] = useState(username || '');
+    const [valuePassword, setValuePassword] = useState(password || '');
 
     const handleLoin = () => {
         dispatch(actionLogin(valueUsername, valuePassword));
@@ -28,6 +32,7 @@ const LoginScreen = () => {
                     <input
                         className={cx('input')}
                         placeholder={'Tài khoản'}
+                        value={valueUsername}
                         onChange={(e) => setValueUsername(e.target.value)}
                     />
                 </div>
@@ -37,6 +42,7 @@ const LoginScreen = () => {
                         className={cx('input')}
                         placeholder={'Mật khẩu'}
                         type={'password'}
+                        value={password}
                         onChange={(e) => setValuePassword(e.target.value)}
                     />
                 </div>
