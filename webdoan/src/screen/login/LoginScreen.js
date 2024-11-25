@@ -1,8 +1,8 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import classNames from 'classnames/bind';
 import styles from './LoginStyle.module.scss';
 import {useDispatch} from "react-redux";
-import {actionLogin} from "../../redux-store/action/actionAuth";
+import {actionLogin, actionRefreshToken} from "../../redux-store/action/actionAuth";
 import IconMail from "../../icon/iconMail";
 import IconLock from "../../icon/iconLock";
 
@@ -21,6 +21,12 @@ const LoginScreen = () => {
     const handleLoin = () => {
         dispatch(actionLogin(valueUsername, valuePassword));
     }
+
+    useEffect(() => {
+        if(token) {
+            dispatch(actionRefreshToken(token));
+        }
+    }, []);
 
     return (
         <div className={cx('LoginScreen')}>

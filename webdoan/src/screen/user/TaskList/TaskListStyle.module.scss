@@ -1,4 +1,78 @@
 .TaskListScreen {
-  height: 1000px;
-  padding-top: 60px;
+  padding: 50px 20px 40px 10px;
+}
+
+.icon_folder {
+  font-size: 24px;
+  color: #338BEB;
+}
+
+.number_total {
+  background-color: #338BEB;
+  color: white;
+  width: 30px;
+  height: 30px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.active {
+  background-color: rgba(17, 115, 234, 0.2);
+}
+
+.row_menu {
+  border-radius: 20px;
+  width: 90%;
+  padding: 2% 4%;
+  justify-content: space-between;
+}
+
+.list_task {
+  padding: 0;
+  margin: 0;
+}
+
+.row_lua_chon {
+  border-bottom: 1px solid #ccc;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.item_lua_chon {
+  padding: 15px 20px;
+  border-right: 1px solid #ccc;
+  cursor: pointer;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 150px;
+  font-size: 16px;
+  position: relative;
+}
+
+.pl_item_lua_chon {
+  padding: 15px 30px 15px 15px;
+}
+
+.close_item_lua_chon {
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 18px 15px 18px 0;
+}
+
+.active_lua_chon {
+  background-color: white;
+}
+
+.list_menu {
+  position: fixed;
+  padding-top: 20px;
+  top: 50px;
+  bottom: 0;
+  left: 0;
+  border-right: 1px solid #ccc;
 }

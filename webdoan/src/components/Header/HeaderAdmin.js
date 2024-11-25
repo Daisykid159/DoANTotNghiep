@@ -4,10 +4,9 @@ import classNames from 'classnames/bind';
 import styles from './HeaderStyle.module.scss';
 import NoPage from "../../screen/noPage/NoPagge";
 import PersonnelManagementScreen from "../../screen/admin/PersonnelManagement/PersonnelManagementScreen";
-import IconUsers from "../../icon/iconUsers";
 import DepartmentManagementScreen from "../../screen/admin/DepartmentManagement/DepartmentManagementScreen";
 import DetailUserScreen from "../../screen/admin/DetailUser/DetailUserScreen";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {actionLogout} from "../../redux-store/action/actionAuth";
 
 const cx = classNames.bind(styles);
@@ -15,6 +14,8 @@ const cx = classNames.bind(styles);
 function HeaderAdmin () {
 
     const dispatch = useDispatch();
+
+    const decoded = useSelector(state => state.reducerAuth.decoded);
 
     return (
         <Router>
@@ -46,7 +47,7 @@ function HeaderAdmin () {
                 </div>
 
                 <div className={cx('flex', 'align-items-center')}>
-                    <div className={cx('text_name_user')}>text_name_user</div>
+                    <div className={cx('text_name_user')}>{decoded.sub}</div>
                     <div
                         className={cx('btn_logout')}
                         onClick={() => dispatch(actionLogout())}

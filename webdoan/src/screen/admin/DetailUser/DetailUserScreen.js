@@ -78,6 +78,7 @@ const DetailUserScreen = () => {
             address: address,
             active: isActive,
             role: isAdminActive,
+            department: listSelectedDepartment,
         }
         dispatch(actionCreatePersonnel(token, userNew, navigate))
     }
@@ -169,11 +170,25 @@ const DetailUserScreen = () => {
                 <div className="mb-3 d-flex align-items-center">
                     <label className="col-md-2">Giới tính:</label>
                     <div className="form-check form-check-inline">
-                        <input className="form-check-input" type="radio" name="gender" id="male" value="male" />
+                        <input
+                            className="form-check-input"
+                            type="radio" name="gender"
+                            id="male" value="male"
+                            checked={gender === 1}
+                            onChange={e => setGender(e.target.value ? 1 : 0)}
+                        />
                         <label className="form-check-label" htmlFor="male">Nam</label>
                     </div>
                     <div className="form-check form-check-inline">
-                        <input className="form-check-input" type="radio" name="gender" id="female" value="female" checked />
+                        <input
+                            className="form-check-input"
+                            type="radio"
+                            name="gender"
+                            id="female"
+                            value="female"
+                            checked={gender === 0}
+                            onChange={e => setGender(e.target.value ? 0 : 1)}
+                        />
                         <label className="form-check-label" htmlFor="female">Nữ</label>
                     </div>
                 </div>
@@ -201,7 +216,7 @@ const DetailUserScreen = () => {
                 </div>
 
                 <div className="mb-3 d-flex align-items-center">
-                    <label className="col-md-2">Phòng ban:</label>
+                    <label className="col-md-2">Thêm phòng ban:</label>
                     <Select
                         options={departments}
                         value={selectedDepartment || null}
@@ -217,7 +232,6 @@ const DetailUserScreen = () => {
                             <tr className={cx('text-center', 'table_row')}>
                                 <th>STT</th>
                                 <th className={cx('w-50')}>Tên phòng</th>
-                                <th>Chức danh</th>
                                 <th>Chức vụ</th>
                                 <th>Phòng ban chính</th>
                                 <th>Xoá</th>
@@ -229,7 +243,6 @@ const DetailUserScreen = () => {
                                     <td>{index + 1}</td>
                                     <td className='text_left'>{item.label}</td>
                                     <td>Chuyên viên</td>
-                                    <td>Ban lãnh đạo</td>
                                     <td>
                                         <input type="checkbox" className="form-check-input" id="active"/>
                                     </td>
@@ -243,12 +256,28 @@ const DetailUserScreen = () => {
 
                 <div className="mb-3 d-flex align-items-center">
                     <div className={cx('col-md-3')}>
-                        <input type="checkbox" className="form-check-input me-2" id="active" checked={isActive === 'ACTIVE'} />
+                        <input
+                            type="checkbox"
+                            className="form-check-input me-2"
+                            id="active"
+                            checked={isActive === 'ACTIVE'}
+                            onChange={(e) => {
+                                setIsActive(e.target.checked ? 'ACTIVE' : 'INACTIVE');
+                            }}
+                        />
                         <label className="form-check-label" htmlFor="active">Hoạt động</label>
                     </div>
 
                     <div className={cx('col-md-3')}>
-                        <input type="checkbox" className="form-check-input me-2" id="active" checked={isAdminActive === 'ADMIN'} />
+                        <input
+                            type="checkbox"
+                            className="form-check-input me-2"
+                            id="active"
+                            checked={isAdminActive === 'ADMIN'}
+                            onChange={(e) => {
+                                setIsAdminActive(e.target.checked ? 'ADMIN' : 'USER');
+                            }}
+                        />
                         <label className="form-check-label" htmlFor="active">Quản trị viên hệ thống</label>
                     </div>
                 </div>

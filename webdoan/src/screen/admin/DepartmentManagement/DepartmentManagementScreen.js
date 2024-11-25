@@ -171,7 +171,6 @@ const DepartmentManagementScreen = () => {
                             <tr className={cx('text-center', 'table_row')}>
                                 <th>STT</th>
                                 <th>Tên nhân viên</th>
-                                <th>Chức danh</th>
                                 <th>Chức vụ</th>
                                 <th>Phòng ban chính</th>
                                 <th>Xoá</th>
@@ -183,7 +182,6 @@ const DepartmentManagementScreen = () => {
                                     <td>{index + 1}</td>
                                     <td className='text_left'>{item.fullname}</td>
                                     <td>Chuyên viên</td>
-                                    <td>Ban lãnh đạo</td>
                                     <td>
                                         <input type="checkbox" className="form-check-input" id="active"/>
                                     </td>

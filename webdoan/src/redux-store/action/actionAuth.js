@@ -46,6 +46,42 @@ export function actionLogin (username, password, nextToScreen) {
     };
 }
 
+export function actionRefreshToken (token) {
+    return async (dispatch, getState) => {
+        try {
+            const response = await Api(token).refreshToken(token);
+            if (response && response.data.result.token){
+                const decoded = jwtDecode(response.data.result.token);
+
+                dispatch(updateData({
+                    isLogin: true,
+                    decoded: decoded,
+                    isAdmin: decoded.scope === 'ADMIN',
+                    token: response.data.result.token,
+                }))
+
+                if(decoded.scope === 'ADMIN') {
+                    dispatch(actionGetGeneralAdmin(response.data.result.token));
+                }
+
+                localStorage.setItem('token', response.data.result.token);
+            } else {
+                dispatch(updateData({
+                    isLogin: false,
+                    decoded: {},
+                    isAdmin: false,
+                    token: '',
+                }))
+            }
+        } catch (error) {
+            dispatch(updateData({
+                isLogin: false,
+                token: '',
+            }))
+        }
+    };
+}
+
 export function actionLogout () {
     return (dispatch, getState) => {
         try {
@@ -84,6 +120,7 @@ export function actionGetGeneralAdmin (token) {
 
 export default {
     actionLogin,
+    actionRefreshToken,
     actionLogout,
     actionGetGeneralAdmin,
 };

@@ -31,6 +31,12 @@ const Api = (token) => {
         });
     }
 
+    const refreshToken = (token) => {
+        return api.post('/auth/refresh', {
+            token: token,
+        })
+    }
+
     const getListPersonnelManagement =(page, size, username = '', fullname = '', active = '', role = '', position = '') => {
         return api.get(`/api/admin/users?page=${page}&size=${size}&username=${username}&fullname=${fullname}&active=${active}&role=${role}&position=${position}`);
     }
@@ -53,6 +59,7 @@ const Api = (token) => {
 
     return {
         getTokenLogin,
+        refreshToken,
         getListPersonnelManagement,
         getGeneralAdmin,
         createPersonnelManagement,

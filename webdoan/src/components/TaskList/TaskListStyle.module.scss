@@ -1,0 +1,33 @@
+.table-fixed {
+  width: 100%;
+}
+
+.table-fixed thead {
+  position: sticky;
+  top: 0;
+  background-color: #f8f9fa;
+  z-index: -1;
+  border-bottom: 1px solid #ccc;
+}
+
+.table-fixed th, .table-fixed td {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.icon_mail {
+  font-size: 28px;
+  color: #787575;
+}
+
+.table-fixed tbody {
+  display: block;
+  max-height: 78vh;
+  overflow-y: auto;
+}
+
+.table-fixed tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
