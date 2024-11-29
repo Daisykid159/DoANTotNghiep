@@ -1,8 +1,8 @@
 package org.example.ims_backend.Exception;
 
 import org.example.ims_backend.common.ErrorCode;
-import org.example.ims_backend.dto.request.AppException;
-import org.example.ims_backend.dto.response.ApiReponse;
+import org.example.ims_backend.dto.admin.request.AppException;
+import org.example.ims_backend.dto.admin.response.ApiReponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
        ErrorCode errorCode = ErrorCode.INVALID_KEY;
        try {
               errorCode = ErrorCode.valueOf(enumKey);
-         } catch (IllegalArgumentException ex) {
+         } catch (IllegalArgumentException ignored) {
 
        }
          ApiReponse response = new ApiReponse();

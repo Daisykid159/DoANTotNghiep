@@ -1,8 +1,8 @@
 package org.example.ims_backend.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 import org.example.ims_backend.common.Active;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -10,20 +10,23 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "position")
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Position {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "PositionId")
-    private Long id;
+    Long id;
     @Column(name = "PositionName")
-    private String positionName;
+    String positionName;
     @Column(name = "IsActive")
-    private int isActive;
+    int isActive;
     @CreationTimestamp
     @Column(name = "CreatedDate")
-    private LocalDate createdDate;
+    LocalDate createdDate;
     @Column(name = "DeletedDate")
-    private LocalDate deletedDate;
+    LocalDate deletedDate;
 }

@@ -1,0 +1,62 @@
+package org.example.ims_backend.mapper;
+
+import org.example.ims_backend.dto.admin.projectDTO.request.ProjectRequest;
+import org.example.ims_backend.dto.admin.projectDTO.response.ProjectDetailResponse;
+import org.example.ims_backend.dto.admin.projectDTO.response.ProjectResponse;
+import org.example.ims_backend.dto.admin.taskDTO.response.TaskResponse;
+import org.example.ims_backend.entity.Project;
+import org.example.ims_backend.entity.Task;
+import org.mapstruct.Mapper;
+
+import java.util.List;
+
+@Mapper(componentModel = "spring")
+public interface ProjectMapper {
+    default ProjectResponse toProjectResponse(Project project){
+        return ProjectResponse.builder()
+                .project_id(project.getId())
+                .project_name(project.getName())
+                .content(project.getContent())
+                .number_task(project.getNumberTask())
+                .status(project.getStatus())
+                .created_date(project.getCreatedDate())
+                .expired_date(project.getExpiredDate())
+                .completed_date(project.getCompletedDate())
+                .build();
+    }
+    default Project toProject(Project project, ProjectRequest projectRequest){
+        project.setName(projectRequest.getProject_name());
+        project.setContent(projectRequest.getContent());
+        project.setNumberTask(projectRequest.getNumber_task());
+        project.setStatus(projectRequest.getStatus());
+        project.setCreatedDate(projectRequest.getCreated_date());
+        project.setExpiredDate(projectRequest.getExpired_date());
+        return project;
+    }
+    default ProjectDetailResponse toProjectDetailResponse(Project project , List<Task> tasks){
+        List<TaskResponse> taskResponses = tasks.stream().map(task -> TaskResponse.builder()
+                .task_id(task.getId())
+                .task_title(task.getTitle())
+                .created_date(task.getCreatedDate())
+                .expired_date(task.getExpiredDate())
+                .status(task.getStatus())
+                .department_id(task.getTargetDepartment().getId())
+                .assign_user_id(task.getAssignUser().getId())
+                .targer_user_id(task.getTargetUser().getId())
+                .department_name(task.getTargetDepartment().getDepartmentName())
+                .assign_user_name(task.getAssignUser().getFullName())
+                .target_user_name(task.getTargetUser().getFullName())
+                .build()).toList();
+       return ProjectDetailResponse.builder()
+                                    .project_id(project.getId())
+                                    .project_name(project.getName())
+                                    .content(project.getContent())
+                                    .number_task(project.getNumberTask())
+                                    .status(project.getStatus())
+                                    .created_date(project.getCreatedDate())
+                                    .expired_date(project.getExpiredDate())
+                                    .completed_date(project.getCompletedDate())
+                                    .tasks(taskResponses)
+                                    .build();
+    }
+}

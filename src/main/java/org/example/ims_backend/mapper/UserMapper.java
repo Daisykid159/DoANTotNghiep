@@ -1,21 +1,15 @@
 
 package org.example.ims_backend.mapper;
 
-import org.example. ims_backend.common.Active;
-import org.example.ims_backend.common.Gender;
-import org.example.ims_backend.common.Role;
-import org.example.ims_backend.dto.request.UserCreationRequest;
-import org.example.ims_backend.dto.request.UserUpdateRequest;
-import org.example.ims_backend.dto.response.DepartmentResponse;
-import org.example.ims_backend.dto.response.DepartmentUserResponse;
-import org.example.ims_backend.dto.response.UpdateUserResponse;
-import org.example.ims_backend.dto.response.UserResponse;
-import org.example.ims_backend.entity.Department;
+
+import org.example.ims_backend.dto.admin.request.UserCreationRequest;
+import org.example.ims_backend.dto.admin.request.UserUpdateRequest;
+import org.example.ims_backend.dto.admin.response.DepartmentResponse;
+import org.example.ims_backend.dto.admin.response.UpdateUserResponse;
+import org.example.ims_backend.dto.admin.response.UserResponse;
 import org.example.ims_backend.entity.DepartmentUser;
 import org.example.ims_backend.entity.User;
-import org.example.ims_backend.repository.DepartmentUserRepository;
 import org.mapstruct.Mapper;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 
@@ -29,9 +23,9 @@ public interface UserMapper {
         user.setPassword(userCreationRequest.getPassword());
         user.setEmail(userCreationRequest.getEmail());
         user.setIsAdmin(userCreationRequest.getRole().name().equals("ADMIN") ? 1 : 0);
-        user.setIsActive(0);
+        user.setIsActive(userCreationRequest.isActive() ? 1 : 0);
         user.setPhone(userCreationRequest.getPhone());
-        user.setGender(userCreationRequest.getGender().name().equals("MALE") ? 1 : 0);
+        user.setGender(userCreationRequest.isGender() ? 1 : 0);
         user.setDateOfBirth( userCreationRequest.getDateofbirth());
         user.setHomeTown(userCreationRequest.getHometown());
         user.setLastName(userCreationRequest.getLastname());
@@ -42,15 +36,16 @@ public interface UserMapper {
     }
     default User updateUser(User user, UserUpdateRequest userUpdateRequest){
         user.setUsername(userUpdateRequest.getUsername());
-        user.setIsAdmin(userUpdateRequest.getRole().name().equals("ADMIN") ? 1 : 0);
-        user.setIsActive(userUpdateRequest.getActive().name().equals("ACTIVE") ? 1 : 0);
+        user.setIsAdmin(userUpdateRequest.isIsadmin() ? 1 : 0);
+        user.setIsActive(userUpdateRequest.isIsactive() ? 1 : 0);
         user.setPhone(userUpdateRequest.getPhone());
-        user.setGender(userUpdateRequest.getGender().name().equals("MALE") ? 1 : 0);
+        user.setGender(userUpdateRequest.isGender() ? 1 : 0);
         user.setDateOfBirth( userUpdateRequest.getDateofbirth());
         user.setHomeTown(userUpdateRequest.getHometown());
+        user.setFirstName(userUpdateRequest.getFirstname());
         user.setLastName(userUpdateRequest.getLastname());
         user.setFullName(userUpdateRequest.getFullname());
-
+        user.setEmail(userUpdateRequest.getEmail());
         return user;
     }
     default UserResponse toUserResponse(User user){
@@ -58,39 +53,28 @@ public interface UserMapper {
                 .id(user.getId())
                 .username(user.getUsername())
                 .fullName(user.getFullName())
-                .Active(user.getIsActive() == 1 ? Active.ACTIVE : Active.INACTIVE)
+                .active(user.getIsActive() == 1)
                 .build();
     }
-    default UpdateUserResponse toUpdateUserResponse(User user, Set<Department> departments, List<DepartmentUser> departmentUsers){
+    default UpdateUserResponse toUpdateUserResponse(User user, List<DepartmentUser> departmentUsers){
         List<DepartmentResponse> departmentResponses = new ArrayList<>();
-        for (Department department : departments){
-            List<DepartmentUserResponse>  departmentUserResponses = new ArrayList<>();
-            for(DepartmentUser departmentUser: departmentUsers){
-                DepartmentUserResponse departmentUserResponse = new DepartmentUserResponse();
-                if(department.getId().equals(departmentUser.getDepartment().getId())){
-                    departmentUserResponse.setPosition(departmentUser.getPosition().getPositionName());
-                    departmentUserResponse.setPositionId(departmentUser.getPosition().getId());
-                    departmentUserResponse.setDepartmentMain(departmentUser.getDepartmentMain() == 1 ? Active.ACTIVE : Active.INACTIVE);
-                    departmentUserResponses.add(departmentUserResponse);
-                }
-
-            }
-
+        for (DepartmentUser departmentUser : departmentUsers){
             departmentResponses.add(DepartmentResponse.builder()
-                    .id(department.getId())
-                    .departmentName(department.getDepartmentName())
-                    .departmentUsers(departmentUserResponses)
+                            .department_id(departmentUser.getDepartment().getId())
+                            .position_id(departmentUser.getPosition().getId())
+                            .Ismain(departmentUser.getDepartmentMain() == 1)
                     .build());
-        }
+            }
         return UpdateUserResponse.builder()
-                .id(user.getId())
+                .user_id(user.getId())
                 .lastName(user.getLastName())
                 .username(user.getUsername())
                 .fullName(user.getFullName())
                 .phone(user.getPhone())
-                .address(user.getHomeTown())
-                .active(user.getIsActive() == 1 ? Active.ACTIVE : Active.INACTIVE)
-                .role(user.getIsAdmin() == 1 ? Role.ADMIN : Role.USER)
+                .hometown(user.getHomeTown())
+                .gender(user.getGender() == 1)
+                .active(user.getIsActive() == 1)
+                .Isadmin(user.getIsAdmin() == 1)
                 .department(departmentResponses)
                 .build();
     }

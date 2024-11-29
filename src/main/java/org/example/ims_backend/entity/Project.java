@@ -7,6 +7,7 @@ import org.example.ims_backend.common.StatusProject;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 @Entity
 @Table(name = "project")
@@ -22,19 +23,19 @@ public class Project {
     @Column(name = "Content")
     private String content;
     @Column(name = "NumberTask")
-    private int numberTask;
+    private Integer numberTask;
     @Column(name = "NumberUser")
-    private int numberUser;
+    private Integer numberUser;
     @Column(name = "Status")
-    private int status;
+    private Integer status;
     @CreationTimestamp
     @Column(name = "CreatedDate")
     private LocalDate createdDate;
     @Column(name = "DeletedDate")
     private LocalDate deletedDate;
     @Column(name = "ExpiredDate")
-    private LocalDate ExpiredDate;
+    private Date expiredDate;
     @Column(name = "CompletedDate")
-    private LocalDate CompletedDate;
+    private Date completedDate;
 
 }

@@ -1,0 +1,51 @@
+package org.example.ims_backend.controller.Admin;
+
+import org.example.ims_backend.dto.admin.projectDTO.request.DepartmentOfProject;
+import org.example.ims_backend.dto.admin.projectDTO.request.ProjectRequest;
+import org.example.ims_backend.dto.admin.projectDTO.response.ProjectDetailResponse;
+import org.example.ims_backend.dto.admin.projectDTO.response.ProjectResponse;
+import org.example.ims_backend.service.admin.ProjectService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/admin")
+public class ProjectController {
+    @Autowired
+    private ProjectService projectService;
+    @GetMapping("/projects")
+    ResponseEntity<Page<ProjectResponse>> getProjects(
+            @RequestParam(defaultValue = "0", required = false) int page,
+            @RequestParam(defaultValue = "15", required = false) int size
+    ) {
+        PageRequest pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "expiredDate"));
+        Page<ProjectResponse> projects = projectService.getProjects(pageable);
+        return ResponseEntity.ok(projects);
+    }
+    @PostMapping("/createProject")
+    boolean createProject(@RequestBody ProjectRequest request) {
+        return projectService.createProject(request);
+    }
+        @PutMapping("/updateProject/{id}")
+    boolean updateProject(@RequestBody ProjectRequest request,
+                          @PathVariable Long id) {
+        request.setProject_id(id);
+        return projectService.updateProject(request);
+    }
+    @GetMapping("/project/{id}")
+    ProjectDetailResponse getProjectDetail(@PathVariable Long id) {
+        return projectService.getProjectDetail(id);
+    }
+    @PutMapping("/updateDepartmentOfProject/{id}")
+    boolean updateDepartmentOfProject(@RequestBody List<DepartmentOfProject> request,
+                                      @PathVariable Long id) {
+        return projectService.updateDepartmentOfProject(id,request);
+    }
+}

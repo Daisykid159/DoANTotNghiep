@@ -27,21 +27,21 @@ public class UserSpecification {
                     builder.like(builder.lower(root.get("fullName")), likePattern));
         };
     }
-    public static Specification<User> hasActive(Active active) {
+    public static Specification<User> hasActive(Boolean active) {
         return (root, query, builder) -> {
             if (active == null) {
                 return builder.conjunction();
             }
-            int status = (active == Active.ACTIVE) ? 1 : 0;
+            int status = (active) ? 1 : 0;
             return builder.equal(root.get("isActive"), status);
         };
     }
-    public static Specification<User> hasRole(Role role) {
+    public static Specification<User> hasRole(Boolean role) {
         return (root, query, builder) -> {
             if (role == null) {
                 return builder.conjunction();
             }
-            int isAdmin = (role == Role.ADMIN) ? 1 : 0;
+            int isAdmin = (role) ? 1 : 0;
             return builder.equal(root.get("IsAdmin"), isAdmin);
         };
     }

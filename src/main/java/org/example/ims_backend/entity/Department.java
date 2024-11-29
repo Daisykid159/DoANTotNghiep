@@ -1,17 +1,19 @@
 package org.example.ims_backend.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import org.example.ims_backend.common.Active;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "department")
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Department {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

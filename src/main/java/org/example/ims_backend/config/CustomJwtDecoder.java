@@ -1,7 +1,7 @@
 package org.example.ims_backend.config;
 
 import com.nimbusds.jose.JOSEException;
-import org.example.ims_backend.dto.request.IntrospectRequest;
+import org.example.ims_backend.dto.admin.request.IntrospectRequest;
 import org.example.ims_backend.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

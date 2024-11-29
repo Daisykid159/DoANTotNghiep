@@ -17,11 +17,11 @@ public class Task {
     @Column(name = "TaskId")
     private Long id;
     @Column(name = "Status")
-    private int status;
+    private Integer status;
     @Column(name = "State")
-    private int state;
+    private Integer state;
     @Column(name = "Priority")
-    private int priority;
+    private Integer priority;
     @Column(name = "Title")
     private String Title;
     @ManyToOne(fetch = FetchType.EAGER)
