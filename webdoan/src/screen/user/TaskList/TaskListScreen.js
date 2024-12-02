@@ -1344,6 +1344,7 @@ const TaskListScreen = () => {
         }
     ])
     const [chose, setChose] = useState(listChose[0])
+    const [showModule, setShowModule] = useState(true);
 
     const handleDetailTask = (itemSelect) => {
         const updatedData = listChose.map((item, index) => {
@@ -1371,7 +1372,7 @@ const TaskListScreen = () => {
     return (
         <div className={cx('TaskListScreen')}>
             <div className={cx('row')}>
-                <div className={cx('col-md-3', 'list_menu')}>
+                <div className={cx('col-md-2', 'list_menu')}>
                     {listMenu.map(itemMenu => (
                         <div
                             className={cx('flex', 'align-items-center', 'mb-2', 'row_menu', (menuSelected.menu_id === itemMenu.menu_id ? 'active' : ''))}
@@ -1390,8 +1391,8 @@ const TaskListScreen = () => {
                     ))}
                 </div>
 
-                <div className={cx('col-md-3')}></div>
-                <div className={cx('col-md-9', 'list_task')}>
+                <div className={cx('col-md-2')}></div>
+                <div className={cx('col-md-10', 'list_task')}>
                     <div className={cx('flex', 'row_lua_chon')}>
                         {listChose.map(itemChose => (
                             <div
@@ -1411,6 +1412,29 @@ const TaskListScreen = () => {
                             : (<DetailTaskScreen task={chose} />)}
                 </div>
             </div>
+
+            {showModule && (<div className={cx('module_xu_ly_nhanh')}>
+                <div className={cx('body_module_xu_ly_nhanh')}>
+                    <div className={cx('text_header_module_xu_ly_nhanh')}>
+                        <div>Danh sách nhiệm vụ cần xử lý</div>
+                        <button
+                            onClick={() => setShowModule(!showModule)}
+                            className={cx("btn btn-close btn-light", 'btn_close_module')}
+                        ></button>
+                    </div>
+
+                    <div className={cx('p-3')}>
+                        <div className={cx('text_header_module_xu_ly_nhanh', 'mb-2')}>Danh sách nhiệm vụ chờ báo cáo
+                        </div>
+
+                        <div className={cx('text_header_module_xu_ly_nhanh', 'mb-2')}>Danh sách nhiệm vụ chờ duyệt</div>
+
+                        <div className={cx('text_header_module_xu_ly_nhanh', 'mb-2')}>Danh sách nhiệm vụ tới hạn</div>
+
+                        <div className={cx('text_header_module_xu_ly_nhanh', 'mb-2')}>Danh sách nhiệm vụ quá hạn</div>
+                    </div>
+                </div>
+            </div>)}
         </div>
     )
 }

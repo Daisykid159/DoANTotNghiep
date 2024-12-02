@@ -8,6 +8,8 @@ import DepartmentManagementScreen from "../../screen/admin/DepartmentManagement/
 import DetailUserScreen from "../../screen/admin/DetailUser/DetailUserScreen";
 import {useDispatch, useSelector} from "react-redux";
 import {actionLogout} from "../../redux-store/action/actionAuth";
+import ProjectManagementScreen from "../../screen/admin/ProjectManagement/ProjectManagementScreen";
+import DetailProjectScreen from "../../screen/admin/DetailProject/DetailProjectScreen";
 
 const cx = classNames.bind(styles);
 
@@ -34,7 +36,7 @@ function HeaderAdmin () {
                             <div>Quản lý phòng ban</div>
                         </Link>
 
-                        <Link to="/" className={cx('row_list_management', 'margin_left_20')}>
+                        <Link to="/admin/ProjectManagementScreen" className={cx('row_list_management', 'margin_left_20')}>
                             <i className={cx('bx bx-task', 'icon_header_admin')}></i>
                             <div>Quản lý dự án</div>
                         </Link>
@@ -60,6 +62,8 @@ function HeaderAdmin () {
                     <Route path="/" element={<PersonnelManagementScreen />} />
                     <Route path="/admin/DepartmentManagementScreen" element={<DepartmentManagementScreen />} />
                     <Route path="/admin/DetailUserScreen" element={<DetailUserScreen />} />
+                    <Route path="/admin/ProjectManagementScreen" element={<ProjectManagementScreen />} />
+                    <Route path="/admin/DetailProjectScreen" element={<DetailProjectScreen />} />
                     <Route path="*" element={<NoPage />} />
                 </Routes>
             </div>

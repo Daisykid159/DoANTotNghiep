@@ -23,6 +23,15 @@ h4 {
     text-align: left !important;
 }
 
+.text_file {
+    color: #085cd4 !important;
+    text-decoration: underline;
+}
+
+.text_green {
+    color: green !important;
+}
+
 .flex {
     display: flex;
 }

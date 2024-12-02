@@ -177,6 +177,7 @@ const PersonnelManagementScreen = () => {
                                     className={cx("btn_page_number", 'btn_page', {
                                         active: page === pageCurrent, // Thêm class "active" nếu là trang hiện tại
                                     })}
+                                    onClick={() => setPageCurrent(page)}
                                 >
                                     {page}
                                 </div>

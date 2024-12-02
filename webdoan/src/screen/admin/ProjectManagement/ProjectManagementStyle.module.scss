@@ -1,0 +1,33 @@
+.ProjectManagementScreen {
+  padding: 90px 60px 90px;
+}
+
+.icon_header {
+  font-size: 30px;
+  color: #085cd4;
+}
+
+.table_list_project {
+  width: 100%;
+}
+
+.table_row {
+  height: 50px;
+  border-bottom: 1px solid #cccccc;
+}
+
+.btn_page_number {
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.btn_page {
+  border: 1px solid #dcdcdc;
+  cursor: pointer;
+}
+
+.active {
+  background-color: #338BEB;
+  color: white;
+}
+

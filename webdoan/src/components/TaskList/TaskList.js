@@ -36,8 +36,8 @@ const TaskList = ({ tasks, handleDetailTask }) => {
                             {task.title}
                         </div>
                     </td>
-                    <td>{task.label_name}</td>
-                    <td>{task.target_user_name}</td>
+                    <td className={cx('text_left')}>{task.label_name}</td>
+                    <td className={cx('text_left')}>{task.target_user_name}</td>
                     <td>{task.status}</td>
                     <td>{formatDate(task.created_date)}</td>
                     <td>{formatDate(task.expire_date)}</td>
