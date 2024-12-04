@@ -141,7 +141,7 @@ const DepartmentManagementScreen = () => {
                         <button
                             className="btn btn-info d-flex align-items-center"
                         >
-                            Cập nhật
+                            CẬP NHẬT
                         </button>
                     </div>
 

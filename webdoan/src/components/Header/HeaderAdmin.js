@@ -10,6 +10,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {actionLogout} from "../../redux-store/action/actionAuth";
 import ProjectManagementScreen from "../../screen/admin/ProjectManagement/ProjectManagementScreen";
 import DetailProjectScreen from "../../screen/admin/DetailProject/DetailProjectScreen";
+import DetailTaskAdminScreen from "../../screen/admin/DetailTaskAdmin/DetailTaskAdminScreen";
 
 const cx = classNames.bind(styles);
 
@@ -64,6 +65,7 @@ function HeaderAdmin () {
                     <Route path="/admin/DetailUserScreen" element={<DetailUserScreen />} />
                     <Route path="/admin/ProjectManagementScreen" element={<ProjectManagementScreen />} />
                     <Route path="/admin/DetailProjectScreen" element={<DetailProjectScreen />} />
+                    <Route path="/admin/DetailTaskAdminScreen" element={<DetailTaskAdminScreen />} />
                     <Route path="*" element={<NoPage />} />
                 </Routes>
             </div>

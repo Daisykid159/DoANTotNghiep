@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import classNames from "classnames/bind";
 import styles from "./ProjectManagementStyle.module.scss";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const cx = classNames.bind(styles);
 
@@ -41,9 +41,18 @@ const ProjectManagementScreen = () => {
 
     return (
         <div className={cx('ProjectManagementScreen', 'container')}>
-            <div className={cx('d-flex', 'align-items-center', 'mb-3')}>
-                <i className={cx('bx bx-task', 'icon_header')}></i>
-                <h4>Quản lý dự án</h4>
+            <div className={cx('d-flex', 'align-items-center', 'justify-content-between', 'mb-3')}>
+                <div className={cx('d-flex', 'align-items-center')}>
+                    <i className={cx('bx bx-task', 'icon_header', 'me-2')}></i>
+                    <h4>Quản lý dự án</h4>
+                </div>
+
+                <button
+                    className="btn btn-success d-flex align-items-center me-2"
+                >
+                    <i className="bx bx-plus me-1"></i>
+                    TẠO MỚI
+                </button>
             </div>
 
             <div className="col-md-12">
@@ -52,7 +61,7 @@ const ProjectManagementScreen = () => {
                     <input
                         type="text"
                         className="form-control"
-                        placeholder="Tên đăng nhập"
+                        placeholder="Tên dự án"
                     />
                 </div>
 

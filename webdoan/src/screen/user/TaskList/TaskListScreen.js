@@ -3,7 +3,7 @@ import classNames from 'classnames/bind';
 import styles from './TaskListStyle.module.scss';
 import TaskList from "../../../components/TaskList/TaskList";
 import Search from "../../../components/Search/Search";
-import DetailTaskScreen from "../DetalTask/DetailTaskScreen";
+import DetailTaskScreen from "../DetailTask/DetailTaskScreen";
 
 const cx = classNames.bind(styles);
 

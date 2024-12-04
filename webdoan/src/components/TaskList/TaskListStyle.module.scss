@@ -2,15 +2,18 @@
   width: 100%;
 }
 
-.table-fixed thead {
-  position: sticky;
-  top: 0;
+.table_task_list thead {
   background-color: #f8f9fa;
-  z-index: -1;
   border-bottom: 1px solid #ccc;
 }
 
-.table-fixed th, .table-fixed td {
+.table-fixed thead {
+  position: sticky;
+  top: 0;
+  z-index: -1;
+}
+
+.table_task_list th, .table_task_list td {
   padding: 10px;
   border-bottom: 1px solid #ccc;
 }

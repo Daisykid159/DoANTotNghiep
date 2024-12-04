@@ -123,11 +123,11 @@ const DetailUserScreen = () => {
                             type="button"
                             className="btn btn-success col-md-2 margin_left_20"
                             onClick={handleCreateUser}
-                        >Thêm mới</button>) :
+                        >THÊM MỚI</button>) :
                         (<button
                             type="button"
                             className="btn btn-success col-md-2 margin_left_20"
-                        >Cập nhật</button>)
+                        >CẬP NHẬT</button>)
                     }
                 </div>
             </div>

@@ -5,9 +5,9 @@ import classNames from "classnames/bind";
 
 const cx = classNames.bind(styles);
 
-const TaskList = ({ tasks, handleDetailTask }) => {
+const TaskList = ({ tasks, handleDetailTask, showFullTaskList = false }) => {
     return (
-        <table bordered hover className={cx("col-md-12", "table-fixed")}>
+        <table bordered hover className={cx("col-md-12", 'table_task_list', showFullTaskList ? '' : "table-fixed")}>
             <thead>
             <tr>
                 <th className={cx('w-40')}>
