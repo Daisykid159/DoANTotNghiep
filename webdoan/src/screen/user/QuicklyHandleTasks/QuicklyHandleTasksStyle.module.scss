@@ -1,0 +1,39 @@
+.QuicklyHandleTasksScreen {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: 11;
+  background-color: rgba(120, 117, 117, 0.5);
+}
+
+.QuicklyHandleTasksScreen_body_close {
+  color: white;
+  font-size: 35px;
+  padding: 0;
+  margin: 0;
+}
+
+.body_module_xu_ly_nhanh {
+  margin: 4% auto;
+  width: 60%;
+  height: 65vh;
+  background-color: #fff;
+}
+
+.text_header_module_xu_ly_nhanh {
+  color: white;
+  background-color: #338BEB;
+  height: 40px;
+  display: flex;
+  padding: 1%;
+  font-size: 18px;
+  font-weight: 600;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btn_close_module {
+  color: white;
+}

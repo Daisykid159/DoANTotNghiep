@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {BrowserRouter as Router, Route, Routes, Link} from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import classNames from 'classnames/bind';
 import styles from './HeaderStyle.module.scss';
 import TaskListScreen from "../../screen/user/TaskList/TaskListScreen";
@@ -24,7 +24,12 @@ function HeaderUser () {
     return (
         <Router>
             <div className={cx('flex', 'HeaderTop')}>
-                <div className={cx('text_name_he_thong')}>HỆ THỐNG QUẢN LÝ DỰ ÁN</div>
+                <Link
+                    className={cx('text_name_he_thong')}
+                    to={'/'}
+                >
+                    HỆ THỐNG QUẢN LÝ DỰ ÁN
+                </Link>
 
                 <div className={cx('flex', 'margin_right_20')}>
                     <div className={cx('search_header', 'flex')}>

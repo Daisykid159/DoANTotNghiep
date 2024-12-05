@@ -3,6 +3,8 @@ import styles from "./DetailTaskStyle.module.scss";
 import classNames from "classnames/bind";
 import {formatDate} from "../../../utils";
 import moment from "moment";
+import ItemRowComment from "../../../components/ItemRowComment/ItemRowComment";
+import ListAction from "../../../components/ListAction";
 
 const cx = classNames.bind(styles);
 
@@ -52,9 +54,7 @@ const DetailTaskScreen = (props) => {
             "deleted_date": null,
             "created_date": "2024-11-22T00:00:00",
             "tags": [],
-            "group_ids": [
-            3
-        ],
+            "group_ids": [3],
             "can_finished": false,
             "task_tags": [],
             "task_groups": [
@@ -232,7 +232,97 @@ const DetailTaskScreen = (props) => {
             "rotation": null,
             "combination_user_ids": [],
             "task_sources": [],
-        "comments": [
+            "comments": [
+            {
+                "report_id": 1064,
+                "task_id": 738,
+                "create_user": 291,
+                "user_id": 291,
+                "parent_id": null,
+                "combination_id": null,
+                "external_id": null,
+                "approved_user": null,
+                "approved_at": null,
+                "type": 6,
+                "status": 1,
+                "state": 1,
+                "content": "xử lý",
+                "organization_id": null,
+                "new_expired_date": null,
+                "completed_date": null,
+                "deleted_date": null,
+                "children": [
+                    {
+                        "report_id": 1065,
+                        "task_id": 738,
+                        "create_user": 291,
+                        "user_id": 291,
+                        "parent_id": 1064,
+                        "combination_id": null,
+                        "external_id": null,
+                        "approved_user": null,
+                        "approved_at": null,
+                        "type": 6,
+                        "status": 1,
+                        "state": 1,
+                        "content": "test",
+                        "organization_id": null,
+                        "new_expired_date": null,
+                        "completed_date": null,
+                        "deleted_date": null,
+                        "children": null,
+                        "created_date": "2024-11-28T16:49:17",
+                        "label_name": "Nguyễn Thị Kim Hà"
+                    }
+                ],
+                "created_date": "2024-11-28T16:45:54",
+                "label_name": "Nguyễn Thị Kim Hà"
+            },
+            {
+                "report_id": 1064,
+                "task_id": 738,
+                "create_user": 291,
+                "user_id": 291,
+                "parent_id": null,
+                "combination_id": null,
+                "external_id": null,
+                "approved_user": null,
+                "approved_at": null,
+                "type": 6,
+                "status": 1,
+                "state": 1,
+                "content": "xử lý",
+                "organization_id": null,
+                "new_expired_date": null,
+                "completed_date": null,
+                "deleted_date": null,
+                "children": [
+                    {
+                        "report_id": 1065,
+                        "task_id": 738,
+                        "create_user": 291,
+                        "user_id": 291,
+                        "parent_id": 1064,
+                        "combination_id": null,
+                        "external_id": null,
+                        "approved_user": null,
+                        "approved_at": null,
+                        "type": 6,
+                        "status": 1,
+                        "state": 1,
+                        "content": "test",
+                        "organization_id": null,
+                        "new_expired_date": null,
+                        "completed_date": null,
+                        "deleted_date": null,
+                        "children": null,
+                        "created_date": "2024-11-28T16:49:17",
+                        "label_name": "Nguyễn Thị Kim Hà"
+                    }
+                ],
+                "created_date": "2024-11-28T16:45:54",
+                "label_name": "Nguyễn Thị Kim Hà"
+            },
             {
                 "report_id": 1064,
                 "task_id": 738,
@@ -302,7 +392,9 @@ const DetailTaskScreen = (props) => {
             "parent_task": null
     }
 
-    const itemRowComment = (item) => (
+    const [showAddComment, setShowAddComment] = useState();
+
+    const itemRowTimeLines = (item) => (
         <div>
             <div className={cx('d-flex', 'align-items-center', 'justify-content-between', 'mb-3')}>
                 <div className={cx('d-flex', 'align-items-center')}>
@@ -310,7 +402,6 @@ const DetailTaskScreen = (props) => {
                     <div>
                         <div>{item.label_name}</div>
                         <div>{item.content}</div>
-                        <div>Trả lời</div>
                     </div>
                 </div>
 
@@ -318,30 +409,16 @@ const DetailTaskScreen = (props) => {
                     {moment(item.created_date).format('hh:mm A DD/MM/yyyy')}
                 </div>
             </div>
-            {item.children && item.children.length && item.children.map(itemChildren => (
-                <div className={cx('d-flex', 'align-items-center', 'justify-content-between', 'mb-3', 'ms-5')}>
-                    <div className={cx('d-flex', 'align-items-center')}>
-                        <i className={cx('bx bx-user-circle', 'icon_user', 'me-2')}></i>
-                        <div>
-                            <div>{itemChildren.label_name}</div>
-                            <div>{itemChildren.content}</div>
-                        </div>
-                    </div>
-
-                    <div>
-                        {moment(itemChildren.created_date).format('hh:mm A DD/MM/yyyy')}
-                    </div>
-                </div>
-            ))}
         </div>
     )
 
     return (
         <div className={cx('DetailTaskScreen')}>
+            <ListAction role={1} />
             <div className={cx('text_header_title')}>{detailTask.title}</div>
 
             <div className={cx('body_detail_task')}>
-                <div className={cx('col-md-12', 'mb-2')}>
+                <div className={cx('col-md-12', 'mb-3')}>
                     <div className={cx('text_title_type', 'mb-2')}>
                         <div><i className={cx('bx bx-file', 'icon_document')}></i></div>
                         <div>Nội dung công việc</div>
@@ -401,7 +478,7 @@ const DetailTaskScreen = (props) => {
                         </div>
 
                         <div className={cx('col-md-12', 'mb-2')}>
-                            <div className={cx('col-md-2', 'fw-bold')}>kết quả nhiệm vụ:</div>
+                            <div className={cx('col-md-2', 'fw-bold', 'mb-2')}>kết quả nhiệm vụ:</div>
                             <div className={cx('col-md-11')}>
                                 {detailTask.file_in_report_complete.length && detailTask.file_in_report_complete.map(item => (
                                     <div className={cx('row_file')}>
@@ -414,12 +491,13 @@ const DetailTaskScreen = (props) => {
                     </div>
                 </div>
 
-                <div className={cx('col-md-12', 'mb-2')}>
+                <div className={cx('col-md-12', 'mb-3')}>
                     <div className={cx('text_title_type', 'mb-2')}>
                         <div><i className={cx('bx bxs-file-blank', 'icon_document')}></i></div>
                         <div>Báo cáo</div>
                     </div>
-                    <table bordered hover className={cx("col-md-11", "table-fixed")}>
+
+                    <table bordered className={cx("col-md-11", "table-fixed")}>
                         <thead>
                         <tr>
                             <th>Người gửi</th>
@@ -443,7 +521,7 @@ const DetailTaskScreen = (props) => {
                     </table>
                 </div>
 
-                <div className={cx('col-md-12', 'mb-2')}>
+                <div className={cx('col-md-12', 'mb-3')}>
                     <div className={cx('text_title_type', 'mb-2')}>
                         <div><i className={cx('bx bx-purchase-tag-alt', 'icon_document')}></i></div>
                         <div>File đính kèm</div>
@@ -458,32 +536,53 @@ const DetailTaskScreen = (props) => {
                     </div>
                 </div>
 
-                <div className={cx('col-md-12', 'mb-2')}>
+                <div className={cx('col-md-12', 'mb-3')}>
                     <div className={cx('text_title_type', 'mb-2')}>
                         <div><i className={cx('bx bx-time-five', 'icon_document')}></i></div>
                         <div>Lịch sử tiến độ xử lý</div>
                     </div>
                     <div className={cx('col-md-11')}>
                         {detailTask.timelines.length && detailTask.timelines.map(item => {
-                            return itemRowComment(item)
+                            return itemRowTimeLines(item)
                         })}
                     </div>
                 </div>
 
-                <div className={cx('col-md-12', 'mb-2')}>
+                <div className={cx('col-md-12', 'mb-3')}>
                     <div className={cx('text_title_type', 'mb-2')}>
                         <div><i className={cx('bx bx-message-rounded-dots', 'icon_document')}></i></div>
                         <div>Ý kiến xử lý</div>
                     </div>
                     <div className={cx('col-md-11')}>
-                        {detailTask.comments.length && detailTask.comments.map(item => {
-                            return itemRowComment(item)
-                        })}
+                        {detailTask.comments.length && detailTask.comments.map(item => (
+                            <ItemRowComment item={item} />
+                        ))}
+                    </div>
+
+                    <div className={cx('col-md-11')}>
+                        <div
+                            className={cx('mb-1', 'd-flex', 'align-items-center', 'row_add_comment')}
+                            onClick={() => setShowAddComment(!showAddComment)}
+                        >
+                            <i className={cx('bx bx-message-rounded', 'me-2')}></i>
+                            <div>Thêm ý kiến xử lý</div>
+                        </div>
+                        {showAddComment && (<div className={cx('add_comment')}>
+                            <textarea
+                                className={cx("form-control", 'input_comment', 'col-md-11')}
+                                placeholder="Ý kiến xử lý"
+                                rows="3"
+                            />
+                            <div className="d-flex justify-content-end gap-2 mt-2">
+                                <button className="btn btn-secondary">Huỷ</button>
+                                <button className="btn btn-primary ms-3">Lưu</button>
+                            </div>
+                        </div>)}
                     </div>
                 </div>
             </div>
         </div>
     );
-}
+};
 
 export default DetailTaskScreen;

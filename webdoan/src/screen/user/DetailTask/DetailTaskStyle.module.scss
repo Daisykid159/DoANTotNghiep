@@ -11,7 +11,7 @@
 }
 
 .text_header_title {
-  padding: 10px 0;
+  padding: 5px 0 10px;
   font-size: 18px;
   font-weight: 600;
 }
@@ -22,7 +22,7 @@
 }
 
 .body_detail_task {
-  max-height: 78vh;
+  max-height: 75vh;
   overflow-y: auto;
 }
 
@@ -44,6 +44,34 @@
   padding: 0px 2%;
   background-color: rgba(120, 117, 117, 0.1);
   border-radius: 10px;
+}
+
+.input_comment {
+  resize: none;
+  border: none;
+}
+
+.add_comment {
+  border: 1px solid #cccccc;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.row_add_comment {
+  color: #085cd4;
+  background-color: rgba(66, 146, 234, 0.2);
+  padding: 10px;
+  border-radius: 10px;
+  width: 18%;
+  font-size: 18px;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.btn_response {
+  color: #085cd4;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .icon_download {

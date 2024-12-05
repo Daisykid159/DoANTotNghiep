@@ -4,6 +4,8 @@ import styles from './TaskListStyle.module.scss';
 import TaskList from "../../../components/TaskList/TaskList";
 import Search from "../../../components/Search/Search";
 import DetailTaskScreen from "../DetailTask/DetailTaskScreen";
+import CreateTaskScreen from "../CreateTask/CreateTaskScreen";
+import QuicklyHandleTasksScreen from "../QuicklyHandleTasks/QuicklyHandleTasksScreen";
 
 const cx = classNames.bind(styles);
 
@@ -1319,12 +1321,6 @@ const TaskListScreen = () => {
             'name_menu': 'Nhiệm vụ theo dõi',
         },
         {
-            "menu_id": 5,
-            "un_read": 0,
-            "total": 0,
-            'name_menu': 'Nhiệm vụ đã tạo',
-        },
-        {
             "menu_id": 6,
             "un_read": 0,
             "total": 21,
@@ -1344,7 +1340,8 @@ const TaskListScreen = () => {
         }
     ])
     const [chose, setChose] = useState(listChose[0])
-    const [showModule, setShowModule] = useState(true);
+    const [showModule, setShowModule] = useState(false);
+    const [showModuleCreateTask, setShowModuleCreateTask] = useState(false);
 
     const handleDetailTask = (itemSelect) => {
         const updatedData = listChose.map((item, index) => {
@@ -1366,13 +1363,19 @@ const TaskListScreen = () => {
     const handleDeleteChose = (item) => {
         const updatedData = listChose.filter(chose => chose.idChose !== item.idChose);
         setListChose(updatedData);
-        setChose(listChose[0]);
+        console.log(listChose);
+        setChose({
+            idChose: 1,
+            nameChose: 'Nhiệm vụ',
+        });
     }
 
     return (
         <div className={cx('TaskListScreen')}>
             <div className={cx('row')}>
                 <div className={cx('col-md-2', 'list_menu')}>
+                    <div className={cx('text_header_menu', 'mt-4', 'mb-4')}>Xử lý nhiệm vụ</div>
+
                     {listMenu.map(itemMenu => (
                         <div
                             className={cx('flex', 'align-items-center', 'mb-2', 'row_menu', (menuSelected.menu_id === itemMenu.menu_id ? 'active' : ''))}
@@ -1413,30 +1416,17 @@ const TaskListScreen = () => {
                 </div>
             </div>
 
-            {showModule && (<div className={cx('module_xu_ly_nhanh')}>
-                <div className={cx('body_module_xu_ly_nhanh')}>
-                    <div className={cx('text_header_module_xu_ly_nhanh')}>
-                        <div>Danh sách nhiệm vụ cần xử lý</div>
-                        <button
-                            onClick={() => setShowModule(!showModule)}
-                            className={cx("btn btn-close btn-light", 'btn_close_module')}
-                        ></button>
-                    </div>
+            {showModule && (<QuicklyHandleTasksScreen setShowModule={setShowModule} />)}
 
-                    <div className={cx('p-3')}>
-                        <div className={cx('text_header_module_xu_ly_nhanh', 'mb-2')}>Danh sách nhiệm vụ chờ báo cáo
-                        </div>
+            <div
+                onClick={() => setShowModuleCreateTask(!showModuleCreateTask)}
+            >
+                <i className={cx('bx bx-plus-circle', 'btn_create_task')}></i>
+            </div>
 
-                        <div className={cx('text_header_module_xu_ly_nhanh', 'mb-2')}>Danh sách nhiệm vụ chờ duyệt</div>
-
-                        <div className={cx('text_header_module_xu_ly_nhanh', 'mb-2')}>Danh sách nhiệm vụ tới hạn</div>
-
-                        <div className={cx('text_header_module_xu_ly_nhanh', 'mb-2')}>Danh sách nhiệm vụ quá hạn</div>
-                    </div>
-                </div>
-            </div>)}
+            {showModuleCreateTask && (<CreateTaskScreen setShowModuleCreateTask={setShowModuleCreateTask} />)}
         </div>
     )
 }
 
-export default TaskListScreen
+export default TaskListScreen;

@@ -104,3 +104,7 @@ h1, h2, h3, h4, h5 {
 .margin_left_50 {
     margin-left: 50px;
 }
+
+.col-md-125 {
+    min-width: 12.5% !important;
+}
