@@ -22,13 +22,13 @@ public class UserUpdateRequest {
      String firstname;
      String lastname;
      String fullname;
-     boolean gender;
+     int gender;
      String email;
      String phone;
      String hometown;
      Date dateofbirth;
-     boolean isactive;
-     boolean isadmin;
+     boolean IsActive;
+     boolean IsAdmin;
      List<DepartmentRequest> departments;
 
 }

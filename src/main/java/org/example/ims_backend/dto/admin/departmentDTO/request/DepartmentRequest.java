@@ -11,5 +11,5 @@ import lombok.experimental.FieldDefaults;
 public class DepartmentRequest {
     Long parent_department_id;
     String department_name;
-    boolean isactive;
+    boolean IsActive;
 }

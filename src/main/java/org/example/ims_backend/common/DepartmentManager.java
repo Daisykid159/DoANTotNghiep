@@ -2,6 +2,8 @@ package org.example.ims_backend.common;
 
 import org.example.ims_backend.dto.admin.departmentDTO.response.DepartmentDTO;
 import org.example.ims_backend.dto.admin.departmentDTO.response.DepartmentUserDTO;
+import org.example.ims_backend.repository.DepartmentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +12,7 @@ import java.util.List;
 
 public class DepartmentManager {
     private final Map<Long, DepartmentDTO> departmentMap = new HashMap<>();
-
+    private final Map<Long,DepartmentDTO> resultMap = new HashMap<>();
     // Method to add a department to the map
     public void addDepartment(Long departmentId, String departmentName, boolean isactive, Long parentDepartmentId, String departmentCode) {
         // Kiểm tra xem phòng ban đã tồn tại chưa
@@ -37,6 +39,8 @@ public class DepartmentManager {
         // Thêm phòng ban con vào phòng ban cha nếu có
         if (parentDepartment != null) {
             parentDepartment.addSubDepartment(newDepartment);
+        }else{
+            resultMap.put(departmentId,newDepartment);
         }
 
         System.out.println("Phòng ban " + departmentName + " đã được thêm thành công.");
@@ -45,6 +49,6 @@ public class DepartmentManager {
     // Method to get all departments
     public List<DepartmentDTO> getAllDepartments() {
         // Trả về danh sách phòng ban theo dạng cấu trúc cây
-        return new ArrayList<>(departmentMap.values());
+        return new ArrayList<>(resultMap.values());
     }
 }

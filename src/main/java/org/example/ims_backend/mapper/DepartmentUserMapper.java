@@ -17,8 +17,8 @@ public interface DepartmentUserMapper {
             departmentUserDTOS.add(DepartmentUserDTO.builder()
                             .user_id(departmentUser.getUser().getId())
                             .user_name(departmentUser.getUser().getFullName())
-                            .isactive(departmentUser.getUser().getIsActive() == 1)
-                            .ismain(departmentUser.getDepartmentMain() == 1)
+                            .IsActive(departmentUser.getUser().getIsActive() == 1)
+                            .IsMain(departmentUser.getDepartmentMain() == 1)
                             .position_id(departmentUser.getPosition().getId())
                             .position_name(departmentUser.getPosition().getPositionName())
                         .build());

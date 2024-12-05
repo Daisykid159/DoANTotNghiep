@@ -20,11 +20,11 @@ public class UpdateUserResponse {
      String username;
      String lastName;
      String fullName;
-     boolean gender;
+     int gender;
      String phone;
      String hometown;
-     boolean Isadmin;
-     boolean active;
+     boolean IsAdmin;
+     boolean IsActive;
      List<DepartmentResponse> department;
 
 }

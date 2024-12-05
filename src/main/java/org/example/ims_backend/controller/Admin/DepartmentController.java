@@ -16,7 +16,7 @@ public class DepartmentController {
     @Autowired
     private DepartmentService departmentService;
     @GetMapping("/department")
-    public DepartmentDTO getDepartment() {
+    public List<DepartmentDTO> getDepartment() {
         return departmentService.getDepartment();
     }
     @PostMapping("/createDepartment")

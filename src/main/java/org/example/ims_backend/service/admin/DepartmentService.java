@@ -8,7 +8,7 @@ import org.example.ims_backend.dto.admin.departmentDTO.response.DepartmentUserDT
 import java.util.List;
 
 public interface DepartmentService {
-    DepartmentDTO getDepartment();
+    List<DepartmentDTO> getDepartment();
     boolean createDepartment(DepartmentRequest request);
     boolean updateDepartment(Long id,DepartmentRequest request);
     List<DepartmentUserDTO> getUsersOfDepartment(Long id);

@@ -50,7 +50,7 @@ public class PositionServiceImpl implements PositionService {
         try {
             Position position = positionRepository.findById(positionRequest.getPosition_id()).orElseThrow(() -> new RuntimeException("false"));
             position.setPositionName(positionRequest.getPosition_name());
-            position.setIsActive(positionRequest.isIsactive() ? 1 : 0);
+            position.setIsActive(positionRequest.isIsActive() ? 1 : 0);
             positionRepository.save(position);
             return true;
         } catch (Exception e){

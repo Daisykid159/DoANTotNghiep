@@ -16,9 +16,7 @@ import java.util.List;
 public class DepartmentResponse {
     Long department_id;
     Long position_id;
-    boolean Ismain;
-
-
+    boolean IsMain;
 }
 
 

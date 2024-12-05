@@ -11,5 +11,5 @@ import lombok.experimental.FieldDefaults;
 public class DepartmentUserRequest {
     Long user_id;
     Long position_id;
-    boolean ismain;
+    boolean IsMain;
 }

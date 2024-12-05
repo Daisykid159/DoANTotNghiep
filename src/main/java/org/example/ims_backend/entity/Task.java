@@ -23,7 +23,7 @@ public class Task {
     @Column(name = "Priority")
     private Integer priority;
     @Column(name = "Title")
-    private String Title;
+    private String title;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "AssignDepartment")
     private Department assignDepartment;

@@ -13,14 +13,14 @@ public interface PositionMapper {
         return PositionResponse.builder()
                 .position_id(position.getId())
                 .position_name(position.getPositionName())
-                .is_active(position.getIsActive() == 1)
+                .IsActive(position.getIsActive() == 1)
                 .build();
     }
     default
     Position toPosition(PositionRequest positionRequest){
         return Position.builder()
                 .positionName(positionRequest.getPosition_name())
-                .isActive(positionRequest.isIsactive() ? 1 : 0)
+                .isActive(positionRequest.isIsActive() ? 1 : 0)
                 .build();
     }
     // List<PositionResponse> toPositionResponseList(List<Position> positions);

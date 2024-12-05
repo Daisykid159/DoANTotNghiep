@@ -19,7 +19,7 @@ public class UserCreationRequest {
     String username;
     @Size(min = 4,message = "PASSWORD_INVALID")
     String password;
-    boolean gender;
+    int gender;
     String phone;
     String hometown;
     String firstname;
@@ -27,7 +27,7 @@ public class UserCreationRequest {
     String fullname;
     Date dateofbirth;
     String email;
-    Role role;
-    boolean active;
+    boolean IsAdmin;
+    boolean IsActive;
 
 }

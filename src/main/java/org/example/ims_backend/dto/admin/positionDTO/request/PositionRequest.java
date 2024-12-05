@@ -11,5 +11,5 @@ import lombok.experimental.FieldDefaults;
 public class PositionRequest {
     Long position_id;
     String position_name;
-    boolean isactive;
+    boolean IsActive;
 }

@@ -145,7 +145,7 @@ public class UserServiceImpl implements UserService {
                     DepartmentUser departmentUser = new DepartmentUser();
                     departmentUser.setUser(user);
                     departmentUser.setDepartment(departmentRepository.findById(departmentRequest.getDepartment_id()).orElseThrow(() -> new RuntimeException("false")));
-                    departmentUser.setDepartmentMain(departmentRequest.isIsmain() ? 1 : 0);
+                    departmentUser.setDepartmentMain(departmentRequest.isIsMain() ? 1 : 0);
                     Optional<Position> position = positionRepository.findById(departmentRequest.getPosition_id());
                     departmentUser.setPosition(position.orElseThrow(() -> new RuntimeException("false")));
                     departmentUserRepository.save(departmentUser);
@@ -157,7 +157,7 @@ public class UserServiceImpl implements UserService {
 
                     if(departmentUser.getDepartment().getId().equals(departmentRequest.getDepartment_id())){
                         isExist = true;
-                        departmentUser.setDepartmentMain(departmentRequest.isIsmain() ? 1 : 0);
+                        departmentUser.setDepartmentMain(departmentRequest.isIsMain() ? 1 : 0);
                         Optional<Position> position = positionRepository.findById(departmentRequest.getPosition_id());
                         departmentUser.setPosition(position.orElseThrow(() -> new RuntimeException("false")));
                         departmentUserRepository.save(departmentUser);

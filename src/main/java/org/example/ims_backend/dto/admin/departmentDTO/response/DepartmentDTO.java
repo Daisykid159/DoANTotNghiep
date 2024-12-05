@@ -13,29 +13,29 @@ public class DepartmentDTO {
     private Long departmentId;
     private String departmentName;
     private String departmentCode;
-    private boolean isactive;
+    private boolean IsActive;
     @JsonIgnore
     private DepartmentDTO parentDepartment;
-    private List<DepartmentDTO> subDepartments = new ArrayList<>();
+    private List<DepartmentDTO> child_departments = new ArrayList<>();
 
     // Constructor
-    public DepartmentDTO(Long departmentId, String departmentName, boolean isactive, DepartmentDTO parentDepartment,String departmentCode) {
+    public DepartmentDTO(Long departmentId, String departmentName, boolean IsActive, DepartmentDTO parentDepartment,String departmentCode) {
         this.departmentId = departmentId;
         this.departmentName = departmentName;
-        this.isactive = isactive;
+        this.IsActive = IsActive;
         this.parentDepartment = parentDepartment;
         this.departmentCode = departmentCode;
     }
 
 
     // Method to add sub-department to the parent department
-    public void addSubDepartment(DepartmentDTO subDepartment) {
-        if (this.subDepartments == null) {
-            this.subDepartments = new ArrayList<>();
+    public void addSubDepartment(DepartmentDTO child_department) {
+        if (this.child_departments == null) {
+            this.child_departments = new ArrayList<>();
         }
         // Avoid adding duplicates
-        if (!this.subDepartments.contains(subDepartment)) {
-            this.subDepartments.add(subDepartment);
+        if (!this.child_departments.contains(child_department)) {
+            this.child_departments.add(child_department);
         }
     }
 }

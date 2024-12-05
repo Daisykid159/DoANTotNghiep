@@ -17,6 +17,6 @@ public class DepartmentUserDTO {
     String user_name;
     Long position_id;
     String position_name;
-    boolean isactive;
-    boolean ismain;
+    boolean IsActive;
+    boolean IsMain;
 }

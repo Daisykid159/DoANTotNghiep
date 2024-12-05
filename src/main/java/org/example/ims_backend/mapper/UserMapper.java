@@ -22,10 +22,10 @@ public interface UserMapper {
         user.setUsername(userCreationRequest.getUsername());
         user.setPassword(userCreationRequest.getPassword());
         user.setEmail(userCreationRequest.getEmail());
-        user.setIsAdmin(userCreationRequest.getRole().name().equals("ADMIN") ? 1 : 0);
-        user.setIsActive(userCreationRequest.isActive() ? 1 : 0);
+        user.setIsAdmin(userCreationRequest.isIsAdmin() ? 1 : 0);
+        user.setIsActive(userCreationRequest.isIsActive() ? 1 : 0);
         user.setPhone(userCreationRequest.getPhone());
-        user.setGender(userCreationRequest.isGender() ? 1 : 0);
+        user.setGender(userCreationRequest.getGender());
         user.setDateOfBirth( userCreationRequest.getDateofbirth());
         user.setHomeTown(userCreationRequest.getHometown());
         user.setLastName(userCreationRequest.getLastname());
@@ -36,10 +36,10 @@ public interface UserMapper {
     }
     default User updateUser(User user, UserUpdateRequest userUpdateRequest){
         user.setUsername(userUpdateRequest.getUsername());
-        user.setIsAdmin(userUpdateRequest.isIsadmin() ? 1 : 0);
-        user.setIsActive(userUpdateRequest.isIsactive() ? 1 : 0);
+        user.setIsAdmin(userUpdateRequest.isIsAdmin() ? 1 : 0);
+        user.setIsActive(userUpdateRequest.isIsActive() ? 1 : 0);
         user.setPhone(userUpdateRequest.getPhone());
-        user.setGender(userUpdateRequest.isGender() ? 1 : 0);
+        user.setGender(userUpdateRequest.getGender());
         user.setDateOfBirth( userUpdateRequest.getDateofbirth());
         user.setHomeTown(userUpdateRequest.getHometown());
         user.setFirstName(userUpdateRequest.getFirstname());
@@ -62,7 +62,7 @@ public interface UserMapper {
             departmentResponses.add(DepartmentResponse.builder()
                             .department_id(departmentUser.getDepartment().getId())
                             .position_id(departmentUser.getPosition().getId())
-                            .Ismain(departmentUser.getDepartmentMain() == 1)
+                            .IsMain(departmentUser.getDepartmentMain() == 1)
                     .build());
             }
         return UpdateUserResponse.builder()
@@ -72,9 +72,9 @@ public interface UserMapper {
                 .fullName(user.getFullName())
                 .phone(user.getPhone())
                 .hometown(user.getHomeTown())
-                .gender(user.getGender() == 1)
-                .active(user.getIsActive() == 1)
-                .Isadmin(user.getIsAdmin() == 1)
+                .gender(user.getGender())
+                .IsActive(user.getIsActive() == 1)
+                .IsAdmin(user.getIsAdmin() == 1)
                 .department(departmentResponses)
                 .build();
     }

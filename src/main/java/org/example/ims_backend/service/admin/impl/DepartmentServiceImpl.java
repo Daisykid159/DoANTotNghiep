@@ -31,7 +31,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     PositionRepository positionRepository;
     UserRepository userRepository;
     @Override
-    public DepartmentDTO getDepartment() {
+    public List<DepartmentDTO> getDepartment() {
         List<Department> departments = departmentRepository.findAll();
         DepartmentManager manager = new DepartmentManager();
 
@@ -59,7 +59,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         }
 
         // Trả về tất cả phòng ban theo cấu trúc cây
-        return manager.getAllDepartments().get(0);
+        return manager.getAllDepartments();
     }
 
     @Override
@@ -91,7 +91,7 @@ public class DepartmentServiceImpl implements DepartmentService {
             Department department = departmentRepository.findById(id).orElse(null);
             assert department != null;
             department.setDepartmentName(request.getDepartment_name());
-            department.setIsActive(request.isIsactive() ? 1 : 0);
+            department.setIsActive(request.isIsActive() ? 1 : 0);
             departmentRepository.save(department);
             return true;
         }catch (Exception e){
@@ -118,7 +118,7 @@ public class DepartmentServiceImpl implements DepartmentService {
                     departmentUser.setDepartment(department);
                     departmentUser.setUser(userRepository.findById(userRequest.getUser_id()).orElse(null));
                     departmentUser.setPosition(positionRepository.findById(userRequest.getPosition_id()).orElse(null));
-                    departmentUser.setDepartmentMain(userRequest.isIsmain() ? 1 : 0);
+                    departmentUser.setDepartmentMain(userRequest.isIsMain() ? 1 : 0);
                     departmentUserRepository.save(departmentUser);
                 }
             }
@@ -127,7 +127,7 @@ public class DepartmentServiceImpl implements DepartmentService {
                 for (DepartmentUserRequest user : users) {
                     if (departmentUser.getUser().getId().equals(user.getUser_id())) {
                         departmentUser.setPosition(positionRepository.findById(user.getPosition_id()).orElse(null));
-                        departmentUser.setDepartmentMain(user.isIsmain() ? 1 : 0);
+                        departmentUser.setDepartmentMain(user.isIsMain() ? 1 : 0);
                         departmentUserRepository.save(departmentUser);
                         isExist = true;
                         break;

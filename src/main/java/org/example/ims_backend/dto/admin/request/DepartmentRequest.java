@@ -12,6 +12,6 @@ import org.example.ims_backend.common.Active;
 public class DepartmentRequest {
     Long department_id;
     Long position_id;
-    boolean ismain;
+    boolean IsMain;
 
 }
