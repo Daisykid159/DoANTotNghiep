@@ -11,9 +11,12 @@ import org.example.ims_backend.entity.Menu;
 import org.example.ims_backend.entity.User;
 import org.example.ims_backend.repository.MenuRepository;
 import org.example.ims_backend.repository.TaskRepository;
-import org.example.ims_backend.service.user.TaskUserService;
+import org.example.ims_backend.repository.TaskUserRepository;
+import org.example.ims_backend.repository.UserRepository;
+import org.example.ims_backend.service.user.TaskService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,10 +25,12 @@ import java.util.List;
 @Slf4j
 @Service
 @FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
-public class TaskUserServiceImpl implements TaskUserService {
+public class TaskServiceImpl implements TaskService {
     TaskRepository taskRepository;
     MenuRepository menuRepository;
     EntityManager entityManager;
+    TaskUserRepository taskUserRepository;
+    UserRepository userRepository;
     @Override
     public List<TaskResponse> getListMuneById(Long user_id, Long menu_id) {
         List<TaskResponse> taskResponses = new ArrayList<>();
@@ -48,15 +53,17 @@ public class TaskUserServiceImpl implements TaskUserService {
                     .state((int) resultArray[5])
                     .title((String) resultArray[6])
                     .priority((int) resultArray[7])
-                    .created_date((Date) resultArray[9])
-                    .expired_date((Date) resultArray[8])
-                    .completed_date((Date) resultArray[12])
+                    .created_date((LocalDate) resultArray[9])
+                    .expired_date((LocalDate) resultArray[8])
+                    .completed_date((LocalDate) resultArray[12])
                     .assign_department(assign_department.getDepartmentName())
                     .assign_user_name(assign_user.getFullName())
                     .assign_user_id(assign_user.getId())
                     .target_department(target_department.getDepartmentName())
                     .target_user_name(target_user.getFullName())
                     .target_user_id(target_user.getId())
+                    .has_read(taskUserRepository.findByUserAndTask(userRepository.findById(user_id).orElse(null),taskRepository.findById((Long) resultArray[0]).orElse(null)).getHasRead())
+                    .updated_date(taskUserRepository.findByUserAndTask(userRepository.findById(user_id).orElse(null),taskRepository.findById((Long) resultArray[0]).orElse(null)).getUpdatedDate())
                     .build();
             taskResponses.add(taskResponse);
         }

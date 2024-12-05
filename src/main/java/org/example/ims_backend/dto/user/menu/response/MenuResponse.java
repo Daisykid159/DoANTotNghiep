@@ -19,15 +19,15 @@ public class MenuResponse {
     int total_task;
     @JsonIgnore
     MenuResponse parent_menu;
-    boolean IsActive;
+    int active;
     List<MenuResponse> menu_child = new ArrayList<>();
-    public MenuResponse(Long menu_id, String menu_name, String menu_code, int total_task, MenuResponse parent_menu, boolean IsActive) {
+    public MenuResponse(Long menu_id, String menu_name, String menu_code, int total_task, MenuResponse parent_menu, int active) {
         this.menu_id = menu_id;
         this.menu_name = menu_name;
         this.menu_code = menu_code;
         this.total_task = total_task;
         this.parent_menu= parent_menu;
-        this.IsActive = IsActive;
+        this.active = active;
     }
     public void addSubMenuResponse(MenuResponse child_menu) {
         if (this.menu_child == null) {

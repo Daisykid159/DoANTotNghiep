@@ -4,11 +4,12 @@ import org.example.ims_backend.dto.admin.projectDTO.request.DepartmentOfProject;
 import org.example.ims_backend.dto.admin.projectDTO.request.ProjectRequest;
 import org.example.ims_backend.dto.admin.projectDTO.response.ProjectDetailResponse;
 import org.example.ims_backend.dto.admin.projectDTO.response.ProjectResponse;
+import org.example.ims_backend.dto.admin.taskDTO.request.TaskRequest;
+import org.example.ims_backend.dto.admin.taskDTO.response.TaskResponse;
 import org.example.ims_backend.service.admin.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,5 +48,16 @@ public class ProjectController {
     boolean updateDepartmentOfProject(@RequestBody List<DepartmentOfProject> request,
                                       @PathVariable Long id) {
         return projectService.updateDepartmentOfProject(id,request);
+    }
+
+    @GetMapping("/task/{id}")
+    public TaskResponse getTaskDetail(@PathVariable Long id) {
+        return projectService.getTaskDetail(id);
+    }
+    @PutMapping("/updateTask/{id}")
+    public boolean updateTask(@RequestBody TaskRequest request,
+                              @PathVariable Long id) {
+        request.setTask_id(id);
+        return projectService.updateTask(request);
     }
 }

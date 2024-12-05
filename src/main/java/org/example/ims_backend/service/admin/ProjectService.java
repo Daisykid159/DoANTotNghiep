@@ -4,6 +4,8 @@ import org.example.ims_backend.dto.admin.projectDTO.request.DepartmentOfProject;
 import org.example.ims_backend.dto.admin.projectDTO.request.ProjectRequest;
 import org.example.ims_backend.dto.admin.projectDTO.response.ProjectDetailResponse;
 import org.example.ims_backend.dto.admin.projectDTO.response.ProjectResponse;
+import org.example.ims_backend.dto.admin.taskDTO.request.TaskRequest;
+import org.example.ims_backend.dto.admin.taskDTO.response.TaskResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -15,4 +17,6 @@ public interface ProjectService {
     boolean updateProject(ProjectRequest projectRequest);
     ProjectDetailResponse getProjectDetail(Long id);
     boolean updateDepartmentOfProject(Long id, List<DepartmentOfProject> request);
+    TaskResponse getTaskDetail(Long id);
+    boolean updateTask(TaskRequest request);
 }

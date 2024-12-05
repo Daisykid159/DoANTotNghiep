@@ -45,7 +45,7 @@ public class MenuServiceImpl implements MenuService {
                     menu.getMenuCode(),
                     totalTask,
                     parentMenuId,
-                    menu.getIsActive() == 1
+                    menu.getIsActive()
             );
         }
         return manager.getAllMenus();
