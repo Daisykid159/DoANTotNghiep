@@ -1,11 +1,22 @@
 import React, {useState} from "react";
 import styles from './CreateTaskStyle.module.scss'
 import classNames from "classnames/bind";
+import ListActionTarget from "../../../components/ListAction/ListActionTarget";
 
 const cx = classNames.bind(styles);
 
 const CreateTaskScreen = (props) => {
 
+    const [titleTask, setTitleTask] = useState(props.dataEdit.title || '');
+    const [assignTask, setAssignTask] = useState('');
+    const [targetTask, setTargetTask] = useState('');
+    const [combinationTask, setCombinationTask] = useState('');
+    const [createTask, setCreateTask] = useState( '');
+    const [sourceTask, setSourceTask] = useState(null);
+    const [levelTask, setLevelTask] = useState(props.dataEdit.title || '');
+    const [createDate, setCreateDate] = useState(null);
+    const [deadlineTask, setDeadlineTask] = useState(null);
+    const [contentTask, setContentTask] = useState('');
     const [uploadedFiles, setUploadedFiles] = useState([]);
 
     const handleFileUpload = (event) => {
@@ -24,7 +35,7 @@ const CreateTaskScreen = (props) => {
             <div className={cx('CreateTaskScreen_body')}>
                 <div className={cx('d-flex', 'align-items-center', 'CreateTaskScreen_body_header')}>
                     <i className={cx('bx bx-stats', 'me-2', 'icon_stats')}></i>
-                    <div>Giao nhiệm vụ</div>
+                    <div>{props.dataEdit ? 'Chỉnh sửa nhiệm vụ' : 'Giao nhiệm vụ'}</div>
 
                     <button
                         onClick={() => props.setShowModuleCreateTask(false)}
@@ -42,6 +53,8 @@ const CreateTaskScreen = (props) => {
                                 type="text"
                                 className="form-control"
                                 placeholder="Tiêu đề nhiệm vụ"
+                                value={titleTask}
+                                onChange={(e) => setTitleTask(e.target.value)}
                             />
                         </div>
                     </div>

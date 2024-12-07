@@ -5,6 +5,7 @@ import {formatDate} from "../../../utils";
 import moment from "moment";
 import ItemRowComment from "../../../components/ItemRowComment/ItemRowComment";
 import ListAction from "../../../components/ListAction";
+import CreateTaskScreen from "../CreateTask/CreateTaskScreen";
 
 const cx = classNames.bind(styles);
 
@@ -393,6 +394,7 @@ const DetailTaskScreen = (props) => {
     }
 
     const [showAddComment, setShowAddComment] = useState();
+    const [showModuleEditTask, setShowModuleEditTask] = useState(false);
 
     const itemRowTimeLines = (item) => (
         <div>
@@ -414,7 +416,7 @@ const DetailTaskScreen = (props) => {
 
     return (
         <div className={cx('DetailTaskScreen')}>
-            <ListAction role={1} />
+            <ListAction role={1} setShowModuleCreateTask={setShowModuleEditTask} />
             <div className={cx('text_header_title')}>{detailTask.title}</div>
 
             <div className={cx('body_detail_task')}>
@@ -581,6 +583,8 @@ const DetailTaskScreen = (props) => {
                     </div>
                 </div>
             </div>
+
+            {showModuleEditTask && (<CreateTaskScreen setShowModuleCreateTask={setShowModuleEditTask} dataEdit={detailTask} />)}
         </div>
     );
 };

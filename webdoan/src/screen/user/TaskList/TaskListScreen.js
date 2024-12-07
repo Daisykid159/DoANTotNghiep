@@ -1342,6 +1342,7 @@ const TaskListScreen = () => {
     const [chose, setChose] = useState(listChose[0])
     const [showModule, setShowModule] = useState(false);
     const [showModuleCreateTask, setShowModuleCreateTask] = useState(false);
+    const [resetView, setResetView] = useState(false);
 
     const handleDetailTask = (itemSelect) => {
         const updatedData = listChose.map((item, index) => {
@@ -1363,12 +1364,15 @@ const TaskListScreen = () => {
     const handleDeleteChose = (item) => {
         const updatedData = listChose.filter(chose => chose.idChose !== item.idChose);
         setListChose(updatedData);
-        console.log(listChose);
-        setChose({
-            idChose: 1,
-            nameChose: 'Nhiệm vụ',
-        });
+        setResetView(true);
     }
+
+    useEffect(() => {
+        if(resetView) {
+            setResetView(!resetView);
+            setChose(listChose[0]);
+        }
+    }, [resetView])
 
     return (
         <div className={cx('TaskListScreen')}>

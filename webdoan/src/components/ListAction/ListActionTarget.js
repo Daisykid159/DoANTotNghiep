@@ -5,7 +5,7 @@ import HandleAction from "./HandleAction";
 
 const cx = classNames.bind(styles);
 
-const ListActionTarget = () => {
+const ListActionTarget = (props) => {
 
     const [showHandleAction, setShowHandleAction] = useState(false);
     const [typeAction, setTypeAction] = useState('');
@@ -80,7 +80,10 @@ const ListActionTarget = () => {
                 <div>Tiến độ</div>
             </div>
 
-            <div className={cx('d-flex', 'action_item')}>
+            <div
+                className={cx('d-flex', 'action_item')}
+                onClick={() => props.setShowModuleCreateTask(true)}
+            >
                 <i className={cx('bx bx-edit-alt', 'icon_action', 'me-2')}></i>
                 <div>Chỉnh sửa</div>
             </div>
