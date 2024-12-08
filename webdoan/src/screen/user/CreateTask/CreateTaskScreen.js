@@ -7,13 +7,13 @@ const cx = classNames.bind(styles);
 
 const CreateTaskScreen = (props) => {
 
-    const [titleTask, setTitleTask] = useState(props.dataEdit.title || '');
+    const [titleTask, setTitleTask] = useState(props?.dataEdit?.title || '');
     const [assignTask, setAssignTask] = useState('');
     const [targetTask, setTargetTask] = useState('');
     const [combinationTask, setCombinationTask] = useState('');
     const [createTask, setCreateTask] = useState( '');
     const [sourceTask, setSourceTask] = useState(null);
-    const [levelTask, setLevelTask] = useState(props.dataEdit.title || '');
+    const [levelTask, setLevelTask] = useState(null);
     const [createDate, setCreateDate] = useState(null);
     const [deadlineTask, setDeadlineTask] = useState(null);
     const [contentTask, setContentTask] = useState('');
@@ -196,8 +196,7 @@ const CreateTaskScreen = (props) => {
                             <button
                                 className="btn btn-success d-flex align-items-center me-2"
                             >
-                                <i className="bx bx-plus me-1"></i>
-                                TẠO MỚI
+                                {props.dataEdit ? 'Chỉnh sửa' : 'TẠO MỚI'}
                             </button>
                         </div>
                     </div>

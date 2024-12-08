@@ -337,8 +337,16 @@ const DetailTaskAdminScreen = () => {
 
     return (
         <div className={cx('DetailTaskAdminScreen', 'container')}>
-            <div className={cx('col-md-12')}>
-                <h4>Chi tiết nhiệm vụ</h4>
+            <div className={cx('d-flex', 'align-items-center', 'justify-content-between', 'mb-3')}>
+                <div className={cx('d-flex', 'align-items-center')}>
+                    <i className={cx('bx bx-task', 'icon_header', 'me-2')}></i>
+                    <h4>Chi tiết nhiệm vụ</h4>
+                </div>
+
+                <button
+                    type="button"
+                    className="btn btn-success col-md-2 margin_left_20"
+                >CẬP NHẬT</button>
             </div>
 
             <div className={cx('text_header_title')}>{detailTask.title}</div>
