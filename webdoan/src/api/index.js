@@ -54,7 +54,7 @@ const Api = (token) => {
     }
 
     const putPasswordNew = (userId, newPassword) => {
-        return api.put(`/api/admin/upPassword?password=${newPassword}&idUser${userId}`);
+        return api.put(`/api/admin/upPassword?password=${newPassword}&idUser=${userId}`);
     }
 
     return {

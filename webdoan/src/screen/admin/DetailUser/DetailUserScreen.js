@@ -28,14 +28,16 @@ const DetailUserScreen = () => {
     const [newPassword, setNewPassword] = useState('');
 
     const [userName, setUserName] = useState('');
+    const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [fullName, setFullName] = useState('');
     const [gender, setGender] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
     const [address, setAddress] = useState('');
-    const [isActive, setIsActive] = useState('');
+    const [isActive, setIsActive] = useState(true);
     const [isAdminActive, setIsAdminActive] = useState('');
+    const [dateOfBirth, setDateOfBirth] = useState('');
     const [password, setPassword] = useState('');
 
     const handleDepartmentChange = (item) => {
@@ -70,21 +72,24 @@ const DetailUserScreen = () => {
     const handleCreateUser = () => {
         const userNew = {
             username: userName,
+            password: '1234',
+            firstname: firstName,
             lastname: lastName,
             fullname: fullName,
+            dateofbirth: dateOfBirth,
             gender: gender,
             email: email,
             phone: phone,
-            address: address,
-            active: isActive,
-            role: isAdminActive,
+            hometown: address,
+            isActive: isActive,
+            isAdmin: '1',
             department: listSelectedDepartment,
         }
         dispatch(actionCreatePersonnel(token, userNew, navigate))
     }
 
     const handleResetPassword = () => {
-        dispatch(actionResetPasswordPersonnel(token, detailUser.id, newPassword))
+        dispatch(actionResetPasswordPersonnel(token, detailUser.user_id, newPassword))
     }
 
     useEffect(() => {
@@ -157,6 +162,17 @@ const DetailUserScreen = () => {
                 </div>
 
                 <div className="mb-3 d-flex align-items-center">
+                    <label className="col-md-2">Họ và tên đệm <span className="text-danger">*</span>:</label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Nhập họ và tên đệm"
+                        value={firstName}
+                        onChange={e => setFirstName(e.target.value)}
+                    />
+                </div>
+
+                <div className="mb-3 d-flex align-items-center">
                     <label className="col-md-2">Họ và tên <span className="text-danger">*</span>:</label>
                     <input
                         type="text"
@@ -164,6 +180,17 @@ const DetailUserScreen = () => {
                         placeholder="Nhập họ và tên"
                         value={fullName}
                         onChange={e => setFullName(e.target.value)}
+                    />
+                </div>
+
+                <div className="mb-3 d-flex align-items-center">
+                    <label className="col-md-2">Ngày sinh <span className="text-danger">*</span>:</label>
+                    <input
+                        type="date"
+                        className="form-control"
+                        placeholder="Nhập họ và tên"
+                        value={dateOfBirth}
+                        onChange={e => setDateOfBirth(e.target.value)}
                     />
                 </div>
 
@@ -246,7 +273,9 @@ const DetailUserScreen = () => {
                                     <td>
                                         <input type="checkbox" className="form-check-input" id="active"/>
                                     </td>
-                                    <td onClick={() => handleDeleteItemDepartment(item)} className={cx('text_red')}>Xoá</td>
+                                    <td onClick={() => handleDeleteItemDepartment(item)}
+                                        className={cx('text_red')}>Xoá
+                                    </td>
                                 </tr>
                             ))}
                             </tbody>
@@ -260,9 +289,9 @@ const DetailUserScreen = () => {
                             type="checkbox"
                             className="form-check-input me-2"
                             id="active"
-                            checked={isActive === 'ACTIVE'}
+                            checked={isActive}
                             onChange={(e) => {
-                                setIsActive(e.target.checked ? 'ACTIVE' : 'INACTIVE');
+                                setIsActive(e.target.checked);
                             }}
                         />
                         <label className="form-check-label" htmlFor="active">Hoạt động</label>
@@ -295,7 +324,8 @@ const DetailUserScreen = () => {
                         type="button"
                         className="btn btn-info col-md-2 margin_left_20"
                         onClick={handleResetPassword}
-                    >Reset mật khẩu</button>
+                    >Reset mật khẩu
+                    </button>
                 </div>) : (<div className="mb-3 d-flex align-items-center">
                     <label className="col-md-2">Mật khẩu:</label>
                     <input
