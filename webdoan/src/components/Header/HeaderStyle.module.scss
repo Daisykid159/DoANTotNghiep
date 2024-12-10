@@ -52,15 +52,22 @@
   position: absolute;
   top: 40px;
   border-radius: 10px;
-  padding: 10px 0px;
   background-color: #fafafa;
+  border: 1px solid #cccccc;
   right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 200;
 }
 
 .row_module_header {
   color: #343434;
   cursor: pointer;
-  padding: 10px 30px;
+  padding: 15px 40px;
+  width: 100%;
 }
 
 .row_module_header_border_top {
@@ -107,4 +114,20 @@
   color: white;
   padding: 10px 20px;
   font-weight: 600;
+}
+
+.module_header_notification {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.item_notification{
+  margin: 10px;
+  padding: 10px;
+  width: 90%;
+  border: 1px solid #4292EA;
+}
+
+.icon_user_notify {
+  font-size: 30px;
 }

@@ -89,6 +89,13 @@ const Api = (token) => {
         });
     }
 
+    const getListProject = (positionNameNew, isActiveNew) => {
+        return api.post(`/api/admin/createPosition`, {
+            position_name: positionNameNew,
+            isActive: isActiveNew
+        });
+    }
+
     return {
         getTokenLogin,
         refreshToken,
@@ -102,6 +109,7 @@ const Api = (token) => {
         getListPositions,
         updatePosition,
         createPosition,
+        getListProject,
     };
 };
 

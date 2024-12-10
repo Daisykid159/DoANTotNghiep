@@ -316,7 +316,7 @@ const DetailUserScreen = () => {
                     <input
                         type="text"
                         className="form-control"
-                        placeholder="Bỏ trống để tạo mật khẩu ngẫu nhiên"
+                        placeholder="Nhập mật khẩu mới"
                         value={newPassword}
                         onChange={e => setNewPassword(e.target.value)}
                     />
@@ -331,7 +331,7 @@ const DetailUserScreen = () => {
                     <input
                         type="text"
                         className="form-control"
-                        placeholder="Bỏ trống để tạo mật khẩu ngẫu nhiên"
+                        placeholder="Nhập mật khẩu mới"
                         value={password}
                         onChange={e => setPassword(e.target.value)}
                     />

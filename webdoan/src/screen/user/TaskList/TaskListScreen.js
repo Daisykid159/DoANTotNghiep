@@ -1298,34 +1298,44 @@ const TaskListScreen = () => {
     const listMenu = [
         {
             "menu_id": 1,
-            "un_read": 0,
-            "total": 54,
-            'name_menu': 'Nhiệm vụ chủ trì',
-        },
-        {
-            "menu_id": 2,
-            "un_read": 0,
-            "total": 50,
-            'name_menu': 'Nhiệm vụ phối hợp',
+            "menu_name": "Nhiệm vụ chờ xử lý",
+            "menu_code": '1',
+            "active": 1,
+            "total_task": 5,
+            "menu_child": [
+                {
+                    "menu_id": 2,
+                    "menu_name": "Nhiệm vụ chủ trì",
+                    "menu_code": '1',
+                    "active": 1,
+                    "total_task": 5,
+                    "menu_child": []
+                },{
+                    "menu_id": 3,
+                    "menu_name": "Nhiệm vụ phối hợp",
+                    "menu_code": '1',
+                    "active": 1,
+                    "total_task": 5,
+                    "menu_child": []
+                },
+            ]
         },
         {
             "menu_id": 3,
-            "un_read": 0,
-            "total": 1,
-            'name_menu': 'Nhiệm vụ đã giao',
+            "menu_name": "Nhiệm vụ phối hợp",
+            "menu_code": '1',
+            "active": 1,
+            "total_task": 5,
+            "menu_child": []
         },
         {
-            "menu_id": 4,
-            "un_read": 0,
-            "total": 96,
-            'name_menu': 'Nhiệm vụ theo dõi',
+            "menu_id": 3,
+            "menu_name": "Nhiệm vụ phối hợp",
+            "menu_code": '1',
+            "active": 1,
+            "total_task": 5,
+            "menu_child": []
         },
-        {
-            "menu_id": 6,
-            "un_read": 0,
-            "total": 21,
-            'name_menu': 'Nhiệm vụ kết thúc',
-        }
     ]
 
     const [menuSelected, setMenuSelected] = useState(listMenu[0])
@@ -1377,29 +1387,47 @@ const TaskListScreen = () => {
     return (
         <div className={cx('TaskListScreen')}>
             <div className={cx('row')}>
-                <div className={cx('col-md-2', 'list_menu')}>
+                <div className={cx('col-md-3', 'list_menu')}>
                     <div className={cx('text_header_menu', 'mt-4', 'mb-4')}>Xử lý nhiệm vụ</div>
 
                     {listMenu.map(itemMenu => (
-                        <div
-                            className={cx('flex', 'align-items-center', 'mb-2', 'row_menu', (menuSelected.menu_id === itemMenu.menu_id ? 'active' : ''))}
-                            onClick={() => {
-                                setMenuSelected(itemMenu);
-                            }}
-                        >
-                            <div className={cx('me-3')}>
-                                <i className={cx('bx bx-folder-open', 'icon_folder', 'me-3')}></i>
-                                {itemMenu.name_menu}
+                        <div>
+                            <div
+                                className={cx('flex', 'align-items-center', 'mb-2', 'row_menu', (menuSelected.menu_id === itemMenu.menu_id ? 'active' : ''))}
+                                onClick={() => {
+                                    setMenuSelected(itemMenu);
+                                }}
+                            >
+                                <div className={cx('me-3')}>
+                                    <i className={cx('bx bx-folder-open', 'icon_folder', 'me-3')}></i>
+                                    {itemMenu.menu_name}
+                                </div>
+                                <div className={cx('number_total')}>
+                                    {itemMenu.total_task}
+                                </div>
                             </div>
-                            <div className={cx('number_total')}>
-                            {itemMenu.total}
-                            </div>
+                            {itemMenu.menu_child.length > 0 && itemMenu.menu_child.map((item, index) => (
+                                <div
+                                    className={cx('flex', 'align-items-center', 'mb-2', 'row_menu_child', (menuSelected.menu_id === item.menu_id ? 'active' : ''))}
+                                    onClick={() => {
+                                        setMenuSelected(item);
+                                    }}
+                                >
+                                    <div className={cx('me-3')}>
+                                        <i className={cx('bx bx-folder-open', 'icon_folder', 'me-3')}></i>
+                                        {item.menu_name}
+                                    </div>
+                                    <div className={cx('number_total')}>
+                                        {item.total_task}
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     ))}
                 </div>
 
-                <div className={cx('col-md-2')}></div>
-                <div className={cx('col-md-10', 'list_task')}>
+                <div className={cx('col-md-3')}></div>
+                <div className={cx('col-md-9', 'list_task')}>
                     <div className={cx('flex', 'row_lua_chon')}>
                         {listChose.map(itemChose => (
                             <div
@@ -1415,12 +1443,12 @@ const TaskListScreen = () => {
                         ))}
                     </div>
                     {chose.idChose === 1 ? (<TaskList tasks={dataList} handleDetailTask={handleDetailTask}/>)
-                        : chose.idChose === 2 ? (<Search />)
-                            : (<DetailTaskScreen task={chose} />)}
+                        : chose.idChose === 2 ? (<Search/>)
+                            : (<DetailTaskScreen task={chose}/>)}
                 </div>
             </div>
 
-            {showModule && (<QuicklyHandleTasksScreen setShowModule={setShowModule} />)}
+            {showModule && (<QuicklyHandleTasksScreen setShowModule={setShowModule}/>)}
 
             <div
                 onClick={() => setShowModuleCreateTask(!showModuleCreateTask)}
