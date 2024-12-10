@@ -7,10 +7,10 @@ export function updateData(data) {
     }
 }
 
-export function actionGetListPersonnelManagement (token, page, size, username, fullname, active, role, position) {
+export function actionGetListPersonnelManagement (token, page, size, username, fullname, active, isAdmin, position) {
     return async (dispatch, getState) => {
         try {
-            const response = await Api(token).getListPersonnelManagement(page, size, username, fullname, active, role, position);
+            const response = await Api(token).getListPersonnelManagement(page, size, username, fullname, active, isAdmin, position);
             if (response && response.data){
                 dispatch(updateData({
                     listPersonnelManagementResponse: response.data,

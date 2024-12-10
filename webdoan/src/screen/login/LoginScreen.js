@@ -48,7 +48,7 @@ const LoginScreen = () => {
                         className={cx('input')}
                         placeholder={'Mật khẩu'}
                         type={'password'}
-                        value={password}
+                        value={valuePassword}
                         onChange={(e) => setValuePassword(e.target.value)}
                     />
                 </div>

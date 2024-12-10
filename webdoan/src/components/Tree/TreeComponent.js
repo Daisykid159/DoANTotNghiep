@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import TreeNode from "./TreeNode";
 
-const TreeComponent = ({ data }) => {
+const TreeComponent = ({ data, handleNodeClick }) => {
+
     return (
         <div>
-            {data.map((node, i) => (
-                <TreeNode key={i} node={node} />
+            {Array.isArray(data) && data.map((node, i) => (
+                <TreeNode key={i} node={node} onNodeClick={handleNodeClick} />
             ))}
         </div>
     );

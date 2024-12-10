@@ -1,0 +1,22 @@
+.StatisticalAdminScreen {
+  padding: 90px 60px 10px;
+}
+
+.StatisticalAdminScreen_header {
+  position: sticky;
+  top: 90px;
+}
+
+.StatisticalAdminScreen_body {
+  max-height: 65vh;
+  overflow-y: auto;
+}
+
+.col-md-125 {
+  max-width: 12.5% !important;
+}
+
+.icon_header {
+  font-size: 30px;
+  color: #085cd4;
+}

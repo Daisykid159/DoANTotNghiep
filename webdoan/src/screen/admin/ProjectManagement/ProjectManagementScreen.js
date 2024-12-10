@@ -36,7 +36,7 @@ const ProjectManagementScreen = () => {
                 taskCount: 8,
             },
         ],
-        totalPages: 5,
+        totalPages: 1,
     };
 
     return (
@@ -69,13 +69,13 @@ const ProjectManagementScreen = () => {
                     <label className="col-md-2">Ngày tạo</label>
                     <input
                         type="date"
-                        className={classNames("form-control")}
+                        className={cx("form-control")}
                         placeholder="Từ ngày"
                     />
                     <span style={{ margin: "0 20px" }}>đến</span>
                     <input
                         type="date"
-                        className={classNames("form-control")}
+                        className={cx("form-control")}
                         placeholder="Đến ngày"
                     />
                 </div>
@@ -84,13 +84,13 @@ const ProjectManagementScreen = () => {
                     <label className="col-md-2">Hạn xử lý</label>
                     <input
                         type="date"
-                        className={classNames("form-control")}
+                        className={cx("form-control")}
                         placeholder="Từ ngày"
                     />
                     <span style={{ margin: "0 20px" }}>đến</span>
                     <input
                         type="date"
-                        className={classNames("form-control")}
+                        className={cx("form-control")}
                         placeholder="Đến ngày"
                     />
                 </div>

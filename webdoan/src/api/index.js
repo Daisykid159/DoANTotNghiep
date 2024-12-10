@@ -1,5 +1,6 @@
 import axios from 'axios';
 import reducerPersonnelManagement from "../redux-store/reducer/reducerPersonnelManagement";
+import {getListDepartmentManagement} from "../redux-store/action/actionDepartmentManagement";
 
 const Api = (token) => {
     let api
@@ -37,8 +38,8 @@ const Api = (token) => {
         })
     }
 
-    const getListPersonnelManagement =(page, size, username = '', fullname = '', active = '', role = '', position = '') => {
-        return api.get(`/api/admin/users?page=${page}&size=${size}&username=${username}&fullname=${fullname}&active=${active}&role=${role}&position=${position}`);
+    const getListPersonnelManagement =(page, size, username = '', fullname = '', active = '', isAdmin = '', position = '') => {
+        return api.get(`/api/admin/users?page=${page}&size=${size}&username=${username}&fullname=${fullname}&active=${active}&isAdmin=${isAdmin}&position=${position}`);
     }
 
     const getGeneralAdmin = () => {
@@ -57,6 +58,37 @@ const Api = (token) => {
         return api.put(`/api/admin/upPassword?password=${newPassword}&idUser=${userId}`);
     }
 
+    const getListDepartmentManagement = () => {
+        return api.get(`/api/admin/department`);
+    }
+
+    const createDepartment = (parentDepartmentId, departmentNewName, departmentNewIsActive) => {
+        return api.post(`/api/admin/createDepartment`, {
+            parent_department_id: parentDepartmentId,
+            department_name: departmentNewName,
+            isactive: departmentNewIsActive,
+        });
+    }
+
+
+    const getListPositions = () => {
+        return api.get(`/api/admin/positions`);
+    }
+
+    const updatePosition = (pos) => {
+        return api.put(`/api/admin/updatePosition/${pos.position_id}`, {
+            position_name: pos.position_name,
+            isActive: pos.isActive,
+        });
+    }
+
+    const createPosition = (positionNameNew, isActiveNew) => {
+        return api.post(`/api/admin/createPosition`, {
+            position_name: positionNameNew,
+            isActive: isActiveNew
+        });
+    }
+
     return {
         getTokenLogin,
         refreshToken,
@@ -65,6 +97,11 @@ const Api = (token) => {
         createPersonnelManagement,
         getDetailPersonnel,
         putPasswordNew,
+        getListDepartmentManagement,
+        createDepartment,
+        getListPositions,
+        updatePosition,
+        createPosition,
     };
 };
 

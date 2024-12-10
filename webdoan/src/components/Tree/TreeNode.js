@@ -1,15 +1,28 @@
 import TreeView from "react-treeview";
 import React from "react";
 
-const TreeNode = ({ node }) => {
-    const hasChildren = node.children && node.children.length > 0;
+const TreeNode = ({ node, onNodeClick }) => {
+    const hasChildren = node.child_departments && node.child_departments.length > 0;
+
+    const handleClick = () => {
+        if (onNodeClick) {
+            onNodeClick(node); // Gửi dữ liệu nhánh được click ra ngoài
+        }
+    };
 
     return (
-        <TreeView nodeLabel={node.label} defaultCollapsed={false}>
+        <TreeView
+            nodeLabel={
+                <span onClick={handleClick} style={{ cursor: "pointer" }}>
+                    {node.departmentName}
+                </span>
+            }
+            defaultCollapsed={false}
+        >
             {hasChildren &&
-            node.children.map((child, i) => (
-                <TreeNode key={i} node={child} />
-            ))}
+                node.child_departments.map((child, i) => (
+                    <TreeNode key={i} node={child} onNodeClick={onNodeClick} />
+                ))}
         </TreeView>
     );
 };

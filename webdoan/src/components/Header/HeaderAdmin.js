@@ -11,6 +11,8 @@ import {actionLogout} from "../../redux-store/action/actionAuth";
 import ProjectManagementScreen from "../../screen/admin/ProjectManagement/ProjectManagementScreen";
 import DetailProjectScreen from "../../screen/admin/DetailProject/DetailProjectScreen";
 import DetailTaskAdminScreen from "../../screen/admin/DetailTaskAdmin/DetailTaskAdminScreen";
+import StatisticalAdminScreen from "../../screen/admin/StatisticalAdmin/StatisticalAdminScreen";
+import PositionManagementScreen from "../../screen/admin/DepartmentManagement/PositionManagementScreen";
 
 const cx = classNames.bind(styles);
 
@@ -42,7 +44,7 @@ function HeaderAdmin () {
                             <div>Quản lý dự án</div>
                         </Link>
 
-                        <Link to="/" className={cx('row_list_management', 'margin_left_20')}>
+                        <Link to="/admin/StatisticalAdminScreen" className={cx('row_list_management', 'margin_left_20')}>
                             <i className={cx('bx bx-line-chart', 'icon_header_admin')}></i>
                             <div>Thống kê</div>
                         </Link>
@@ -66,6 +68,8 @@ function HeaderAdmin () {
                     <Route path="/admin/ProjectManagementScreen" element={<ProjectManagementScreen />} />
                     <Route path="/admin/DetailProjectScreen" element={<DetailProjectScreen />} />
                     <Route path="/admin/DetailTaskAdminScreen" element={<DetailTaskAdminScreen />} />
+                    <Route path="/admin/StatisticalAdminScreen" element={<StatisticalAdminScreen />} />
+                    <Route path="/admin/PositionManagementScreen" element={<PositionManagementScreen />} />
                     <Route path="*" element={<NoPage />} />
                 </Routes>
             </div>

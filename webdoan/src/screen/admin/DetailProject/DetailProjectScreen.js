@@ -1333,7 +1333,7 @@ const DetailProjectScreen = () => {
                     <label className="col-md-2">Ngày tạo</label>
                     <input
                         type="date"
-                        className={classNames("form-control")}
+                        className={cx("form-control")}
                         placeholder="Từ ngày"
                         value={startDateCreate}
                         onChange={(e) => setStartDateCreate(e.target.value)}
@@ -1341,7 +1341,7 @@ const DetailProjectScreen = () => {
                     <span style={{ margin: "0 20px" }}>đến</span>
                     <input
                         type="date"
-                        className={classNames("form-control")}
+                        className={cx("form-control")}
                         placeholder="Đến ngày"
                         min={startDateCreate}
                         value={endDateCreate}
@@ -1353,7 +1353,7 @@ const DetailProjectScreen = () => {
                     <label className="col-md-2">Hạn xử lý</label>
                     <input
                         type="date"
-                        className={classNames("form-control")}
+                        className={cx("form-control")}
                         placeholder="Từ ngày"
                         value={startDateProcessing}
                         onChange={(e) => setStartDateProcessing(e.target.value)}
@@ -1361,7 +1361,7 @@ const DetailProjectScreen = () => {
                     <span style={{ margin: "0 20px" }}>đến</span>
                     <input
                         type="date"
-                        className={classNames("form-control")}
+                        className={cx("form-control")}
                         placeholder="Đến ngày"
                         min={startDateProcessing}
                         value={endDateProcessing}

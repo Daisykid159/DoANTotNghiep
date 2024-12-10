@@ -16,12 +16,15 @@ const PersonnelManagementScreen = () => {
     const navigate = useNavigate();
 
     const token = useSelector(state => state.reducerAuth.token);
+    const overViewAdmin = useSelector(state => state.reducerAuth.overViewAdmin);
+
     const listPersonnelManagementResponse = useSelector(state => state.reducerPersonnelManagement.listPersonnelManagementResponse);
     const listUsers = listPersonnelManagementResponse?.content || [];
+
     const [userNameSearch, setUserNameSearch] = useState('');
     const [fullNameSearch, setFullNameSearch] = useState('');
     const [active, setActive] = useState('');
-    const [role, setRole] = useState('');
+    const [isAdmin, setIsAdmin] = useState('');
     const [position, setPosition] = useState('');
 
     const [pageCurrent, setPageCurrent] = useState(1);
@@ -42,12 +45,12 @@ const PersonnelManagementScreen = () => {
     }
 
     const handleSearchListPersonnelManagement = () => {
-        dispatch(actionGetListPersonnelManagement(token, 0, 15, userNameSearch, fullNameSearch, active, role, position));
+        dispatch(actionGetListPersonnelManagement(token, pageCurrent - 1, sizePage, userNameSearch, fullNameSearch, active, isAdmin, position));
     }
 
     useEffect(() => {
-        dispatch(actionGetListPersonnelManagement(token, 0, 15));
-    }, []);
+        dispatch(actionGetListPersonnelManagement(token, pageCurrent - 1, sizePage));
+    }, [pageCurrent, sizePage]);
 
     return (
         <div className={cx('PersonnelManagementScreen', 'container')}>
@@ -75,23 +78,25 @@ const PersonnelManagementScreen = () => {
             <div className="col-md-12">
                 <div className="mb-3 d-flex align-items-center">
                     <label className="col-md-2">Chức vụ</label>
-                    <select className="form-control">
-                        <option>Tất cả</option>
-                        {/* Các tùy chọn khác */}
+                    <select className="form-control" onChange={e => setPosition(e.target.value)}>
+                        <option value={''}>Tất cả</option>
+                        {overViewAdmin.position && overViewAdmin.position.map(item => (
+                            <option value={item.position_id}>{item.positionName}</option>
+                        ))}
                     </select>
                 </div>
                 <div className="mb-3 d-flex align-items-center">
                     <label className="col-md-2">Nhóm quyền</label>
                     <select
                         className="form-control"
-                        value={role}
+                        value={isAdmin}
                         onChange={(event) => {
-                            setRole(event.target.value);
+                            setIsAdmin(event.target.value);
                         }}
                     >
-                        <option value={null}>Tất cả</option>
-                        <option value={"USER"}>Người dùng</option>
-                        <option value={"ADMIN"}>Người quản trị</option>
+                        <option value={''}>Tất cả</option>
+                        <option value={false}>Người dùng</option>
+                        <option value={true}>Người quản trị</option>
                     </select>
                 </div>
                 <div className="mb-3 d-flex align-items-center">
@@ -104,8 +109,8 @@ const PersonnelManagementScreen = () => {
                         }}
                     >
                         <option value={''}>Tất cả</option>
-                        <option value={'ACTIVE'}>Hoạt động</option>
-                        <option value={'INACTIVE'}>Không hoạt động</option>
+                        <option value={true}>Hoạt động</option>
+                        <option value={false}>Không hoạt động</option>
                     </select>
                 </div>
                 <div className="mb-3 d-flex align-items-center">
