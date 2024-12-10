@@ -12,12 +12,16 @@ import org.example.ims_backend.dto.admin.taskDTO.response.TaskResponse;
 import org.example.ims_backend.entity.*;
 import org.example.ims_backend.mapper.ProjectMapper;
 import org.example.ims_backend.repository.*;
+import org.example.ims_backend.repository.specification.ProjectSpecification;
 import org.example.ims_backend.service.admin.ProjectService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -32,8 +36,14 @@ public class ProjectServiceImpl implements ProjectService {
     DepartmentRepository departmentRepository;
     UserRepository userRepository;
     @Override
-    public Page<ProjectResponse> getProjects(Pageable pageable) {
-        Page<Project> projects =  projectRepository.findAll(pageable);
+    public Page<ProjectResponse> getProjects(Pageable pageable, String keyword, LocalDate fromCreatedDate, LocalDate toCreatedDate, LocalDate fromExpiredDate, LocalDate toExpiredDate) {
+        Specification<Project> spec = Specification.where(ProjectSpecification
+                        .hasKeyword(keyword))
+                        .and(ProjectSpecification.createdDateBetween(fromCreatedDate,toCreatedDate))
+                        .and(ProjectSpecification.expiredDateBetween(fromExpiredDate,toExpiredDate));
+
+        Page<Project> projects =  projectRepository.findAll(spec,pageable);
+
         List<ProjectResponse> projectResponseList = projects.stream().map(projectMapper::toProjectResponse).toList();
         return new PageImpl<>(projectResponseList, pageable, projects.getTotalElements());
     }

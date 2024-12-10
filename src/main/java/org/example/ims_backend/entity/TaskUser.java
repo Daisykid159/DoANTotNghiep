@@ -1,8 +1,8 @@
 package org.example.ims_backend.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 import org.example.ims_backend.common.HasRead;
 import org.example.ims_backend.common.Role;
 import org.hibernate.annotations.CreationTimestamp;
@@ -11,8 +11,11 @@ import java.time.LocalDate;
 
 @Table(name = "task_user")
 @Entity
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class TaskUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,5 +38,8 @@ public class TaskUser {
     private LocalDate createdDate;
     @Column(name = "UpdatedDate")
     private LocalDate updatedDate;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="DepartmentId")
+    private Department department;
 
 }

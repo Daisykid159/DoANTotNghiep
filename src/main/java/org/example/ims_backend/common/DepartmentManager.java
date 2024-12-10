@@ -14,7 +14,7 @@ public class DepartmentManager {
     private final Map<Long, DepartmentDTO> departmentMap = new HashMap<>();
     private final Map<Long,DepartmentDTO> resultMap = new HashMap<>();
     // Method to add a department to the map
-    public void addDepartment(Long departmentId, String departmentName, boolean isactive, Long parentDepartmentId, String departmentCode) {
+    public void addDepartment(Long departmentId, String departmentName, boolean isactive, Long parentDepartmentId,String parentDepartmentName, String departmentCode) {
         // Kiểm tra xem phòng ban đã tồn tại chưa
         if (departmentMap.containsKey(departmentId)) {
             System.out.println("Phòng ban với ID " + departmentId + " đã tồn tại.");
@@ -33,7 +33,7 @@ public class DepartmentManager {
         }
 
         // Tạo phòng ban mới và thêm vào bản đồ
-        DepartmentDTO newDepartment = new DepartmentDTO(departmentId, departmentName, isactive, parentDepartment, departmentCode);
+        DepartmentDTO newDepartment = new DepartmentDTO(departmentId, departmentName, isactive, parentDepartmentId,parentDepartmentName, departmentCode);
         departmentMap.put(departmentId, newDepartment);
 
         // Thêm phòng ban con vào phòng ban cha nếu có

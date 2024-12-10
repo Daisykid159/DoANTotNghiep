@@ -26,10 +26,9 @@ public class PositionServiceImpl implements PositionService {
     PositionMapper positionMapper;
     @Override
     @PreAuthorize("hasRole('ADMIN')")
-    public Page<PositionResponse> getPositions(Pageable pageable) {
-        Page<Position> positions = positionRepository.findAll(pageable);
-        List<PositionResponse> positionResponses = positions.stream().map(positionMapper ::toPositionResponse).toList();
-        return new PageImpl<>(positionResponses, pageable, positions.getTotalElements());
+    public List<PositionResponse> getPositions() {
+        List<Position> positions = positionRepository.findAll();
+        return positions.stream().map(positionMapper ::toPositionResponse).toList();
     }
 
     @Override
@@ -48,6 +47,7 @@ public class PositionServiceImpl implements PositionService {
     @Override
     public boolean updatePosition(PositionRequest positionRequest) {
         try {
+            System.out.println(positionRequest.getPosition_id()+" "+positionRequest.getPosition_name()+" "+positionRequest.isIsActive());
             Position position = positionRepository.findById(positionRequest.getPosition_id()).orElseThrow(() -> new RuntimeException("false"));
             position.setPositionName(positionRequest.getPosition_name());
             position.setIsActive(positionRequest.isIsActive() ? 1 : 0);

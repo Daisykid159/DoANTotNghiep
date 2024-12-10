@@ -9,7 +9,6 @@ import org.example.ims_backend.dto.user.menu.response.MenuResponse;
 import org.example.ims_backend.entity.Menu;
 import org.example.ims_backend.repository.MenuRepository;
 import org.example.ims_backend.service.user.MenuService;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import java.util.List;
 

@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.example.ims_backend.dto.admin.departmentDTO.response.DepartmentDTO;
 
 import java.util.List;
 @Data
@@ -18,27 +19,10 @@ public class GeneralResponse {
     @AllArgsConstructor
     @Builder
     @FieldDefaults(level = lombok.AccessLevel.PRIVATE )
-    public static class Active {
-        String active;
-    }
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    @FieldDefaults(level = lombok.AccessLevel.PRIVATE )
-    public static class Role {
-        String role;
-    }
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    @FieldDefaults(level = lombok.AccessLevel.PRIVATE )
     public static class Position {
-        Long id;
+        Long positionId;
         String positionName;
     }
     List<Position> position;
-    List<Active> active;
-    List<Role> role;
+    List<DepartmentDTO> departments;
 }

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.example.ims_backend.common.ErrorCode;
+import org.example.ims_backend.dto.admin.departmentDTO.response.DepartmentDTO;
 import org.example.ims_backend.dto.admin.request.AppException;
 import org.example.ims_backend.dto.admin.request.DepartmentRequest;
 import org.example.ims_backend.dto.admin.request.UserCreationRequest;
@@ -19,6 +20,7 @@ import org.example.ims_backend.repository.specification.UserSpecification;
 import org.example.ims_backend.entity.*;
 import org.example.ims_backend.mapper.UserMapper;
 import org.example.ims_backend.repository.UserRepository;
+import org.example.ims_backend.service.admin.DepartmentService;
 import org.example.ims_backend.service.admin.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -43,6 +45,7 @@ public class UserServiceImpl implements UserService {
      DepartmentUserRepository departmentUserRepository;
      PositionRepository positionRepository;
      DepartmentRepository departmentRepository;
+     DepartmentService departmentService;
      @Override
     @PreAuthorize("hasRole('ADMIN')")
     public boolean createUser(UserCreationRequest request) {
@@ -52,7 +55,15 @@ public class UserServiceImpl implements UserService {
                 }
                 User user = userMapper.toUser(request);
                 user.setPassword(passwordEncoder.encode(user.getPassword()));
-                userRepository.save(user);
+                User result = userRepository.save(user);
+                for(DepartmentRequest departmentRequest: request.getDepartments()){
+                    DepartmentUser departmentUser = new DepartmentUser();
+                    departmentUser.setDepartmentMain(departmentRequest.isIsMain() ? 1 : 0);
+                    departmentUser.setUser(result);
+                    departmentUser.setDepartment(departmentRepository.findById(departmentRequest.getDepartment_id()).orElseThrow(() -> new RuntimeException("false")));
+                    departmentUser.setPosition(positionRepository.findById(departmentRequest.getPosition_id()).orElseThrow(() -> new RuntimeException("false")));
+                    departmentUserRepository.save(departmentUser);
+                }
                 return true;
             } catch (Exception e) {
                 log.error("Error when create user", e);
@@ -103,23 +114,20 @@ public class UserServiceImpl implements UserService {
         List<Position> positions = positionRepository.findAll();
         List<GeneralResponse.Position> positionResponses = positions.stream().map(o -> {
             GeneralResponse.Position position = new GeneralResponse.Position();
-            position.setId(o.getId());
+            position.setPositionId(o.getId());
             position.setPositionName(o.getPositionName());
             return position;
         }).toList();
-        List<GeneralResponse.Active> actives = List.of(
-                new GeneralResponse.Active("ACTIVE"),
-                new GeneralResponse.Active("INACTIVE")
-        );
-        List<GeneralResponse.Role> roles = List.of(
-                new GeneralResponse.Role("ADMIN"),
-                new GeneralResponse.Role("USER")
-        );
+        List<DepartmentDTO> departments = departmentService.getDepartment();
         return GeneralResponse.builder()
                 .position(positionResponses)
-                .active(actives)
-                .role(roles)
+                .departments(departments)
                 .build();
+    }
+
+    @Override
+    public List<UserResponse> getFullUsers() {
+        return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
     }
 
     @Override

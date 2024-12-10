@@ -5,14 +5,12 @@ import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.example.ims_backend.dto.user.task.request.CreateTaskRequest;
 import org.example.ims_backend.dto.user.task.response.TaskResponse;
-import org.example.ims_backend.entity.Department;
-import org.example.ims_backend.entity.Menu;
-import org.example.ims_backend.entity.User;
-import org.example.ims_backend.repository.MenuRepository;
-import org.example.ims_backend.repository.TaskRepository;
-import org.example.ims_backend.repository.TaskUserRepository;
-import org.example.ims_backend.repository.UserRepository;
+import org.example.ims_backend.dto.user.taskUser.request.CreateTaskUserRequest;
+import org.example.ims_backend.entity.*;
+import org.example.ims_backend.mapper.TaskMapper;
+import org.example.ims_backend.repository.*;
 import org.example.ims_backend.service.user.TaskService;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +29,9 @@ public class TaskServiceImpl implements TaskService {
     EntityManager entityManager;
     TaskUserRepository taskUserRepository;
     UserRepository userRepository;
+    DepartmentRepository departmentRepository;
+    TaskMapper taskMapper;
+    ProjectRepository projectRepository;
     @Override
     public List<TaskResponse> getListMuneById(Long user_id, Long menu_id) {
         List<TaskResponse> taskResponses = new ArrayList<>();
@@ -68,5 +69,89 @@ public class TaskServiceImpl implements TaskService {
             taskResponses.add(taskResponse);
         }
         return taskResponses;
+    }
+
+    @Override
+    public List<Object[]> searchTask(String titleCodeDepart, Integer userId, Integer status, String department, Integer projectId, LocalDate createFrom, LocalDate createTo, LocalDate endFrom, LocalDate endTo, Boolean isExtend, Integer userCurrentId) {
+        return taskRepository.searchTasks(titleCodeDepart, userId, status, department, projectId, createFrom, createTo, endFrom, endTo, isExtend, userCurrentId);
+    }
+
+    @Override
+    public TaskResponse TaskDetail(Long task_user_id) {
+        TaskUser taskUser = taskUserRepository.findById(task_user_id).orElse(null);
+        TaskResponse taskResponse = new TaskResponse();
+        return taskResponse;
+    }
+
+    @Override
+    public boolean evictTask(Long task_user_id) {
+            try {
+                TaskUser taskUser = taskUserRepository.findById(task_user_id).orElse(null);
+                assert taskUser != null;
+                if(taskUser.getHasRead() == 1){
+                    log.error("Task not evict");
+                    return false;
+                }
+                Task task = taskUser.getTask();
+                task.setStatus(4);
+                return true;
+            } catch (Exception e){
+                log.error("Error while evicting task with id: {}", task_user_id, e);
+                return false;
+            }
+    }
+
+    @Override
+    public boolean createTask(CreateTaskRequest createTaskRequest) {
+        try {
+            Task task = Task.builder()
+                    .title(createTaskRequest.getTitle())
+                    .content(createTaskRequest.getContent())
+                    .priority(createTaskRequest.getPriority())
+                    .createdDate(createTaskRequest.getCreated_date())
+                    .expiredDate(createTaskRequest.getExpired_date())
+                    .state(0)
+                    .status(0)
+                    .assignDepartment(departmentRepository.findById(createTaskRequest.getAssign_department()).orElse(null))
+                    .assignUser(userRepository.findById(createTaskRequest.getAssign_user()).orElse(null))
+                    .TargetDepartment(departmentRepository.findById(createTaskRequest.getTarget_department()).orElse(null))
+                    .TargetUser(userRepository.findById(createTaskRequest.getTarget_user()).orElse(null))
+                    .project(projectRepository.findById(createTaskRequest.getProject_id()).orElse(null))
+                    .build();
+            Task result = taskRepository.save(task);
+            for(CreateTaskUserRequest createTaskUserRequest : createTaskRequest.getCombinations()){
+                TaskUser taskUser = TaskUser.builder()
+                        .createdDate(createTaskUserRequest.getCreated_date())
+                        .role(2)
+                        .task(result)
+                        .user(userRepository.findById(createTaskUserRequest.getCombination_user()).orElse(null))
+                        .department(departmentRepository.findById(createTaskUserRequest.getCombination_department()).orElse(null))
+                        .hasRead(0)
+                        .build();
+                taskUserRepository.save(taskUser);
+            }
+            taskUserRepository.save(TaskUser.builder()
+                            .createdDate(createTaskRequest.getCreated_date())
+                            .hasRead(0)
+                            .role(0)
+                            .department(departmentRepository.findById(createTaskRequest.getAssign_department()).orElse(null))
+                            .user(userRepository.findById(createTaskRequest.getAssign_user()).orElse(null))
+                            .task(result)
+                    .build());
+            taskUserRepository.save(TaskUser.builder()
+                    .createdDate(createTaskRequest.getCreated_date())
+                    .hasRead(0)
+                    .role(1)
+                    .department(departmentRepository.findById(createTaskRequest.getTarget_department()).orElse(null))
+                    .user(userRepository.findById(createTaskRequest.getTarget_user()).orElse(null))
+                    .task(result)
+                    .build());
+            return true;
+        }catch (Exception e){
+            log.error("Error while creating task", e);
+            return false;
+        }
+
+
     }
 }

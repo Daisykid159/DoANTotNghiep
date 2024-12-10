@@ -5,8 +5,10 @@ import org.example.ims_backend.dto.admin.positionDTO.response.PositionResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface PositionService {
-    Page<PositionResponse> getPositions(Pageable pageable);
+    List<PositionResponse> getPositions();
     boolean createPosition(PositionRequest positionRequest);
     boolean updatePosition(PositionRequest positionRequest);
 }

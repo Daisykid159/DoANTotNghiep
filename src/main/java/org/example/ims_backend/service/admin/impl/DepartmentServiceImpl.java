@@ -37,13 +37,15 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         for (Department department : departments) {
             Long parentDepartmentId = null;
+            String parentDepartmentName = null;
 
             // Kiểm tra mã phòng ban cha trong mã phòng ban
             String[] codeSegments = department.getDepartmentCode().split("\\.");
             if (codeSegments.length >= 2) {
                 try {
                     parentDepartmentId = Long.parseLong(codeSegments[codeSegments.length - 2]);
-                } catch (NumberFormatException e) {
+                    parentDepartmentName = departmentRepository.findById(parentDepartmentId).orElseThrow(() -> new Exception("false")).getDepartmentName();
+                } catch (Exception e) {
                     log.error("Invalid parentDepartmentId in department code: {}", department.getDepartmentCode(), e);
                 }
             }
@@ -54,6 +56,7 @@ public class DepartmentServiceImpl implements DepartmentService {
                     department.getDepartmentName(),
                     department.getIsActive() == 1 ,
                     parentDepartmentId,
+                    parentDepartmentName,
                     department.getDepartmentCode()
             );
         }

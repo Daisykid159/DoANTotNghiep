@@ -34,8 +34,8 @@ public class Project {
     @Column(name = "DeletedDate")
     private LocalDate deletedDate;
     @Column(name = "ExpiredDate")
-    private Date expiredDate;
+    private LocalDate expiredDate;
     @Column(name = "CompletedDate")
-    private Date completedDate;
+    private LocalDate completedDate;
 
 }

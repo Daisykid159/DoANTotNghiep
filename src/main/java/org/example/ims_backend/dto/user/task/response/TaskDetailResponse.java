@@ -1,0 +1,50 @@
+package org.example.ims_backend.dto.user.task.response;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+import org.example.ims_backend.dto.user.comment.response.CommentResponse;
+import org.example.ims_backend.dto.user.file.response.FileResponse;
+import org.example.ims_backend.dto.user.history.response.HistoryResponse;
+import org.example.ims_backend.dto.user.report.response.ReportResponse;
+import org.example.ims_backend.dto.user.taskUser.response.TaskUserResponse;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class TaskDetailResponse {
+    Long task_id;
+    Long task_user_id;
+    int status;
+    int state;
+    boolean can_edit;
+    int role;
+    String title;
+    Long assign_department_id;
+    String assign_department_name;
+    Long create_user_id;
+    String create_user_name;
+    Long assign_user_id;
+    String assign_user_name;
+    Long target_department_id;
+    String target_department_name;
+    Long target_user_id;
+    String target_user_name;
+    String content;
+    int priority;
+    LocalDate expired_date;
+    LocalDate created_date;
+    LocalDate deleted_date;
+    LocalDate completed_date;
+    boolean can_finished;
+    List<ReportResponse> reports= new ArrayList<>();
+    List<HistoryResponse> history = new ArrayList<>();
+    List<TaskUserResponse> combinations = new ArrayList<>();
+    List<CommentResponse> comments = new ArrayList<>();
+    List<FileResponse> files = new ArrayList<>();
+}

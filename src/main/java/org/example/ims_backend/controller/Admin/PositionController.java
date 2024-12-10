@@ -19,14 +19,9 @@ public class PositionController {
     private PositionService positionService;
 
     @GetMapping("/positions")
-    ResponseEntity<Page<PositionResponse>> getPositions(
-                                        @RequestParam(defaultValue = "0", required = false) int page,
-                                        @RequestParam(defaultValue = "15", required = false) int size
-                                        )
+    List<PositionResponse> getPositions()
     {
-        PageRequest pageable = PageRequest.of(page,size, Sort.by(Sort.Direction.ASC, "id"));
-        Page<PositionResponse> positions = positionService.getPositions(pageable);
-        return ResponseEntity.ok(positions);
+        return positionService.getPositions();
     }
     @PostMapping("/createPosition")
     boolean createPosition(@RequestBody PositionRequest request) {

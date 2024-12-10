@@ -32,6 +32,7 @@ public interface UserMapper {
         user.setFirstName(userCreationRequest.getFirstname());
         user.setFullName(userCreationRequest.getFullname());
 
+
         return user;
     }
     default User updateUser(User user, UserUpdateRequest userUpdateRequest){

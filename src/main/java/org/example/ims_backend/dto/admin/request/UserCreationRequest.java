@@ -6,7 +6,9 @@ import lombok.experimental.FieldDefaults;
 import org.example.ims_backend.common.Gender;
 import org.example.ims_backend.common.Role;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -28,6 +30,7 @@ public class UserCreationRequest {
     Date dateofbirth;
     String email;
     boolean IsAdmin;
+    List<DepartmentRequest> departments = new ArrayList<>() ;
     boolean IsActive;
 
 }

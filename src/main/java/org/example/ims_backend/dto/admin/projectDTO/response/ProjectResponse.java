@@ -14,9 +14,9 @@ public class ProjectResponse {
     Long project_id;
     String project_name;
     String content;
-    int number_task;
-    int status;
+    Integer number_task;
+    Integer status;
     LocalDate created_date;
-    Date expired_date;
-    Date completed_date;
+    LocalDate expired_date;
+    LocalDate completed_date;
 }

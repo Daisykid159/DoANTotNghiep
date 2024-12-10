@@ -1,21 +1,21 @@
-package org.example.ims_backend.dto.admin.projectDTO.request;
+package org.example.ims_backend.dto.user.history.response;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
-import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ProjectRequest {
-    Long project_id;
-    String project_name;
+public class HistoryResponse {
+    Long history_id;
+    Long department_id;
+    Long task_id;
+    Long create_user_id;
+    Long role;
     String content;
-    int number_task;
-    int status;
+    String label_name;
     LocalDate created_date;
-    LocalDate expired_date;
 }

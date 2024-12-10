@@ -20,7 +20,7 @@ public class ProjectDetailResponse {
     private int number_task;
     private int status;
     private LocalDate created_date;
-    private Date expired_date;
-    private Date completed_date;
+    private LocalDate expired_date;
+    private LocalDate completed_date;
     List<TaskResponse> tasks;
 }

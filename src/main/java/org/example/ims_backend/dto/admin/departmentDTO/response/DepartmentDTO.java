@@ -14,16 +14,17 @@ public class DepartmentDTO {
     private String departmentName;
     private String departmentCode;
     private boolean IsActive;
-    @JsonIgnore
-    private DepartmentDTO parentDepartment;
+    private Long department_parent_id;
+    private String department_parent_name;
     private List<DepartmentDTO> child_departments = new ArrayList<>();
 
     // Constructor
-    public DepartmentDTO(Long departmentId, String departmentName, boolean IsActive, DepartmentDTO parentDepartment,String departmentCode) {
+    public DepartmentDTO(Long departmentId, String departmentName, boolean IsActive,Long department_parent_id,String department_parent_name,String departmentCode) {
         this.departmentId = departmentId;
         this.departmentName = departmentName;
         this.IsActive = IsActive;
-        this.parentDepartment = parentDepartment;
+        this.department_parent_id = department_parent_id;
+        this.department_parent_name =department_parent_name;
         this.departmentCode = departmentCode;
     }
 

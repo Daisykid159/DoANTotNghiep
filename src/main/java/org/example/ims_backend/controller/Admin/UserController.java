@@ -20,6 +20,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequestMapping("/api/admin")
 @RestController
 public class UserController {
@@ -47,6 +49,10 @@ public class UserController {
         PageRequest pageable = PageRequest.of(page,size, Sort.by(Sort.Direction.DESC, "createdDate"));
         Page<UserResponse> users = userService.getUsers(pageable, username, fullname, active, isAdmin, position);
         return ResponseEntity.ok(users);
+    }
+    @GetMapping("/fullUsers")
+    List<UserResponse> getFullUsers() {
+        return userService.getFullUsers();
     }
     @GetMapping("/users/{id}")
     UpdateUserResponse getUser(@PathVariable Long id) {
