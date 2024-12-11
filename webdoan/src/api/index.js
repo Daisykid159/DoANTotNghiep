@@ -102,11 +102,12 @@ const Api = (token) => {
         });
     }
 
-    const getListProject = (positionNameNew, isActiveNew) => {
-        return api.post(`/api/admin/createPosition`, {
-            position_name: positionNameNew,
-            isActive: isActiveNew
-        });
+    const getListProject = (page, size, keyword = '', fromCreatedDate = '', toCreatedDate = '', fromExpiredDate = '', toExpiredDate = '') => {
+        return api.post(`api/admin/projects?page=${page}&size=${size}&keyword=${keyword}&fromCreatedDate=${fromCreatedDate}&toCreatedDate=${toCreatedDate}&fromExpiredDate=${fromExpiredDate}&toExpiredDate=${toExpiredDate}`);
+    }
+
+    const getDetailProject = id => {
+        return api.get(`api/admin/project/${id}`);
     }
 
     return {
@@ -126,6 +127,7 @@ const Api = (token) => {
         updatePosition,
         createPosition,
         getListProject,
+        getDetailProject,
     };
 };
 

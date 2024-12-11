@@ -1,43 +1,26 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import classNames from "classnames/bind";
 import styles from "./ProjectManagementStyle.module.scss";
 import { useNavigate } from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import {actionGetListProject} from "../../../redux-store/action/actionProjectManagement";
 
 const cx = classNames.bind(styles);
 
 const ProjectManagementScreen = () => {
 
+    const dispatch = useDispatch();
     const navigate = useNavigate();
+    const token = useSelector(state => state.reducerAuth.token);
 
     const [pageCurrent, setPageCurrent] = useState(1);
     const [sizePage, setSizePage] = useState(15);
 
-    const dataListProject = {
-        data: [
-            {
-                id: 1,
-                name: 'Dự án A',
-                createdAt: '2024-01-15',
-                deadline: '2024-02-15',
-                taskCount: 5,
-            },
-            {
-                id: 2,
-                name: 'Dự án B',
-                createdAt: '2024-02-01',
-                deadline: '2024-03-01',
-                taskCount: 12,
-            },
-            {
-                id: 3,
-                name: 'Dự án C',
-                createdAt: '2024-03-05',
-                deadline: '2024-04-05',
-                taskCount: 8,
-            },
-        ],
-        totalPages: 1,
-    };
+    const listProjectManagementResponse = useSelector(state => state.reducerProjectManagement.listProjectManagementResponse);
+
+    useEffect(() => {
+        dispatch(actionGetListProject(token, pageCurrent - 1, sizePage))
+    }, [])
 
     return (
         <div className={cx('ProjectManagementScreen', 'container')}>
@@ -112,8 +95,8 @@ const ProjectManagementScreen = () => {
                     </tr>
                     </thead>
                     <tbody>
-                    {dataListProject.data && dataListProject.data.length > 0 ? (
-                        dataListProject.data.map((project, index) => (
+                    {listProjectManagementResponse.content && listProjectManagementResponse.content.length > 0 ? (
+                        listProjectManagementResponse.content.map((project, index) => (
                             <tr
                                 key={index}
                                 className={cx('text-center', 'table_row')}
@@ -122,10 +105,10 @@ const ProjectManagementScreen = () => {
                                 }}
                             >
                                 <td>{index + 1}</td>
-                                <td>{project.name}</td>
-                                <td>{project.createdAt}</td>
-                                <td>{project.deadline}</td>
-                                <td>{project.taskCount}</td>
+                                <td>{project.project_name}</td>
+                                <td>{project.created_date}</td>
+                                <td>{project.expired_date}</td>
+                                <td>{project.number_task}</td>
                             </tr>
                         ))
                     ) : (
