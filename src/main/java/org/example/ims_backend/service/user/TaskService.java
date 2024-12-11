@@ -1,6 +1,7 @@
 package org.example.ims_backend.service.user;
 
 import org.example.ims_backend.dto.user.task.request.CreateTaskRequest;
+import org.example.ims_backend.dto.user.task.request.HandoverTaskRequest;
 import org.example.ims_backend.dto.user.task.response.TaskResponse;
 
 import java.time.LocalDate;
@@ -14,4 +15,5 @@ public interface TaskService {
     TaskResponse TaskDetail(Long task_user_id);
     boolean evictTask(Long task_user_id);
     boolean createTask(CreateTaskRequest createTaskRequest);
+    boolean processingHandover(HandoverTaskRequest handoverTaskRequest);
 }

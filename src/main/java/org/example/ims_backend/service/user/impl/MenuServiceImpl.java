@@ -7,8 +7,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.ims_backend.common.MenuManager;
 import org.example.ims_backend.dto.user.menu.response.MenuResponse;
 import org.example.ims_backend.entity.Menu;
+import org.example.ims_backend.entity.User;
 import org.example.ims_backend.repository.MenuRepository;
+import org.example.ims_backend.repository.UserRepository;
 import org.example.ims_backend.service.user.MenuService;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -19,8 +22,12 @@ import java.util.List;
 public class MenuServiceImpl implements MenuService {
     MenuRepository menuRepository;
     EntityManager entityManager;
+    UserRepository userRepository;
     @Override
-    public List<MenuResponse> getMenu(Long id) {
+    public List<MenuResponse> getMenu() {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("false"));
         List<Menu> menus = menuRepository.findAll();
         MenuManager manager = new MenuManager();
         for (Menu menu : menus){
@@ -28,7 +35,7 @@ public class MenuServiceImpl implements MenuService {
             String[] codeSegments = menu.getMenuCode().split("\\.");
             String query = menu.getQuery();
             Query qery = entityManager.createQuery(query);
-            qery.setParameter("userId", id);
+            qery.setParameter("userId", user.getId());
             List results = qery.getResultList();
             int totalTask =  results.size();
             if (codeSegments.length >= 2){

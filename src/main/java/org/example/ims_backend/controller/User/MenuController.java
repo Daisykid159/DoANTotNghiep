@@ -15,8 +15,9 @@ import java.util.List;
 public class MenuController {
     @Autowired
     private MenuService menuService;
-    @GetMapping("/menus/{id}")
-    public List<MenuResponse> getMenu(@PathVariable Long id) {
-        return menuService.getMenu(id);
+    @GetMapping("/menus")
+    public List<MenuResponse> getMenu() {
+        return menuService.getMenu();
     }
+
 }

@@ -5,9 +5,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.example.ims_backend.common.Active;
-import org.example.ims_backend.common.Role;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -18,8 +18,11 @@ import java.util.List;
 public class UpdateUserResponse {
      Long user_id;
      String username;
+     String firstName;
      String lastName;
      String fullName;
+     String email;
+     Date dateOfBirth;
      int gender;
      String phone;
      String hometown;

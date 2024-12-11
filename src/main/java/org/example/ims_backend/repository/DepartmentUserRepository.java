@@ -13,5 +13,6 @@ import java.util.List;
 public interface DepartmentUserRepository extends JpaRepository<DepartmentUser, Long>,JpaSpecificationExecutor<DepartmentUser>{
     List<DepartmentUser> findByUser(User user);
     List<DepartmentUser> findByDepartment(Department department);
+
     boolean existsByUserAndDepartment(User user, Department department);
 }

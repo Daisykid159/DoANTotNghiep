@@ -6,8 +6,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.example.ims_backend.dto.user.task.request.CreateTaskRequest;
+import org.example.ims_backend.dto.user.task.request.HandoverTaskRequest;
 import org.example.ims_backend.dto.user.task.response.TaskResponse;
 import org.example.ims_backend.dto.user.taskUser.request.CreateTaskUserRequest;
+import org.example.ims_backend.dto.user.taskUser.request.TaskUserRequest;
 import org.example.ims_backend.entity.*;
 import org.example.ims_backend.mapper.TaskMapper;
 import org.example.ims_backend.repository.*;
@@ -153,5 +155,70 @@ public class TaskServiceImpl implements TaskService {
         }
 
 
+    }
+
+    @Override
+    public boolean processingHandover(HandoverTaskRequest handoverTaskRequest) {
+        try {
+            Task task = taskRepository.findById(handoverTaskRequest.getTask_id()).orElseThrow(() -> new RuntimeException("Task not found"));
+            User targetUser = userRepository.findById(handoverTaskRequest.getTarget_user_id()).orElseThrow(() -> new RuntimeException("User not found"));
+            Department targetDepartment = departmentRepository.findById(handoverTaskRequest.getTarget_department_id()).orElseThrow(() -> new RuntimeException("Department not found"));
+            if(task.getTargetUser().getId() != handoverTaskRequest.getTarget_user_id()){
+                TaskUser taskUser = taskUserRepository.findByUserAndTaskAndDepartment(task.getTargetUser(), task,task.getTargetDepartment());
+                taskUser.setRole(3);
+                taskUser.setUpdatedDate(LocalDate.now());
+                taskUserRepository.save(taskUser);
+                taskUserRepository.save(
+                        TaskUser.builder()
+                        .createdDate(LocalDate.now())
+                        .role(1)
+                        .task(task)
+                        .user(targetUser)
+                        .department(targetDepartment)
+                        .hasRead(0)
+                        .build());
+            }
+
+            task.setTargetUser(targetUser);
+            task.setTargetDepartment(targetDepartment);
+            taskRepository.save(task);
+
+            for(TaskUserRequest taskUserRequest : handoverTaskRequest.getCombinations()){
+                if(!taskUserRepository.existsByTaskAndUserAndDepartment(task, userRepository.findById(taskUserRequest.getCombination_id()).orElseThrow(() -> new RuntimeException("User not found")), departmentRepository.findById(taskUserRequest.getDepartment_id()).orElseThrow(() -> new RuntimeException("Department not found")))){
+                    TaskUser taskUser = TaskUser.builder()
+                            .createdDate(LocalDate.now())
+                            .role(2)
+                            .task(task)
+                            .user(userRepository.findById(taskUserRequest.getCombination_id()).orElseThrow(() -> new RuntimeException("User not found"))
+                            )
+                            .department(departmentRepository.findById(taskUserRequest.getDepartment_id()).orElseThrow(() -> new RuntimeException("Department not found")))
+                            .hasRead(0)
+                            .build();
+                    taskUserRepository.save(taskUser);
+                }
+            }
+            List<TaskUser> taskUsers = taskUserRepository.findByTaskAndRole(task,2);
+            for(TaskUser taskUser : taskUsers){
+                boolean isExist = false;
+                for(TaskUserRequest taskUserRequest : handoverTaskRequest.getCombinations()){
+                    if(taskUser.getUser().getId().equals(taskUserRequest.getCombination_id())
+                       && taskUser.getDepartment().getId().equals(taskUserRequest.getDepartment_id())
+                       && taskUser.getTask().getId().equals(task.getId())
+                    ){
+                        isExist = true;
+                        taskUser.setUpdatedDate(LocalDate.now());
+                        taskUserRepository.save(taskUser);
+                        break;
+                    }
+                }
+                if(!isExist){
+                    taskUserRepository.delete(taskUser);
+                }
+            }
+            return true;
+        }catch (Exception e){
+            log.error("Error while processing handover", e);
+            return false;
+        }
     }
 }

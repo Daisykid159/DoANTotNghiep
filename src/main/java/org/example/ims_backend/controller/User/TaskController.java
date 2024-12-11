@@ -1,6 +1,7 @@
 package org.example.ims_backend.controller.User;
 
 import org.example.ims_backend.dto.user.task.request.CreateTaskRequest;
+import org.example.ims_backend.dto.user.task.request.HandoverTaskRequest;
 import org.example.ims_backend.dto.user.task.response.TaskResponse;
 import org.example.ims_backend.service.user.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,5 +44,9 @@ public class TaskController {
     @PostMapping("/createTask")
     public boolean createTask(@RequestBody CreateTaskRequest createTaskRequest) {
         return taskService.createTask(createTaskRequest);
+    }
+    @PutMapping("/processingHandover")
+    public boolean processingHandover(@RequestBody HandoverTaskRequest handoverTaskRequest) {
+        return taskService.processingHandover(handoverTaskRequest);
     }
 }
