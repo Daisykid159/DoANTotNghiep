@@ -34,7 +34,7 @@ public class User {
     @Column(name = "FullName")
     private String fullName;
     @Column(name = "DateOfBirth")
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
     @Column(unique = true ,name = "Email")
     private String email;
     @Column(name = "PhoneNumber")

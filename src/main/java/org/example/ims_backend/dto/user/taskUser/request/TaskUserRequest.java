@@ -10,6 +10,5 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TaskUserRequest {
     Long combination_id;
-    String combination_name;
     Long department_id;
 }

@@ -90,9 +90,14 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public boolean updateDepartment(Long id, DepartmentRequest request) {
+
         try {
+            Department parentDepartment = departmentRepository.findById(request.getParent_department_id()).orElse(null);
             Department department = departmentRepository.findById(id).orElse(null);
+            assert parentDepartment != null;
+
             assert department != null;
+            department.setDepartmentCode(parentDepartment.getDepartmentCode() + "." + id);
             department.setDepartmentName(request.getDepartment_name());
             department.setIsActive(request.isIsActive() ? 1 : 0);
             departmentRepository.save(department);

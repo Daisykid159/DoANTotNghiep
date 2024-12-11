@@ -13,7 +13,9 @@ import org.example.ims_backend.dto.user.taskUser.request.TaskUserRequest;
 import org.example.ims_backend.entity.*;
 import org.example.ims_backend.mapper.TaskMapper;
 import org.example.ims_backend.repository.*;
+import org.example.ims_backend.service.user.HistoryService;
 import org.example.ims_backend.service.user.TaskService;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -32,8 +34,8 @@ public class TaskServiceImpl implements TaskService {
     TaskUserRepository taskUserRepository;
     UserRepository userRepository;
     DepartmentRepository departmentRepository;
-    TaskMapper taskMapper;
     ProjectRepository projectRepository;
+    HistoryService historyService;
     @Override
     public List<TaskResponse> getListMuneById(Long user_id, Long menu_id) {
         List<TaskResponse> taskResponses = new ArrayList<>();
@@ -148,6 +150,9 @@ public class TaskServiceImpl implements TaskService {
                     .user(userRepository.findById(createTaskRequest.getTarget_user()).orElse(null))
                     .task(result)
                     .build());
+            var context = SecurityContextHolder.getContext();
+            User user = userRepository.findByUsername(context.getAuthentication().getName()).orElseThrow(() -> new RuntimeException("User not found"));
+            historyService.addHistory(user, userRepository.findById(createTaskRequest.getTarget_user()).orElseThrow(() -> new RuntimeException("User not found")), result, createTaskRequest.getContent(), 0);
             return true;
         }catch (Exception e){
             log.error("Error while creating task", e);
@@ -163,28 +168,43 @@ public class TaskServiceImpl implements TaskService {
             Task task = taskRepository.findById(handoverTaskRequest.getTask_id()).orElseThrow(() -> new RuntimeException("Task not found"));
             User targetUser = userRepository.findById(handoverTaskRequest.getTarget_user_id()).orElseThrow(() -> new RuntimeException("User not found"));
             Department targetDepartment = departmentRepository.findById(handoverTaskRequest.getTarget_department_id()).orElseThrow(() -> new RuntimeException("Department not found"));
+            var context = SecurityContextHolder.getContext();
+            User user = userRepository.findByUsername(context.getAuthentication().getName()).orElseThrow(() -> new RuntimeException("User not found"));
+
             if(task.getTargetUser().getId() != handoverTaskRequest.getTarget_user_id()){
+                if(!taskUserRepository.existsByTaskAndUserAndDepartment(
+                        task,
+                        targetUser,
+                        targetDepartment
+                        )){
+                    taskUserRepository.save(
+                            TaskUser.builder()
+                                    .createdDate(LocalDate.now())
+                                    .role(1)
+                                    .task(task)
+                                    .user(targetUser)
+                                    .department(targetDepartment)
+                                    .hasRead(0)
+                                    .build());
+                }else {
+                    TaskUser taskUser = taskUserRepository.findByUserAndTaskAndDepartment(targetUser, task, targetDepartment);
+                    taskUser.setRole(1);
+                    taskUser.setUpdatedDate(LocalDate.now());
+                    taskUserRepository.save(taskUser);
+
+                }
                 TaskUser taskUser = taskUserRepository.findByUserAndTaskAndDepartment(task.getTargetUser(), task,task.getTargetDepartment());
                 taskUser.setRole(3);
                 taskUser.setUpdatedDate(LocalDate.now());
                 taskUserRepository.save(taskUser);
-                taskUserRepository.save(
-                        TaskUser.builder()
-                        .createdDate(LocalDate.now())
-                        .role(1)
-                        .task(task)
-                        .user(targetUser)
-                        .department(targetDepartment)
-                        .hasRead(0)
-                        .build());
+                historyService.addHistory(user, targetUser, task, handoverTaskRequest.getContent(), 1);
+                task.setTargetUser(targetUser);
+                task.setTargetDepartment(targetDepartment);
+                taskRepository.save(task);
             }
 
-            task.setTargetUser(targetUser);
-            task.setTargetDepartment(targetDepartment);
-            taskRepository.save(task);
 
             for(TaskUserRequest taskUserRequest : handoverTaskRequest.getCombinations()){
-                if(!taskUserRepository.existsByTaskAndUserAndDepartment(task, userRepository.findById(taskUserRequest.getCombination_id()).orElseThrow(() -> new RuntimeException("User not found")), departmentRepository.findById(taskUserRequest.getDepartment_id()).orElseThrow(() -> new RuntimeException("Department not found")))){
                     TaskUser taskUser = TaskUser.builder()
                             .createdDate(LocalDate.now())
                             .role(2)
@@ -195,25 +215,7 @@ public class TaskServiceImpl implements TaskService {
                             .hasRead(0)
                             .build();
                     taskUserRepository.save(taskUser);
-                }
-            }
-            List<TaskUser> taskUsers = taskUserRepository.findByTaskAndRole(task,2);
-            for(TaskUser taskUser : taskUsers){
-                boolean isExist = false;
-                for(TaskUserRequest taskUserRequest : handoverTaskRequest.getCombinations()){
-                    if(taskUser.getUser().getId().equals(taskUserRequest.getCombination_id())
-                       && taskUser.getDepartment().getId().equals(taskUserRequest.getDepartment_id())
-                       && taskUser.getTask().getId().equals(task.getId())
-                    ){
-                        isExist = true;
-                        taskUser.setUpdatedDate(LocalDate.now());
-                        taskUserRepository.save(taskUser);
-                        break;
-                    }
-                }
-                if(!isExist){
-                    taskUserRepository.delete(taskUser);
-                }
+                    historyService.addHistory(user, userRepository.findById(taskUserRequest.getCombination_id()).orElseThrow(() -> new RuntimeException("User not found")), task, handoverTaskRequest.getContent(), 2);
             }
             return true;
         }catch (Exception e){

@@ -85,6 +85,7 @@ public class UserServiceImpl implements UserService {
         List<UserResponse> userResponses = users.stream().map(userMapper::toUserResponse).toList();
         return new PageImpl<>(userResponses, pageable, users.getTotalElements());
     }
+
     public UserResponse getMyInfo() {
         var context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();

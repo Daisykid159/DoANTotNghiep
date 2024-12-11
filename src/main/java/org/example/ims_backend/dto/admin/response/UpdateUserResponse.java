@@ -22,7 +22,7 @@ public class UpdateUserResponse {
      String lastName;
      String fullName;
      String email;
-     Date dateOfBirth;
+     LocalDate dateOfBirth;
      int gender;
      String phone;
      String hometown;
