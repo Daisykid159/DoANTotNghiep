@@ -50,6 +50,10 @@ const Api = (token) => {
         return api.post(`/api/admin/createUser`, data);
     }
 
+    const updatePersonnelManagement = (data) => {
+        return api.put(`/api/admin/users`, data);
+    }
+
     const getDetailPersonnel = (usedID) => {
         return api.get(`/api/admin/users/${usedID}`);
     }
@@ -102,6 +106,7 @@ const Api = (token) => {
         getListPersonnelManagement,
         getGeneralAdmin,
         createPersonnelManagement,
+        updatePersonnelManagement,
         getDetailPersonnel,
         putPasswordNew,
         getListDepartmentManagement,

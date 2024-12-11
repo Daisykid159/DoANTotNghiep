@@ -1,5 +1,4 @@
 import Api from "../../api";
-import {jwtDecode} from "jwt-decode";
 
 export function updateData(data) {
     return {

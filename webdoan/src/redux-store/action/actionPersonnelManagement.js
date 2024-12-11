@@ -34,10 +34,26 @@ export function actionCreatePersonnel (token, user, navigate) {
         try {
             const response = await Api(token).createPersonnelManagement(user);
             if (response && response.data){
-                if(response.data.result){
-                    alert("Nhân viên đã được thêm thành công");
-                    navigate('/');
-                }
+                alert("Nhân viên đã được thêm thành công");
+                navigate('/');
+            } else {
+                alert("Thêm nhân viên thất bại!");
+                console.log("Lỗi api actionCreatePersonnel");
+            }
+        } catch (error) {
+            console.log("Lỗi api actionGetListPersonnelManagement", error);
+            alert("Lỗi mạng Xin vui lòng kiểm tra lại kết nối internet");
+        }
+    }
+}
+
+export function actionUpdatePersonnel (token, user, navigate) {
+    return async (dispatch, getState) => {
+        try {
+            const response = await Api(token).updatePersonnelManagement(user);
+            if (response && response.data){
+                alert("Nhân viên đã được cập nhật thông tin thành công");
+                navigate('/');
             } else {
                 alert("Thêm nhân viên thất bại!");
                 console.log("Lỗi api actionCreatePersonnel");
@@ -100,5 +116,6 @@ export function actionResetPasswordPersonnel (token, userID, newPassword) {
 export default {
     actionGetListPersonnelManagement,
     actionCreatePersonnel,
+    actionUpdatePersonnel,
     actionGetPersonnel,
 };

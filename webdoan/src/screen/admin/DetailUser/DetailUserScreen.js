@@ -12,6 +12,46 @@ import {
 
 const cx = classNames.bind(styles);
 
+const RowDepartment = ({ item, index, listPositions, handleDeleteItemDepartment }) => {
+    const [position, setPosition] = useState(item.position);
+    const [isMain, setIsMain] = useState(item.isMain);
+
+    const handleChosePosition = (itemPosition) => {
+        setPosition(itemPosition);
+        item.position = itemPosition;
+    }
+
+    return (
+        <tr className={cx('text-center', 'table_row')} key={index}>
+            <td>{index + 1}</td>
+            <td className='text_left'>{item.label}</td>
+            <td>
+                <Select
+                    options={listPositions}
+                    value={position || null}
+                    onChange={handleChosePosition}
+                    placeholder="Tìm phòng ban..."
+                    className="mb-3 w-100"
+                />
+            </td>
+            <td>
+                <input
+                    type="checkbox"
+                    className="form-check-input" id="active"
+                    checked={isMain}
+                    onChange={(e) => {
+                        item.isMain = e.target.checked;
+                        setIsMain(e.target.checked);
+                    }}
+                />
+            </td>
+            <td onClick={() => handleDeleteItemDepartment(item)}
+                className={cx('text_red')}>Xoá
+            </td>
+        </tr>
+    )
+}
+
 const DetailUserScreen = () => {
 
     const dispatch = useDispatch();
@@ -22,10 +62,11 @@ const DetailUserScreen = () => {
     const isCreate = location?.state.isCreate;
 
     const detailUser = useSelector(state => state.reducerPersonnelManagement.userSelected);
+    const overViewAdmin = useSelector(state => state.reducerAuth.overViewAdmin);
 
     const [selectedDepartment, setSelectedDepartment] = useState(null);
     const [listSelectedDepartment, setListSelectedDepartment] = useState([])
-    const [newPassword, setNewPassword] = useState('');
+    const [newPassword, setNewPassword] = useState(null);
 
     const [userName, setUserName] = useState('');
     const [firstName, setFirstName] = useState('');
@@ -36,17 +77,20 @@ const DetailUserScreen = () => {
     const [phone, setPhone] = useState('');
     const [address, setAddress] = useState('');
     const [isActive, setIsActive] = useState(true);
-    const [isAdminActive, setIsAdminActive] = useState('');
+    const [isAdminActive, setIsAdminActive] = useState(false);
     const [dateOfBirth, setDateOfBirth] = useState('');
     const [password, setPassword] = useState('');
 
+    const [listDepartment, setListDepartment] = useState([]);
+    const [listPositions, setListPositions] = useState([]);
+
     const handleDepartmentChange = (item) => {
         setSelectedDepartment(item);
-
         setListSelectedDepartment((prevList) => {
             const exists = prevList.some((department) => department.value === item.value);
             if (!exists) {
-                return [...prevList, item];
+                // Thêm item với trường position
+                return [...prevList, { ...item, position: null, isMain: false }];
             }
             return prevList;
         });
@@ -58,21 +102,44 @@ const DetailUserScreen = () => {
         });
     }
 
-    const departments = [
-        { value: '1', label: 'Sở Thông Tin Và Truyền Thông Tỉnh Tây Ninh\\eGov\\Phòng Dịch vụ và Phát triển phần mềm' },
-        { value: '2', label: 'Sở Thông Tin Và Truyền Thông Tỉnh Tây Ninh\\eGov\\Phòng Giám sát, điều hành đô thị thông minh' },
-        { value: '3', label: 'Sở Thông Tin Và Truyền Thông Tỉnh Tây Ninh\\eGov\\Phòng Hạ tầng và An toàn thông tin mạng' },
-        { value: '4', label: 'Sở Thông Tin Và Truyền Thông Tỉnh Tây Ninh\\eGov\\Phòng Hành chính' },
-        { value: '5', label: 'Sở Thông Tin Và Truyền Thông Tỉnh Tây Ninh\\eGov\\Phòng KSNB' },
-        { value: '6', label: 'Sở Thông Tin Và Truyền Thông Tỉnh Tây Ninh\\eGov\\Thị xã Hòa Thành Test\\Phòng Giáo dục - Thị xã Hòa Thành' },
-        { value: '7', label: 'Sở Thông Tin Và Truyền Thông Tỉnh Tây Ninh\\eGov\\UBND xã Hiệp Thành test' },
-        { value: '8', label: 'Sở Thông Tin Và Truyền Thông Tỉnh Tây Ninh\\eGov\\Văn phòng Tỉnh ủy' },
-    ];
+    const flattenTreeForSelect = (tree, level = 0, parentLabel = "") => {
+        let flatList = [];
+        tree.forEach((node) => {
+            flatList.push({
+                value: node.departmentId,
+                label: `${parentLabel}${node.departmentName}`,
+            });
+            if (node.child_departments && node.child_departments.length > 0) {
+                flatList = flatList.concat(
+                    flattenTreeForSelect(node.child_departments, level + 1, `${parentLabel}--- `)
+                );
+            }
+        });
+        return flatList;
+    };
+    const flattenTreeForSelect2 = (tree, level = 0, parentLabel = "") => {
+        let flatList = [];
+        tree.forEach((node) => {
+            flatList.push({
+                value: node.positionId,
+                label: `${parentLabel}${node.positionName}`,
+            });
+        });
+        return flatList;
+    };
 
     const handleCreateUser = () => {
+        const listDepartmentCreate = listSelectedDepartment.map((department) => {
+            return {
+                "department_id": department.value,
+                "position_id": department.position.value,
+                "isMain": department.isMain
+            }
+        });
+
         const userNew = {
             username: userName,
-            password: '1234',
+            password: password,
             firstname: firstName,
             lastname: lastName,
             fullname: fullName,
@@ -81,9 +148,9 @@ const DetailUserScreen = () => {
             email: email,
             phone: phone,
             hometown: address,
-            isActive: isActive,
-            isAdmin: '1',
-            department: listSelectedDepartment,
+            isActive: isActive === undefined ? true : isActive,
+            isAdmin: isAdminActive === undefined ? false : isAdminActive,
+            department: listDepartmentCreate,
         }
         dispatch(actionCreatePersonnel(token, userNew, navigate))
     }
@@ -91,6 +158,17 @@ const DetailUserScreen = () => {
     const handleResetPassword = () => {
         dispatch(actionResetPasswordPersonnel(token, detailUser.user_id, newPassword))
     }
+
+    useEffect(() => {
+        if(overViewAdmin.departments?.length > 0){
+            const departments = flattenTreeForSelect(overViewAdmin.departments);
+            setListDepartment(departments);
+        }
+        if(overViewAdmin.position?.length > 0){
+            const positions = flattenTreeForSelect2(overViewAdmin.position);
+            setListPositions(positions);
+        }
+    }, [overViewAdmin]);
 
     useEffect(() => {
         if(userSelect) {
@@ -114,6 +192,7 @@ const DetailUserScreen = () => {
         }
     }, [detailUser]);
 
+    console.log(detailUser);
     return (
         <div className={cx('DetailUserScreen', 'container')}>
             <div className="col-md-12">
@@ -225,9 +304,20 @@ const DetailUserScreen = () => {
                     <input
                         type="text"
                         className="form-control"
-                        placeholder={"Nhập tên số địa thoại"}
+                        placeholder={"Nhập số địa thoại"}
                         value={phone}
                         onChange={e => setPhone(e.target.value)}
+                    />
+                </div>
+
+                <div className="mb-3 d-flex align-items-center">
+                    <label className="col-md-2">Email:</label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        placeholder={"Nhập Email"}
+                        value={email}
+                        onChange={e => setEmail(e.target.value)}
                     />
                 </div>
 
@@ -245,7 +335,7 @@ const DetailUserScreen = () => {
                 <div className="mb-3 d-flex align-items-center">
                     <label className="col-md-2">Thêm phòng ban:</label>
                     <Select
-                        options={departments}
+                        options={listDepartment}
                         value={selectedDepartment || null}
                         onChange={handleDepartmentChange}
                         placeholder="Tìm phòng ban..."
@@ -266,17 +356,12 @@ const DetailUserScreen = () => {
                             </thead>
                             <tbody>
                             {listSelectedDepartment.map((item, index) => (
-                                <tr className={cx('text-center', 'table_row')} key={index}>
-                                    <td>{index + 1}</td>
-                                    <td className='text_left'>{item.label}</td>
-                                    <td>Chuyên viên</td>
-                                    <td>
-                                        <input type="checkbox" className="form-check-input" id="active"/>
-                                    </td>
-                                    <td onClick={() => handleDeleteItemDepartment(item)}
-                                        className={cx('text_red')}>Xoá
-                                    </td>
-                                </tr>
+                                <RowDepartment
+                                    item={item}
+                                    index={index}
+                                    listPositions={listPositions}
+                                    handleDeleteItemDepartment={handleDeleteItemDepartment}
+                                />
                             ))}
                             </tbody>
                         </table>
@@ -302,9 +387,9 @@ const DetailUserScreen = () => {
                             type="checkbox"
                             className="form-check-input me-2"
                             id="active"
-                            checked={isAdminActive === 'ADMIN'}
+                            checked={isAdminActive}
                             onChange={(e) => {
-                                setIsAdminActive(e.target.checked ? 'ADMIN' : 'USER');
+                                setIsAdminActive(e.target.checked);
                             }}
                         />
                         <label className="form-check-label" htmlFor="active">Quản trị viên hệ thống</label>
