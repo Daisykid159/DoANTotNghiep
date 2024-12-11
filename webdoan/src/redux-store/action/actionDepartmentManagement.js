@@ -29,6 +29,28 @@ export function actionGetListDepartmentManagement (token) {
     };
 }
 
+export function actionGetListUserOfDepartment (token, id) {
+    return async (dispatch, getState) => {
+        try {
+            const response = await Api(token).getListUsersOfDepartment(id);
+            if (response && response.data){
+                dispatch(updateData({
+                    listUserOfDepartment: response.data,
+                }))
+            } else {
+                dispatch(updateData({
+                    listUserOfDepartment: [],
+                }))
+                alert("Lấy dữ liệu thất bại!");
+                console.log("Lỗi api actionGetListPersonnelManagement");
+            }
+        } catch (error) {
+            console.log("Lỗi api actionGetListPersonnelManagement", error);
+            alert("Lỗi mạng Xin vui lòng kiểm tra lại kết nối internet");
+        }
+    };
+}
+
 export function actionCreateDepartmentManagement (token, parentDepartmentId, departmentNewName, departmentNewIsActive, resetCreate) {
     return async (dispatch, getState) => {
         try {
@@ -39,6 +61,25 @@ export function actionCreateDepartmentManagement (token, parentDepartmentId, dep
                 alert('Thêm phòng ban thành công!')
             } else {
                 alert("Thêm phòng ban thất bại!");
+                dispatch(actionGetListDepartmentManagement(token));
+                console.log("Lỗi api actionCreateDepartmentManagement");
+            }
+        } catch (error) {
+            console.log("Lỗi api actionCreateDepartmentManagement", error);
+            alert("Lỗi mạng Xin vui lòng kiểm tra lại kết nối internet");
+        }
+    };
+}
+
+export function actionUpdateDepartmentManagement (token, department_id, departmentName, department_parent_id, isActive) {
+    return async (dispatch, getState) => {
+        try {
+            const response = await Api(token).updateDepartment(department_id, departmentName, department_parent_id, isActive);
+            if (response && response.data){
+                dispatch(actionGetListDepartmentManagement(token));
+                alert('Cập nhật phòng ban thành công!')
+            } else {
+                alert("Cập nhật phòng ban thất bại!");
                 dispatch(actionGetListDepartmentManagement(token));
                 console.log("Lỗi api actionCreateDepartmentManagement");
             }
@@ -111,8 +152,10 @@ export function actionCreatePosition (token, positionNameNew, isActiveNew) {
 
 export default {
     actionGetListDepartmentManagement,
+    actionGetListUserOfDepartment,
     actionGetListPositions,
     actionUpdatePosition,
     actionCreatePosition,
     actionCreateDepartmentManagement,
+    actionUpdateDepartmentManagement,
 };

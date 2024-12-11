@@ -13,7 +13,7 @@ const TreeNode = ({ node, onNodeClick }) => {
     return (
         <TreeView
             nodeLabel={
-                <span onClick={handleClick} style={{ cursor: "pointer" }}>
+                <span onClick={handleClick} style={{ cursor: "pointer", padding: "10px 5px" }}>
                     {node.departmentName}
                 </span>
             }

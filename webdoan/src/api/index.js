@@ -66,6 +66,10 @@ const Api = (token) => {
         return api.get(`/api/admin/department`);
     }
 
+    const getListUsersOfDepartment = (id) => {
+        return api.get(`api/admin/UsersOfDepartment/${id}`);
+    }
+
     const createDepartment = (parentDepartmentId, departmentNewName, departmentNewIsActive) => {
         return api.post(`/api/admin/createDepartment`, {
             parent_department_id: parentDepartmentId,
@@ -74,6 +78,11 @@ const Api = (token) => {
         });
     }
 
+    const updateDepartment = (department_id, departmentName, department_parent_id, isActive) => {
+        return api.put(`/api/admin/updatePosition/${department_id}`, {
+            department_id, departmentName, department_parent_id, isActive
+        });
+    }
 
     const getListPositions = () => {
         return api.get(`/api/admin/positions`);
@@ -110,6 +119,8 @@ const Api = (token) => {
         getDetailPersonnel,
         putPasswordNew,
         getListDepartmentManagement,
+        getListUsersOfDepartment,
+        updateDepartment,
         createDepartment,
         getListPositions,
         updatePosition,

@@ -2,6 +2,7 @@ const INITIAL_STATE = {
     listDepartment: [],
     detailDepartment: {},
     listPositions: [],
+    listUserOfDepartment: [],
 };
 
 const reducerDepartmentManagement = (state = INITIAL_STATE, action) => {

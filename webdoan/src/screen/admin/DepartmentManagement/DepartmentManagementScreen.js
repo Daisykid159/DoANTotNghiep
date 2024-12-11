@@ -7,7 +7,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import {
     actionCreateDepartmentManagement,
-    actionGetListDepartmentManagement
+    actionGetListDepartmentManagement, actionGetListUserOfDepartment, actionUpdateDepartmentManagement
 } from "../../../redux-store/action/actionDepartmentManagement";
 import Select from "react-select";
 
@@ -20,24 +20,31 @@ const DepartmentManagementScreen = () => {
 
     const token = useSelector(state => state.reducerAuth.token);
     const listDepartment = useSelector(state => state.reducerDepartmentManagement.listDepartment);
-    const listUsers = [
-        { id: 1, username: "admin", fullname: "Administrator Administrator", active: "Có" },
-        { id: 2, username: "admin_anhtp", fullname: "Admin AnhTp", active: "Có" },
-        { id: 3, username: "admin_cuongnt", fullname: "Admin CuongNT", active: "Có" },
-        // Thêm các dòng dữ liệu khác
-    ];
+    const listUserOfDepartment = useSelector(state => state.reducerDepartmentManagement.listUserOfDepartment);
     const [activeModuleDepartment, setActiveModuleDepartment] = useState(false);
-
     const [nodeSelect, setNodeSelect] = useState(listDepartment[0]);
-    const [selectedDepartment, setSelectedDepartment] = useState("");
-
+    const [selectedDepartment, setSelectedDepartment] = useState(null);
+    const [departmentName, setDepartmentName] = useState("");
+    const [departmentActive, setDepartmentActive] = useState(false);
     const [departmentNewName, setDepartmentNewName] = useState("");
     const [departmentNewIsActive, setDepartmentNewIsActive] = useState(true);
     const [selectedDepartmentCreate, setSelectedDepartmentCreate] = useState(null);
 
     const handleNodeClick = (node) => {
         setNodeSelect(node);
-        console.log(node);
+        setDepartmentName(node.departmentName);
+        setDepartmentActive(node.isActive)
+        dispatch(actionGetListUserOfDepartment(token, node.departmentId));
+        let haveParentDepartment = false;
+        flatList.map((department) => {
+            if(department.value === node.department_parent_id) {
+                setSelectedDepartment(department);
+                haveParentDepartment = true
+            }
+        })
+        if(!haveParentDepartment) {
+            setSelectedDepartment(null);
+        }
     }
 
     const flattenTreeForSelect = (tree, level = 0, parentLabel = "") => {
@@ -46,6 +53,8 @@ const DepartmentManagementScreen = () => {
             flatList.push({
                 value: node.departmentId,
                 label: `${parentLabel}${node.departmentName}`,
+                department_parent_id: node.department_parent_id,
+                isActive: node.isActive,
             });
             if (node.child_departments && node.child_departments.length > 0) {
                 flatList = flatList.concat(
@@ -77,8 +86,18 @@ const DepartmentManagementScreen = () => {
         dispatch(actionCreateDepartmentManagement(token, selectedDepartmentCreate.value, departmentNewName, departmentNewIsActive, resetCreate));
     }
 
+    const handleUpdateDepartment = () => {
+        dispatch(actionUpdateDepartmentManagement(token, nodeSelect.departmentId, departmentName, selectedDepartment.value, departmentActive));
+    }
+
     useEffect(() => {
-        setNodeSelect(listDepartment[0]);
+        if(listDepartment.length > 0){
+            dispatch(actionGetListUserOfDepartment(token, listDepartment[0]?.departmentId));
+            setNodeSelect(listDepartment[0]);
+            setSelectedDepartment(null);
+            setDepartmentName(listDepartment[0].departmentName);
+            setDepartmentActive(listDepartment[0].isActive);
+        }
     }, [listDepartment])
 
     useEffect(() => {
@@ -119,11 +138,12 @@ const DepartmentManagementScreen = () => {
                 </div>
 
                 <div className={cx("col-md-8", 'border_left')}>
-                <div className="d-flex justify-content-between align-items-center mb-4">
+                    <div className="d-flex justify-content-between align-items-center mb-4">
                         <h4>Thông tin phòng ban</h4>
 
                         <button
                             className="btn btn-info d-flex align-items-center"
+                            onClick={() => handleUpdateDepartment()}
                         >
                             CẬP NHẬT
                         </button>
@@ -135,7 +155,8 @@ const DepartmentManagementScreen = () => {
                             <input
                                 type="text"
                                 className="form-control"
-                                value={nodeSelect?.departmentName}
+                                value={departmentName}
+                                onChange={(e) => setDepartmentName(e.target.value)}
                             />
                         </div>
 
@@ -150,7 +171,13 @@ const DepartmentManagementScreen = () => {
                             />
                         </div>
                         <div className={cx('col-md-3', 'mb-3')}>
-                            <input type="checkbox" className="form-check-input me-2" id="active" checked={true}/>
+                            <input
+                                type="checkbox"
+                                className="form-check-input me-2"
+                                id="active"
+                                checked={departmentActive}
+                                onChange={(e) => setDepartmentActive(e.target.checked)}
+                            />
                             <label className="form-check-label" htmlFor="active">Hoạt động</label>
                         </div>
                         <div className="mb-3 d-flex align-items-center">
@@ -159,7 +186,15 @@ const DepartmentManagementScreen = () => {
                         </div>
                     </div>
                     <div>
-                        <div>Danh sách cán bộ thuộc phòng ban</div>
+                        <div className="d-flex justify-content-between align-items-center mb-4">
+                            <h5>Danh sách người dùng trong phòng ban</h5>
+
+                            <button
+                                className="btn btn-info d-flex align-items-center"
+                            >
+                                CẬP NHẬT
+                            </button>
+                        </div>
                         <table className={cx('w-100', 'table')}>
                             <thead>
                             <tr className={cx('text-center', 'table_row')}>
@@ -171,13 +206,18 @@ const DepartmentManagementScreen = () => {
                             </tr>
                             </thead>
                             <tbody>
-                            {listUsers.map((item, index) => (
+                            {listUserOfDepartment.map((item, index) => (
                                 <tr className={cx('text-center', 'table_row')} key={index}>
                                     <td>{index + 1}</td>
-                                    <td className='text_left'>{item.fullname}</td>
-                                    <td>Chuyên viên</td>
+                                    <td className='text_left'>{item.user_name}</td>
+                                    <td>{item.position_name}</td>
                                     <td>
-                                        <input type="checkbox" className="form-check-input" id="active"/>
+                                        <input
+                                            type="checkbox"
+                                            className="form-check-input"
+                                            id="active"
+                                            checked={item.isMain}
+                                        />
                                     </td>
                                     <td className={cx('text_red')}>Xoá</td>
                                 </tr>
@@ -234,7 +274,6 @@ const DepartmentManagementScreen = () => {
                                 type="checkbox"
                                 className="form-check-input me-2"
                                 checked={departmentNewIsActive}
-                                value={departmentNewIsActive}
                                 onChange={e => setDepartmentNewIsActive(e.target.checked)}
                             />
                             <label className="form-check-label" htmlFor="active">Hoạt động</label>

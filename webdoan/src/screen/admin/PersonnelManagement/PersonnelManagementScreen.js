@@ -156,8 +156,10 @@ const PersonnelManagementScreen = () => {
                         <tr key={index} className={cx("table_row")}>
                             <td onClick={() => handleToDetailUserScreen(item, false)}>{index + 1}</td>
                             <td onClick={() => handleToDetailUserScreen(item, false)}>{item.username}</td>
-                            <td onClick={() => handleToDetailUserScreen(item, false)}>{item.fullname}</td>
-                            <td onClick={() => handleToDetailUserScreen(item, false)}>{item.active}</td>
+                            <td onClick={() => handleToDetailUserScreen(item, false)}>{item.fullName}</td>
+                            <td onClick={() => handleToDetailUserScreen(item, false)}>
+                                <input type="checkbox" className="form-check-input me-2" id="active" checked={item.active}/>
+                            </td>
                             <td onClick={() => handleToDetailUserScreen(item, false)}>Sửa</td>
                             <td>
                                 <div className="text-danger">Xóa</div>
