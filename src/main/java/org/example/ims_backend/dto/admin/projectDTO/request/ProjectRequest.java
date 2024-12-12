@@ -14,8 +14,6 @@ public class ProjectRequest {
     Long project_id;
     String project_name;
     String content;
-    int number_task;
     int status;
-    LocalDate created_date;
     LocalDate expired_date;
 }

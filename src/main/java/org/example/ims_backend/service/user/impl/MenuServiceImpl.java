@@ -5,14 +5,20 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.example.ims_backend.common.MenuManager;
+import org.example.ims_backend.dto.user.GeneralResponse;
 import org.example.ims_backend.dto.user.menu.response.MenuResponse;
+import org.example.ims_backend.dto.user.response.DepartmentGeneral;
+import org.example.ims_backend.dto.user.response.UserDepartmentGenal;
+import org.example.ims_backend.entity.Department;
+import org.example.ims_backend.entity.DepartmentUser;
 import org.example.ims_backend.entity.Menu;
 import org.example.ims_backend.entity.User;
-import org.example.ims_backend.repository.MenuRepository;
-import org.example.ims_backend.repository.UserRepository;
+import org.example.ims_backend.repository.*;
 import org.example.ims_backend.service.user.MenuService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -23,6 +29,9 @@ public class MenuServiceImpl implements MenuService {
     MenuRepository menuRepository;
     EntityManager entityManager;
     UserRepository userRepository;
+    NotificationUserRepository notificationUserRepository;
+    DepartmentRepository departmentRepository;
+    DepartmentUserRepository departmentUserRepository;
     @Override
     public List<MenuResponse> getMenu() {
         var context = SecurityContextHolder.getContext();
@@ -55,5 +64,48 @@ public class MenuServiceImpl implements MenuService {
             );
         }
         return manager.getAllMenus();
+    }
+
+    @Override
+    public GeneralResponse getOverview() {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("false"));
+        List<MenuResponse> menus = getMenu();
+        int num_notification = notificationUserRepository.countByReceiverUserAndHasRead(user,0);
+        List<Department> departments = departmentRepository.findAll();
+        List<DepartmentGeneral> departmentGenerals = new ArrayList<>();
+
+        for (Department department : departments){
+            String []code = department.getDepartmentCode().split("\\."); ;
+            Long parentDepartmentId = null;
+            if (code.length >= 2){
+                try {
+                    parentDepartmentId = Long.parseLong(code[code.length - 2]);
+                } catch (NumberFormatException e){
+                    log.error("Invalid parentDepartmentId in department code: {}", department.getDepartmentCode(), e);
+                }
+            }
+            List<DepartmentUser> departmentUsers = departmentUserRepository.findByDepartment(department);
+            List<UserDepartmentGenal> userDepartmentGenals = new ArrayList<>();
+            for (DepartmentUser departmentUser : departmentUsers){
+                userDepartmentGenals.add(UserDepartmentGenal.builder()
+                        .user_id(departmentUser.getUser().getId())
+                        .user_name(departmentUser.getUser().getUsername())
+                        .build());
+            }
+            departmentGenerals.add(DepartmentGeneral.builder()
+                            .department_id(department.getId())
+                            .department_code(department.getDepartmentCode())
+                            .department_name(department.getDepartmentName())
+                            .parent_department_id(parentDepartmentId)
+                            .users(userDepartmentGenals)
+                    .build());
+        }
+        return GeneralResponse.builder()
+                .menus(menus)
+                .departments(departmentGenerals)
+                .number_notification(num_notification)
+                .build();
     }
 }

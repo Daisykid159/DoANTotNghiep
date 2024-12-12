@@ -15,7 +15,9 @@ import java.util.List;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE )
 public class DepartmentResponse {
     Long department_id;
+    String department_name;
     Long position_id;
+    String position_name;
     boolean IsMain;
 }
 

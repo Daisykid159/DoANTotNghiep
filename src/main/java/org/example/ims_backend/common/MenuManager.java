@@ -22,7 +22,7 @@ public class MenuManager {
             }
         }
 
-        MenuResponse newMenu = new MenuResponse(menu_id,menu_name,menu_code,total_task,parent_menu,active);
+        MenuResponse newMenu = new MenuResponse(menu_id,menu_name,menu_code,total_task,parent_menu_id,active);
         menuMap.put(menu_id,newMenu);
         if (parent_menu != null) {
             parent_menu.addSubMenuResponse(newMenu);

@@ -22,10 +22,6 @@ public class Project {
     private String name;
     @Column(name = "Content")
     private String content;
-    @Column(name = "NumberTask")
-    private Integer numberTask;
-    @Column(name = "NumberUser")
-    private Integer numberUser;
     @Column(name = "Status")
     private Integer status;
     @CreationTimestamp

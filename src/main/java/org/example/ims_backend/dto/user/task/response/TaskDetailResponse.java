@@ -27,8 +27,6 @@ public class TaskDetailResponse {
     String title;
     Long assign_department_id;
     String assign_department_name;
-    Long create_user_id;
-    String create_user_name;
     Long assign_user_id;
     String assign_user_name;
     Long target_department_id;
@@ -37,6 +35,7 @@ public class TaskDetailResponse {
     String target_user_name;
     String content;
     int priority;
+    Integer progress;
     LocalDate expired_date;
     LocalDate created_date;
     LocalDate deleted_date;

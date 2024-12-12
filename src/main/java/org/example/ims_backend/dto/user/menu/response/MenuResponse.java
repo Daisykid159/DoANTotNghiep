@@ -17,11 +17,10 @@ public class MenuResponse {
     String menu_name;
     String menu_code;
     int total_task;
-    @JsonIgnore
-    MenuResponse parent_menu;
+    Long  parent_menu;
     int active;
     List<MenuResponse> menu_child = new ArrayList<>();
-    public MenuResponse(Long menu_id, String menu_name, String menu_code, int total_task, MenuResponse parent_menu, int active) {
+    public MenuResponse(Long menu_id, String menu_name, String menu_code, int total_task, Long parent_menu, int active) {
         this.menu_id = menu_id;
         this.menu_name = menu_name;
         this.menu_code = menu_code;

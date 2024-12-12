@@ -11,6 +11,9 @@ public interface HistoryMapper {
                 .history_id(history.getId())
                 .task_id(history.getTask().getId())
                 .create_user_id(history.getCreatedUser().getId())
+                .content(history.getContent())
+                .label_name(history.getCreatedUser().getFullName()+"-"+history.getContent())
+                .created_date(history.getCreatedDate())
                 .build();
     }
 }

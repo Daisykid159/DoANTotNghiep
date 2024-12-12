@@ -7,12 +7,16 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.example.ims_backend.dto.user.task.request.CreateTaskRequest;
 import org.example.ims_backend.dto.user.task.request.HandoverTaskRequest;
+import org.example.ims_backend.dto.user.task.response.TaskDetailResponse;
 import org.example.ims_backend.dto.user.task.response.TaskResponse;
 import org.example.ims_backend.dto.user.taskUser.request.CreateTaskUserRequest;
 import org.example.ims_backend.dto.user.taskUser.request.TaskUserRequest;
 import org.example.ims_backend.entity.*;
 import org.example.ims_backend.mapper.TaskMapper;
+import org.example.ims_backend.mapper.TaskUserMapper;
 import org.example.ims_backend.repository.*;
+import org.example.ims_backend.service.user.CommentService;
+import org.example.ims_backend.service.user.FileService;
 import org.example.ims_backend.service.user.HistoryService;
 import org.example.ims_backend.service.user.TaskService;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,11 +40,18 @@ public class TaskServiceImpl implements TaskService {
     DepartmentRepository departmentRepository;
     ProjectRepository projectRepository;
     HistoryService historyService;
+    FileService fileService;
+    TaskMapper taskMapper;
+    TaskUserMapper taskUserMapper;
+    CommentService commentService;
     @Override
-    public List<TaskResponse> getListMuneById(Long user_id, Long menu_id) {
+    public List<TaskResponse> getListMuneById( Long menu_id) {
         List<TaskResponse> taskResponses = new ArrayList<>();
         Menu menu = menuRepository.findById(menu_id).orElse(null);
         String query = menu.getQuery();
+        var context = SecurityContextHolder.getContext();
+        User user = userRepository.findByUsername(context.getAuthentication().getName()).orElseThrow(() -> new RuntimeException("User not found"));
+        Long user_id = user.getId();
         Query qery = entityManager.createQuery(query);
         qery.setParameter("userId", user_id);
         List results = qery.getResultList();
@@ -67,6 +78,7 @@ public class TaskServiceImpl implements TaskService {
                     .target_department(target_department.getDepartmentName())
                     .target_user_name(target_user.getFullName())
                     .target_user_id(target_user.getId())
+                    .progress(taskRepository.findById((Long) resultArray[0]).orElseThrow(() -> new RuntimeException("Task not found")).getProgress())
                     .has_read(taskUserRepository.findByUserAndTask(userRepository.findById(user_id).orElse(null),taskRepository.findById((Long) resultArray[0]).orElse(null)).getHasRead())
                     .updated_date(taskUserRepository.findByUserAndTask(userRepository.findById(user_id).orElse(null),taskRepository.findById((Long) resultArray[0]).orElse(null)).getUpdatedDate())
                     .build();
@@ -76,15 +88,21 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<Object[]> searchTask(String titleCodeDepart, Integer userId, Integer status, String department, Integer projectId, LocalDate createFrom, LocalDate createTo, LocalDate endFrom, LocalDate endTo, Boolean isExtend, Integer userCurrentId) {
-        return taskRepository.searchTasks(titleCodeDepart, userId, status, department, projectId, createFrom, createTo, endFrom, endTo, isExtend, userCurrentId);
+    public List<Object[]> searchTask(String title, Long department_id, Long user_id, LocalDate createTo, LocalDate createFrom, LocalDate expireTo, LocalDate expireFrom, int task_status, Long project_id, Boolean is_extend) {
+        return null;
     }
 
     @Override
-    public TaskResponse TaskDetail(Long task_user_id) {
-        TaskUser taskUser = taskUserRepository.findById(task_user_id).orElse(null);
-        TaskResponse taskResponse = new TaskResponse();
-        return taskResponse;
+    public TaskDetailResponse TaskDetail(Long task_user_id) {
+        TaskUser taskUser = taskUserRepository.findById(task_user_id).orElseThrow(()-> new RuntimeException("false"));
+        TaskDetailResponse taskDetail = taskMapper.toTaskDetailResponse(taskUser);
+        taskDetail.setCombinations(taskUserRepository.findByTaskAndRole(taskUser.getTask(),2).stream().map(taskUserMapper::toTaskUserResponse).toList());
+        taskDetail.setFiles(fileService.getFiles(taskUser.getTask()));
+        taskDetail.setComments(commentService.getComments(taskUser.getTask()));
+        taskDetail.setHistory(historyService.getHistoryList(taskUser.getTask()));
+
+
+        return taskDetail;
     }
 
     @Override

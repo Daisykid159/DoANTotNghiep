@@ -5,6 +5,7 @@ import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 @Data
 @Entity
@@ -21,5 +22,10 @@ public class Comment {
     private User createdUser;
     @CreationTimestamp
     @Column(name = "CreatedDate")
-    private LocalDate createdDate;
+    private Date createdDate;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "TaskId")
+    private Task task;
+    @Column(name = "CommentCode")
+    private String commentCode;
 }

@@ -3,12 +3,19 @@ package org.example.ims_backend.service.user.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.example.ims_backend.dto.user.history.response.HistoryResponse;
 import org.example.ims_backend.entity.History;
 import org.example.ims_backend.entity.Task;
+import org.example.ims_backend.entity.TaskUser;
 import org.example.ims_backend.entity.User;
+import org.example.ims_backend.mapper.HistoryMapper;
 import org.example.ims_backend.repository.HistoryRepository;
+import org.example.ims_backend.repository.TaskUserRepository;
 import org.example.ims_backend.service.user.HistoryService;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -16,7 +23,8 @@ import org.springframework.stereotype.Service;
 @FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
 public class HistoryServiceImpl implements HistoryService {
     HistoryRepository historyRepository;
-
+    HistoryMapper historyMapper;
+    TaskUserRepository taskUserRepository;
     @Override
     public void addHistory(User createUser, User receiveUser, Task task, String content, int status) {
             historyRepository.save(
@@ -27,5 +35,24 @@ public class HistoryServiceImpl implements HistoryService {
                             .status(status)
                             .content(content)
                             .build());
+    }
+
+    @Override
+    public List<HistoryResponse> getHistoryList(Task task) {
+        List<History> historys = historyRepository.findAllByTask(task);
+        List<HistoryResponse> historyResponses = new ArrayList<>();
+        for(History history : historys){
+           historyResponses.add(HistoryResponse.builder()
+                   .history_id(history.getId())
+                   .task_id(history.getTask().getId())
+                   .create_user_id(history.getCreatedUser().getId())
+                   .content(history.getContent())
+                   .label_name(history.getCreatedUser().getFullName()+"-"+history.getContent())
+                   .created_date(history.getCreatedDate())
+                   .role(taskUserRepository.findByUserAndTask(history.getCreatedUser(),task).getRole())
+                   .department_id(taskUserRepository.findByUserAndTask(history.getCreatedUser(),task).getDepartment().getId())
+                   .build());
+        }
+        return historyResponses;
     }
 }

@@ -17,7 +17,6 @@ public interface ProjectMapper {
                 .project_id(project.getId())
                 .project_name(project.getName())
                 .content(project.getContent())
-                .number_task(project.getNumberTask())
                 .status(project.getStatus())
                 .created_date(project.getCreatedDate())
                 .expired_date(project.getExpiredDate())
@@ -27,9 +26,7 @@ public interface ProjectMapper {
     default Project toProject(Project project, ProjectRequest projectRequest){
         project.setName(projectRequest.getProject_name());
         project.setContent(projectRequest.getContent());
-        project.setNumberTask(projectRequest.getNumber_task());
         project.setStatus(projectRequest.getStatus());
-        project.setCreatedDate(projectRequest.getCreated_date());
         project.setExpiredDate(projectRequest.getExpired_date());
         return project;
     }
@@ -40,10 +37,13 @@ public interface ProjectMapper {
                 .created_date(task.getCreatedDate())
                 .expired_date(task.getExpiredDate())
                 .status(task.getStatus())
-                .department_id(task.getTargetDepartment().getId())
                 .assign_user_id(task.getAssignUser().getId())
                 .targer_user_id(task.getTargetUser().getId())
-                .department_name(task.getTargetDepartment().getDepartmentName())
+                .assign_department_id(task.getAssignDepartment().getId())
+                .target_department_id(task.getTargetDepartment().getId())
+                .assign_department_name(task.getAssignDepartment().getDepartmentName())
+                .target_department_name(task.getTargetDepartment().getDepartmentName())
+                .progress(task.getProgress())
                 .assign_user_name(task.getAssignUser().getFullName())
                 .target_user_name(task.getTargetUser().getFullName())
                 .build()).toList();
@@ -51,7 +51,6 @@ public interface ProjectMapper {
                                     .project_id(project.getId())
                                     .project_name(project.getName())
                                     .content(project.getContent())
-                                    .number_task(project.getNumberTask())
                                     .status(project.getStatus())
                                     .created_date(project.getCreatedDate())
                                     .expired_date(project.getExpiredDate())

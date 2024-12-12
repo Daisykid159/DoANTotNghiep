@@ -62,7 +62,9 @@ public interface UserMapper {
         for (DepartmentUser departmentUser : departmentUsers){
             departmentResponses.add(DepartmentResponse.builder()
                             .department_id(departmentUser.getDepartment().getId())
+                            .department_name(departmentUser.getDepartment().getDepartmentName())
                             .position_id(departmentUser.getPosition().getId())
+                            .position_name(departmentUser.getPosition().getPositionName())
                             .IsMain(departmentUser.getDepartmentMain() == 1)
                     .build());
             }

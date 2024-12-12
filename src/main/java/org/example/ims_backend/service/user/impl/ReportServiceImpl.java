@@ -5,12 +5,17 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.example.ims_backend.dto.user.report.request.ReportRequest;
 import org.example.ims_backend.dto.user.report.request.ReviewReportRequest;
+import org.example.ims_backend.dto.user.report.response.ReportResponse;
 import org.example.ims_backend.entity.Report;
+import org.example.ims_backend.entity.Task;
+import org.example.ims_backend.mapper.ReportMapper;
 import org.example.ims_backend.repository.ReportRepository;
 import org.example.ims_backend.repository.TaskRepository;
 import org.example.ims_backend.repository.UserRepository;
 import org.example.ims_backend.service.user.ReportService;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -20,7 +25,7 @@ public class ReportServiceImpl implements ReportService {
     ReportRepository reportRepository;
     TaskRepository taskRepository;
     UserRepository userRepository;
-
+    ReportMapper reportMapper;
     @Override
     public boolean createReport(ReportRequest reportRequest) {
         try {
@@ -74,5 +79,10 @@ public class ReportServiceImpl implements ReportService {
             log.error("Error in recallReport", e);
             return false;
         }
+    }
+
+    @Override
+    public List<ReportResponse> getReportList(Task task) {
+        return reportRepository.findAllByTask(task).stream().map(reportMapper::toReportResponse).toList();
     }
 }

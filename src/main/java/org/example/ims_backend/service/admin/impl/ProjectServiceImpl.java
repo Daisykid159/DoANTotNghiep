@@ -5,6 +5,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.example.ims_backend.dto.admin.projectDTO.request.DepartmentOfProject;
 import org.example.ims_backend.dto.admin.projectDTO.request.ProjectRequest;
+import org.example.ims_backend.dto.admin.projectDTO.response.DepartmentProjectResponse;
 import org.example.ims_backend.dto.admin.projectDTO.response.ProjectDetailResponse;
 import org.example.ims_backend.dto.admin.projectDTO.response.ProjectResponse;
 import org.example.ims_backend.dto.admin.taskDTO.request.TaskRequest;
@@ -32,6 +33,7 @@ public class ProjectServiceImpl implements ProjectService {
     ProjectRepository projectRepository;
     ProjectMapper projectMapper;
     TaskRepository taskRepository;
+    TaskUserRepository taskUserRepository;
     DepartmentProjectRepository departmentProjectRepository;
     DepartmentRepository departmentRepository;
     UserRepository userRepository;
@@ -43,8 +45,11 @@ public class ProjectServiceImpl implements ProjectService {
                         .and(ProjectSpecification.expiredDateBetween(fromExpiredDate,toExpiredDate));
 
         Page<Project> projects =  projectRepository.findAll(spec,pageable);
-
         List<ProjectResponse> projectResponseList = projects.stream().map(projectMapper::toProjectResponse).toList();
+        for(ProjectResponse projectResponse : projectResponseList){
+           int numberTask = taskRepository.countByProject(projectRepository.findById(projectResponse.getProject_id()).orElse(null));
+            projectResponse.setNumber_task(numberTask);
+        }
         return new PageImpl<>(projectResponseList, pageable, projects.getTotalElements());
     }
 
@@ -54,6 +59,7 @@ public class ProjectServiceImpl implements ProjectService {
             Project project = new Project();
             project.setName(projectRequest.getProject_name());
             project.setContent(projectRequest.getContent());
+            project.setStatus(1);
             projectRepository.save(project);
             return true;
         }catch (Exception e){
@@ -85,7 +91,16 @@ public class ProjectServiceImpl implements ProjectService {
             Project project = projectRepository.findById(id).orElse(null);
             List<Task> tasks = taskRepository.findByProject(project);
         assert project != null;
-        return projectMapper.toProjectDetailResponse(project,tasks);
+        ProjectDetailResponse projectDetailResponses= projectMapper.toProjectDetailResponse(project,tasks);
+        projectDetailResponses.setNumber_task(tasks.size());
+        List<DepartmentProject> departmentProjects = departmentProjectRepository.findByProject(project);
+        projectDetailResponses.setDepartments(departmentProjects.stream().map(departmentProject -> DepartmentProjectResponse.builder()
+                .department_id(departmentProject.getDepartment().getId())
+                .department_name(departmentProject.getDepartment().getDepartmentName())
+                .created_date(departmentProject.getCreatedDate())
+                .number_task(taskUserRepository.countDistinctTasksByDepartmentIdAndProjectId(departmentProject.getDepartment().getId(),id))
+                .build()).toList());
+        return projectDetailResponses;
 
 
     }
@@ -134,38 +149,16 @@ public class ProjectServiceImpl implements ProjectService {
                 .created_date(task.getCreatedDate())
                 .expired_date(task.getExpiredDate())
                 .status(task.getStatus())
-                .department_id(task.getTargetDepartment().getId())
+                .assign_department_id(task.getAssignDepartment().getId())
+                .target_department_id(task.getTargetDepartment().getId())
+                .assign_department_name(task.getAssignDepartment().getDepartmentName())
+                .target_department_name(task.getTargetDepartment().getDepartmentName())
                 .assign_user_id(task.getAssignUser().getId())
                 .targer_user_id(task.getTargetUser().getId())
-                .department_name(task.getTargetDepartment().getDepartmentName())
                 .assign_user_name(task.getAssignUser().getFullName())
                 .target_user_name(task.getTargetUser().getFullName())
+                .progress(task.getProgress())
                 .build();
-    }
-
-    @Override
-    public boolean updateTask(TaskRequest request) {
-        try {
-            Task task = taskRepository.findById(request.getTask_id()).orElse(null);
-            if (task == null) {
-                return false;
-            }
-            Department department = departmentRepository.findById(request.getDepartment_id()).orElse(null);
-            User assignUser = userRepository.findById(request.getAssign_user_id()).orElse(null);
-            User targetUser = userRepository.findById(request.getTarger_user_id()).orElse(null);
-            task.setTitle(request.getTask_title());
-            task.setCreatedDate(request.getCreated_date());
-            task.setExpiredDate(request.getExpired_date());
-            task.setStatus(request.getStatus());
-            task.setTargetDepartment(department);
-            task.setAssignUser(assignUser);
-            task.setTargetUser(targetUser);
-            taskRepository.save(task);
-            return true;
-        }catch (Exception e){
-            log.error("Error: ", e);
-            return false;
-        }
     }
 
 }

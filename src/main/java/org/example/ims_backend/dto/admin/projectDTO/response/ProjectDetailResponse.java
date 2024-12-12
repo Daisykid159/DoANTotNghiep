@@ -23,4 +23,5 @@ public class ProjectDetailResponse {
     private LocalDate expired_date;
     private LocalDate completed_date;
     List<TaskResponse> tasks;
+    List<DepartmentProjectResponse> departments;
 }

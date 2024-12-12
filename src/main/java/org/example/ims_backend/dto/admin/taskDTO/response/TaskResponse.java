@@ -15,10 +15,13 @@ public class TaskResponse {
     LocalDate created_date;
     LocalDate expired_date;
     int status;
-    Long department_id;
+    Long assign_department_id;
+    Long target_department_id;
+    String assign_department_name;
+    String target_department_name;
     Long assign_user_id;
     Long targer_user_id;
-    String department_name;
+    Integer progress;
     String assign_user_name;
     String target_user_name;
 }

@@ -51,7 +51,7 @@ public class User {
     @Column(name = "DeletedDate")
     private LocalDate deletedDate;
     @Column( name = "IsAdmin")
-    private int IsAdmin;
+    private int isAdmin;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<DepartmentUser> departmentUsers;
 

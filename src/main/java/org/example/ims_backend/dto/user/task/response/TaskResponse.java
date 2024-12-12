@@ -20,6 +20,7 @@ public class TaskResponse {
     int state;
     String title;
     int priority;
+    int progress;
     LocalDate created_date;
     LocalDate expired_date;
     LocalDate completed_date;

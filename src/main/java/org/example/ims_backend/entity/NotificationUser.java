@@ -20,7 +20,7 @@ public class NotificationUser {
     private Notification notification;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ToUserId")
-    private User toUser;
+    private User receiverUser;
     @Column(name = "HasRead")
     private int hasRead;
 }

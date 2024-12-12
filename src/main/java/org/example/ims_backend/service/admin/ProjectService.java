@@ -20,5 +20,4 @@ public interface ProjectService {
     ProjectDetailResponse getProjectDetail(Long id);
     boolean updateDepartmentOfProject(Long id, List<DepartmentOfProject> request);
     TaskResponse getTaskDetail(Long id);
-    boolean updateTask(TaskRequest request);
 }

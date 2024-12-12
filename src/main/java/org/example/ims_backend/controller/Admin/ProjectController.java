@@ -61,10 +61,4 @@ public class ProjectController {
     public TaskResponse getTaskDetail(@PathVariable Long id) {
         return projectService.getTaskDetail(id);
     }
-    @PutMapping("/updateTask/{id}")
-    public boolean updateTask(@RequestBody TaskRequest request,
-                              @PathVariable Long id) {
-        request.setTask_id(id);
-        return projectService.updateTask(request);
-    }
 }

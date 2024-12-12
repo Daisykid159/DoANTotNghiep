@@ -6,6 +6,8 @@ import org.example.ims_backend.entity.TaskUser;
 import org.example.ims_backend.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,4 +18,9 @@ public interface TaskUserRepository extends JpaRepository<TaskUser, Long>, JpaSp
     TaskUser findByUserAndTaskAndDepartment(User user, Task task, Department department);
     List<TaskUser> findByTaskAndRole(Task task, Integer role);
     boolean existsByTaskAndUserAndDepartment(Task task, User user, Department department);
+    @Query("SELECT COUNT(DISTINCT tu.task.id) " +
+            "FROM TaskUser tu " +
+            "WHERE tu.department.id = :departmentId"+
+            " AND tu.task.project.id = :projectId")
+    Integer countDistinctTasksByDepartmentIdAndProjectId(@Param("departmentId") Long departmentId, @Param("projectId") Long projectId);
 }

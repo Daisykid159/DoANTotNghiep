@@ -53,6 +53,7 @@ public class Task {
     private LocalDate expiredDate;
     @Column(name = "CompletedDate")
     private LocalDate completedDate;
-
+    @Column(name = "Progress")
+    private Integer progress;
 
 }

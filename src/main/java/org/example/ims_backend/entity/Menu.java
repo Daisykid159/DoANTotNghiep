@@ -21,7 +21,7 @@ public class Menu {
     private String menuName;
     @Column(name = "MenuCode")
     private String menuCode;
-    @Column(name = "Query")
+    @Column(name = "Query",length = 3000)
     private String query;
     @Column(name = "IsActive")
     private int isActive;

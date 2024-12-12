@@ -128,7 +128,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserResponse> getFullUsers() {
-        return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
+        return userRepository.findAllByIsActiveAndIsAdmin(1,0).stream().map(userMapper::toUserResponse).toList();
     }
 
     @Override

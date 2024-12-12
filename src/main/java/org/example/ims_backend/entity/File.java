@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "file")
 @Data
@@ -26,11 +28,11 @@ public class File {
     @Column(name = "IsSync")
     int isSync;
     @Column(name = "CreatedDate")
-    String createdDate;
+    LocalDate createdDate;
     @Column(name = "DeletedDate")
-    String deletedDate;
+    LocalDate deletedDate;
     @Column(name = "UpdatedDate")
-    String updatedDate;
+    LocalDate updatedDate;
     @Column(name = "Extension")
     String extension;
     @Column(name = "FileLocalName")
