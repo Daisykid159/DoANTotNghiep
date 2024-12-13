@@ -11,4 +11,5 @@ import java.util.List;
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> , JpaSpecificationExecutor<Comment> {
     List<Comment> findAllByTask(Task task);
+    void deleteAllByTask(Task task);
 }

@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface CommentService {
     List<CommentResponse> getComments(Task task);
+    boolean deleteComment(Task task);
 }

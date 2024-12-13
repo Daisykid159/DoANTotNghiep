@@ -11,4 +11,5 @@ import java.util.List;
 @Repository
 public interface FileRepository extends JpaRepository<File,Long>, JpaSpecificationExecutor<File> {
     List<File> findAllByTask(Task task);
+    void deleteAllByTask(Task task);
 }

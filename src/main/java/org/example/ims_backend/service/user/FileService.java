@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface FileService {
     List<FileResponse> getFiles(Task task);
+    boolean deleteFile(Task task);
 }

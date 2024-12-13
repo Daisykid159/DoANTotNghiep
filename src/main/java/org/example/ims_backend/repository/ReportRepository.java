@@ -11,4 +11,5 @@ import java.util.List;
 @Repository
 public interface ReportRepository extends JpaRepository<Report, Long>, JpaSpecificationExecutor<Report> {
     List<Report> findAllByTask(Task task);
+    void deleteAllByTask(Task task);
 }

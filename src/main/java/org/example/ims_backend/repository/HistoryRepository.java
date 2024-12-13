@@ -11,4 +11,5 @@ import java.util.List;
 @Repository
 public interface HistoryRepository extends JpaRepository<History, Long> , JpaSpecificationExecutor<History> {
     List<History> findAllByTask(Task task);
+    void deleteAllByTask(Task task);
 }

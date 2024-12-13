@@ -55,4 +55,15 @@ public class HistoryServiceImpl implements HistoryService {
         }
         return historyResponses;
     }
+
+    @Override
+    public boolean deleteHistory(Task task) {
+        try {
+            historyRepository.deleteAllByTask(task);
+            return true;
+        }catch (Exception e){
+            log.error("Error in deleteHistory", e);
+            return false;
+        }
+    }
 }

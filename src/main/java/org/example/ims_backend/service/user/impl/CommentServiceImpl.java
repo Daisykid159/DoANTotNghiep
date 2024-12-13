@@ -44,4 +44,15 @@ public class CommentServiceImpl implements CommentService {
         }
         return managers.getComments();
     }
+
+    @Override
+    public boolean deleteComment(Task task) {
+        try {
+            commentRepository.deleteAllByTask(task);
+            return true;
+        } catch (Exception e){
+            log.error("Error in deleteComment", e);
+            return false;
+        }
+    }
 }

@@ -15,4 +15,6 @@ public interface TaskService {
     boolean evictTask(Long task_user_id);
     boolean createTask(CreateTaskRequest createTaskRequest);
     boolean processingHandover(HandoverTaskRequest handoverTaskRequest);
+    boolean updateProcessing(Long task_user_id,Integer processing);
+    boolean deleteTask(Long task);
 }

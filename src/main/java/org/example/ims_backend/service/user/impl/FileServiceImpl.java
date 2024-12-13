@@ -23,4 +23,15 @@ public class FileServiceImpl implements FileService {
     public List<FileResponse> getFiles(Task task) {
         return fileRepository.findAllByTask(task).stream().map(fileMapper::toFileResponse).toList();
     }
+
+    @Override
+    public boolean deleteFile(Task task) {
+        try {
+            fileRepository.deleteAllByTask(task);
+            return true;
+        } catch (Exception e){
+            log.error("Error in deleteFile", e);
+            return false;
+        }
+    }
 }

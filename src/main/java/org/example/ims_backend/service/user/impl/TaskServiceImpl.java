@@ -15,12 +15,10 @@ import org.example.ims_backend.entity.*;
 import org.example.ims_backend.mapper.TaskMapper;
 import org.example.ims_backend.mapper.TaskUserMapper;
 import org.example.ims_backend.repository.*;
-import org.example.ims_backend.service.user.CommentService;
-import org.example.ims_backend.service.user.FileService;
-import org.example.ims_backend.service.user.HistoryService;
-import org.example.ims_backend.service.user.TaskService;
+import org.example.ims_backend.service.user.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -44,6 +42,8 @@ public class TaskServiceImpl implements TaskService {
     TaskMapper taskMapper;
     TaskUserMapper taskUserMapper;
     CommentService commentService;
+    ReportService reportService;
+    NotificationService notificationService;
     @Override
     public List<TaskResponse> getListMuneById( Long menu_id) {
         List<TaskResponse> taskResponses = new ArrayList<>();
@@ -98,6 +98,7 @@ public class TaskServiceImpl implements TaskService {
         TaskDetailResponse taskDetail = taskMapper.toTaskDetailResponse(taskUser);
         taskDetail.setCombinations(taskUserRepository.findByTaskAndRole(taskUser.getTask(),2).stream().map(taskUserMapper::toTaskUserResponse).toList());
         taskDetail.setFiles(fileService.getFiles(taskUser.getTask()));
+        taskDetail.setReports(reportService.getReportList(taskUser.getTask()));
         taskDetail.setComments(commentService.getComments(taskUser.getTask()));
         taskDetail.setHistory(historyService.getHistoryList(taskUser.getTask()));
 
@@ -181,6 +182,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional
     public boolean processingHandover(HandoverTaskRequest handoverTaskRequest) {
         try {
             Task task = taskRepository.findById(handoverTaskRequest.getTask_id()).orElseThrow(() -> new RuntimeException("Task not found"));
@@ -238,6 +240,42 @@ public class TaskServiceImpl implements TaskService {
             return true;
         }catch (Exception e){
             log.error("Error while processing handover", e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean updateProcessing(Long task_user_id,Integer progress) {
+        try{
+            Task task = taskUserRepository.findById(task_user_id).orElseThrow(() -> new RuntimeException("Task not found")).getTask();
+            task.setProgress(progress);
+            taskRepository.save(task);
+            return true;
+        }catch (Exception e){
+            log.error("Error while updating processing", e);
+            return false;
+        }
+    }
+
+    @Override
+    @Transactional
+    public boolean deleteTask(Long task_id) {
+        try {
+            if(!taskRepository.existsByIdAndStatus(task_id, 4)){
+                log.error("Task not delete");
+                return false;
+            }
+            Task task = taskRepository.findById(task_id).orElseThrow(() -> new RuntimeException("Task not found"));
+            taskUserRepository.deleteAllByTask(task);
+            notificationService.deleteNotification(task);
+            commentService.deleteComment(task);
+            reportService.deleteReport(task);
+            fileService.deleteFile(task);
+            historyService.deleteHistory(task);
+            taskRepository.delete(task);
+         return true;
+        }catch (Exception e){
+            log.error("Error while deleting task", e);
             return false;
         }
     }

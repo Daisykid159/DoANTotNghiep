@@ -85,4 +85,15 @@ public class ReportServiceImpl implements ReportService {
     public List<ReportResponse> getReportList(Task task) {
         return reportRepository.findAllByTask(task).stream().map(reportMapper::toReportResponse).toList();
     }
+
+    @Override
+    public boolean deleteReport(Task task) {
+        try {
+            reportRepository.deleteAllByTask(task);
+            return true;
+        }catch (Exception e){
+            log.error("Error in deleteReport", e);
+            return false;
+        }
+    }
 }

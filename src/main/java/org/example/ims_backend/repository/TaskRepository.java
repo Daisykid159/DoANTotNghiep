@@ -14,4 +14,5 @@ public interface TaskRepository extends JpaRepository<Task, Long> , JpaSpecifica
 
     List<Task> findByProject(Project project);
     Integer countByProject(Project project);
+    boolean existsByIdAndStatus(Long id, Integer status);
 }

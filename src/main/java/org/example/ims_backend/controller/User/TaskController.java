@@ -51,4 +51,13 @@ public class TaskController {
     public boolean processingHandover(@RequestBody HandoverTaskRequest handoverTaskRequest) {
         return taskService.processingHandover(handoverTaskRequest);
     }
+    @PutMapping("/updateProcessing")
+    public boolean updateProcessing(@RequestParam Long task_user_id,
+                                    @RequestParam Integer processing) {
+        return taskService.updateProcessing(task_user_id, processing);
+    }
+    @DeleteMapping("/deleteTask")
+    public boolean deleteTask(@RequestParam Long task) {
+        return taskService.deleteTask(task);
+    }
 }
