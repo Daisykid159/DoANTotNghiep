@@ -61,13 +61,21 @@ public interface ProjectMapper {
                                     .tasks(taskResponses)
                                     .build();
     }
-    default MyProject toMyProject(DepartmentProject departmentProject){
-                return MyProject.builder()
+    default List<MyProject> toMyProject(List<DepartmentProject> departmentProjects){
+        List<MyProject> myProjects = new ArrayList<>();
+        for(DepartmentProject departmentProject : departmentProjects){
+            if(departmentProject.getProject().getStatus() != 3){
+                myProjects.add(
+                        MyProject.builder()
                                 .project_id(departmentProject.getProject().getId())
                                 .project_name(departmentProject.getProject().getName())
                                 .content(departmentProject.getProject().getContent())
                                 .status(departmentProject.getProject().getStatus())
                                 .expired_date(departmentProject.getProject().getExpiredDate())
-                                .build();
+                                .build()
+                );
+            }
+        }
+        return myProjects;
     }
 }

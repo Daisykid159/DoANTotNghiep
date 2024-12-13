@@ -134,6 +134,7 @@ public class TaskServiceImpl implements TaskService {
                     .createdDate(createTaskRequest.getCreated_date())
                     .expiredDate(createTaskRequest.getExpired_date())
                     .state(0)
+                    .progress(0)
                     .status(0)
                     .assignDepartment(departmentRepository.findById(createTaskRequest.getAssign_department()).orElse(null))
                     .assignUser(userRepository.findById(createTaskRequest.getAssign_user()).orElse(null))
