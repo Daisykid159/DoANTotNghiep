@@ -5,9 +5,12 @@ import lombok.experimental.FieldDefaults;
 import org.example.ims_backend.dto.user.menu.response.MenuResponse;
 import org.example.ims_backend.dto.user.response.DepartmentGeneral;
 import org.example.ims_backend.dto.user.response.MyInfo;
+import org.example.ims_backend.dto.user.response.MyProject;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -19,4 +22,5 @@ public class GeneralResponse {
     List<DepartmentGeneral> departments = new ArrayList<>();
     List<MenuResponse> menus = new ArrayList<>();
     MyInfo userCurrent;
+    Set<MyProject> projectJoins = new HashSet<>();
 }
