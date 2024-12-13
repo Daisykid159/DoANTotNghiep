@@ -2,7 +2,10 @@ package org.example.ims_backend.mapper;
 
 import org.example.ims_backend.common.Active;
 import org.example.ims_backend.dto.admin.departmentDTO.response.DepartmentUserDTO;
+import org.example.ims_backend.dto.user.response.MyDepartment;
+import org.example.ims_backend.entity.Department;
 import org.example.ims_backend.entity.DepartmentUser;
+import org.example.ims_backend.entity.Project;
 import org.mapstruct.Mapper;
 
 import java.util.ArrayList;
@@ -24,5 +27,19 @@ public interface DepartmentUserMapper {
                         .build());
         }
         return departmentUserDTOS;
+    }
+    default List<MyDepartment> toMyDepartment(List<DepartmentUser> departmentUsers ) {
+        List<MyDepartment> myDepartments = new ArrayList<>();
+        for(DepartmentUser departmentUser : departmentUsers) {
+            myDepartments.add(
+                    MyDepartment.builder()
+                            .department_id(departmentUser.getDepartment().getId())
+                            .department_name(departmentUser.getDepartment().getDepartmentName())
+                            .position_id(departmentUser.getPosition().getId())
+                            .position_name(departmentUser.getPosition().getPositionName())
+                            .build()
+            );
+        }
+        return myDepartments;
     }
 }

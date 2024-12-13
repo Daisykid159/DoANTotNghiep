@@ -7,12 +7,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.ims_backend.common.MenuManager;
 import org.example.ims_backend.dto.user.GeneralResponse;
 import org.example.ims_backend.dto.user.menu.response.MenuResponse;
-import org.example.ims_backend.dto.user.response.DepartmentGeneral;
-import org.example.ims_backend.dto.user.response.UserDepartmentGenal;
-import org.example.ims_backend.entity.Department;
-import org.example.ims_backend.entity.DepartmentUser;
-import org.example.ims_backend.entity.Menu;
-import org.example.ims_backend.entity.User;
+import org.example.ims_backend.dto.user.response.*;
+import org.example.ims_backend.entity.*;
+import org.example.ims_backend.mapper.DepartmentUserMapper;
+import org.example.ims_backend.mapper.ProjectMapper;
+import org.example.ims_backend.mapper.UserMapper;
 import org.example.ims_backend.repository.*;
 import org.example.ims_backend.service.user.MenuService;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,9 +28,13 @@ public class MenuServiceImpl implements MenuService {
     MenuRepository menuRepository;
     EntityManager entityManager;
     UserRepository userRepository;
+    UserMapper userMapper;
     NotificationUserRepository notificationUserRepository;
     DepartmentRepository departmentRepository;
     DepartmentUserRepository departmentUserRepository;
+    DepartmentUserMapper departmentUserMapper;
+    DepartmentProjectRepository departmentProjectRepository;
+    ProjectMapper projectMapper;
     @Override
     public List<MenuResponse> getMenu() {
         var context = SecurityContextHolder.getContext();
@@ -110,6 +113,19 @@ public class MenuServiceImpl implements MenuService {
                 .menus(menus)
                 .departments(departmentGenerals)
                 .number_notification(num_notification)
+                .userCurrent(getMyInfo(user))
                 .build();
+    }
+    private MyInfo getMyInfo(User user){
+        MyInfo myInfo = userMapper.toMyInfo(user);
+        List<DepartmentUser> departmentUsers = departmentUserRepository.findByUser(user);
+        List<MyDepartment> myDepartments = departmentUserMapper.toMyDepartment(departmentUsers);
+        for(MyDepartment myDepartment : myDepartments){
+            List<DepartmentProject> departmentProjects = departmentProjectRepository.findDepartmentProjectByDepartment(departmentRepository.findById(myDepartment.getDepartment_id()).orElseThrow(() -> new RuntimeException("false")));
+            List<MyProject> myProjects = projectMapper.toMyProject(departmentProjects);
+            myDepartment.setProjects(myProjects);
+        }
+        myInfo.setDepartments(myDepartments);
+        return myInfo;
     }
 }

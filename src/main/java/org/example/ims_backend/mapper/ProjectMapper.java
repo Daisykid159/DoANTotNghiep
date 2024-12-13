@@ -4,10 +4,13 @@ import org.example.ims_backend.dto.admin.projectDTO.request.ProjectRequest;
 import org.example.ims_backend.dto.admin.projectDTO.response.ProjectDetailResponse;
 import org.example.ims_backend.dto.admin.projectDTO.response.ProjectResponse;
 import org.example.ims_backend.dto.admin.taskDTO.response.TaskResponse;
+import org.example.ims_backend.dto.user.response.MyProject;
+import org.example.ims_backend.entity.DepartmentProject;
 import org.example.ims_backend.entity.Project;
 import org.example.ims_backend.entity.Task;
 import org.mapstruct.Mapper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
@@ -57,5 +60,22 @@ public interface ProjectMapper {
                                     .completed_date(project.getCompletedDate())
                                     .tasks(taskResponses)
                                     .build();
+    }
+    default List<MyProject> toMyProject(List<DepartmentProject> departmentProjects){
+        List<MyProject> myProjects = new ArrayList<>();
+        for(DepartmentProject departmentProject : departmentProjects){
+            if(departmentProject.getProject().getStatus() != 3){
+                myProjects.add(
+                        MyProject.builder()
+                                .project_id(departmentProject.getProject().getId())
+                                .project_name(departmentProject.getProject().getName())
+                                .content(departmentProject.getProject().getContent())
+                                .status(departmentProject.getProject().getStatus())
+                                .expired_date(departmentProject.getProject().getExpiredDate())
+                                .build()
+                );
+            }
+        }
+        return myProjects;
     }
 }

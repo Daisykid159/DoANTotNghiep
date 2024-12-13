@@ -7,6 +7,7 @@ import org.example.ims_backend.dto.admin.request.UserUpdateRequest;
 import org.example.ims_backend.dto.admin.response.DepartmentResponse;
 import org.example.ims_backend.dto.admin.response.UpdateUserResponse;
 import org.example.ims_backend.dto.admin.response.UserResponse;
+import org.example.ims_backend.dto.user.response.MyInfo;
 import org.example.ims_backend.entity.DepartmentUser;
 import org.example.ims_backend.entity.User;
 import org.mapstruct.Mapper;
@@ -82,6 +83,22 @@ public interface UserMapper {
                 .IsActive(user.getIsActive() == 1)
                 .IsAdmin(user.getIsAdmin() == 1)
                 .department(departmentResponses)
+                .build();
+    }
+    default MyInfo toMyInfo( User user){
+        return MyInfo.builder()
+                .user_id(user.getId())
+                .user_name(user.getUsername())
+                .email(user.getEmail())
+                .phone(user.getPhone())
+                .dateOfBirth(user.getDateOfBirth())
+                .fullName(user.getFullName())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .homeTown(user.getHomeTown())
+                .gender(user.getGender())
+                .IsActive(user.getIsActive() == 1)
+                .IsAdmin(user.getIsAdmin() == 1)
                 .build();
     }
 }

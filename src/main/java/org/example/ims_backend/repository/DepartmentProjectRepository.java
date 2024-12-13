@@ -13,4 +13,5 @@ import java.util.List;
 public interface DepartmentProjectRepository extends JpaRepository<DepartmentProject, Long>, JpaSpecificationExecutor<DepartmentProject> {
     List<DepartmentProject> findByProject(Project project);
     boolean existsByProjectAndDepartment(Project project, Department department);
+    List<DepartmentProject> findDepartmentProjectByDepartment(Department department);
 }
