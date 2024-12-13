@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import styles from './CreateTaskStyle.module.scss'
 import classNames from "classnames/bind";
 import Select from 'react-select';
@@ -33,8 +33,9 @@ const CreateTaskScreen = (props) => {
             label: `${'----'.repeat(level)} ${dep.department_name}`,
             options: [
                 ...dep.users.map((user) => ({
-                    value: `user-${user.user_id}`,
+                    value: `${user.user_id}`,
                     label: `${'----'.repeat(level + 1)} 👤 ${user.user_name}`,
+                    user: user,
                 })),
                 ...mapDepartmentsToOptions(dep.children || [], level + 1),
             ],
@@ -42,6 +43,12 @@ const CreateTaskScreen = (props) => {
     };
 
     const optionsUser = mapDepartmentsToOptions(overViewUser.departments);
+
+    const optionsProject = overViewUser.projectJoins?.map((project) => ({
+        value: project.project_id,
+        label: project.project_name,
+        description: project.content, // Mô tả bổ sung
+    }));
 
     const handleFileUpload = (event) => {
         const files = Array.from(event.target.files); // Lấy danh sách các tệp được chọn
@@ -58,7 +65,7 @@ const CreateTaskScreen = (props) => {
         const taskNew ={
             "title": titleTask,
             "assign_department": 1,
-            "assign_user": 51,
+            "assign_user": overViewUser.userCurrent.user_id,
             "target_department": 1,
             "target_user": 50,
             "content": contentTask,
@@ -87,6 +94,13 @@ const CreateTaskScreen = (props) => {
         // dispatch(actionCreateTask(token, taskNew, props.setShowModuleCreateTask));
     }
 
+    useEffect(() => {
+        setAssignTask({
+            value: `${overViewUser.userCurrent.user_id}`,
+            label: `👤 ${overViewUser.userCurrent.user_name}`,
+        });
+    }, [overViewUser]);
+
     return (
         <div className={cx('CreateTaskScreen')}>
             <div className={cx('CreateTaskScreen_body')}>
@@ -105,7 +119,8 @@ const CreateTaskScreen = (props) => {
                 <div className={cx('p-3', 'row')}>
                     <div className={cx('col-md-12', 'mb-3')}>
                         <div className={cx('d-flex', 'align-items-center')}>
-                            <label className={cx("col-md-125")}>Tiêu đề nhiệm vụ <span className={cx('text_red')}>*</span></label>
+                            <label className={cx("col-md-125")}>Tiêu đề nhiệm vụ <span
+                                className={cx('text_red')}>*</span></label>
                             <input
                                 type="text"
                                 className="form-control"
@@ -118,31 +133,52 @@ const CreateTaskScreen = (props) => {
 
                     <div className={cx('col-md-6', 'mb-3')}>
                         <div className={cx('d-flex', 'align-items-center')}>
-                            <label className="col-md-3">Đơn vị người giao <span className={cx('text_red')}>*</span></label>
+                            <label className="col-md-3">Đơn vị người giao <span
+                                className={cx('text_red')}>*</span></label>
                             <Select
                                 options={optionsUser}
                                 isSearchable
                                 className="w-100"
                                 placeholder="Tìm kiếm phòng ban hoặc người dùng..."
+                                value={assignTask}
                             />
                         </div>
                     </div>
 
                     <div className={cx('col-md-6', 'mb-3')}>
                         <div className={cx('d-flex', 'align-items-center')}>
-                            <label className="col-md-3">Đơn vị người chủ trì <span className={cx('text_red')}>*</span></label>
+                            <label className="col-md-3">Người giao <span
+                                className={cx('text_red')}>*</span></label>
+                            <Select
+                                options={optionsUser}
+                                isSearchable
+                                isDisabled
+                                className="w-100"
+                                placeholder="Tìm kiếm phòng ban hoặc người dùng..."
+                                value={assignTask}
+                            />
+                        </div>
+                    </div>
+
+                    <div className={cx('col-md-6', 'mb-3')}>
+                        <div className={cx('d-flex', 'align-items-center')}>
+                            <label className="col-md-3">Đơn vị người chủ trì <span
+                                className={cx('text_red')}>*</span></label>
                             <Select
                                 options={optionsUser}
                                 isSearchable
                                 className="w-100"
                                 placeholder="Tìm kiếm phòng ban hoặc người dùng..."
+                                value={targetTask}
+                                onChange={(selected) => setTargetTask(selected)}
                             />
                         </div>
                     </div>
 
-                    <div className={cx('col-md-12', 'mb-3')}>
+                    <div className={cx('col-md-6', 'mb-3')}>
                         <div className={cx('d-flex', 'align-items-center')}>
-                            <label className="col-md-125">Đơn vị người phối hợp <span className={cx('text_red')}>*</span></label>
+                            <label className="col-md-3">Đơn vị người phối hợp <span
+                                className={cx('text_red')}>*</span></label>
                             <Select
                                 options={optionsUser}
                                 isSearchable
@@ -158,17 +194,21 @@ const CreateTaskScreen = (props) => {
                     <div className={cx('col-md-6', 'mb-3')}>
                         <div className={cx('d-flex', 'align-items-center')}>
                             <label className="col-md-3">Nguồn nhiệm vụ <span className={cx('text_red')}>*</span></label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Nguồn nhiệm vụ"
+                            <Select
+                                options={optionsProject}
+                                isSearchable
+                                className="w-100"
+                                placeholder="Tìm kiếm dự án..."
+                                value={sourceTask}
+                                onChange={(selected) => setSourceTask(selected)}
                             />
                         </div>
                     </div>
 
                     <div className={cx('col-md-6', 'mb-3')}>
                         <div className={cx('d-flex', 'align-items-center')}>
-                            <label className="col-md-3">Mức độ quan trọng <span className={cx('text_red')}>*</span></label>
+                            <label className="col-md-3">Mức độ quan trọng <span
+                                className={cx('text_red')}>*</span></label>
                             <input
                                 type="number"
                                 className="form-control"
@@ -230,7 +270,7 @@ const CreateTaskScreen = (props) => {
                                     type="file"
                                     multiple
                                     onChange={handleFileUpload}
-                                    style={{ display: "none" }} // Ẩn input thật, chỉ hiển thị nút
+                                    style={{display: "none"}} // Ẩn input thật, chỉ hiển thị nút
                                 />
                             </div>
                         </div>
