@@ -16,5 +16,4 @@ public class MyDepartment {
     String department_name;
     Long position_id;
     String position_name;
-    List<MyProject> projects = new ArrayList<>();
 }
