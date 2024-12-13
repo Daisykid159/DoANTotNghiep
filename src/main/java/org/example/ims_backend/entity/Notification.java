@@ -6,6 +6,7 @@ import org.example.ims_backend.common.TypeNotifi;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 @Entity
 @Table(name = "notification")
@@ -22,7 +23,7 @@ public class Notification {
     private String content;
     @CreationTimestamp
     @Column(name = "CreatedDate")
-    private LocalDate createdDate;
+    private Date createdDate;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "CreatedUserId")
     private User createdUser;

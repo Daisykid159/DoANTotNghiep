@@ -6,6 +6,7 @@ import org.example.ims_backend.dto.user.taskUser.request.CreateTaskUserRequest;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -22,8 +23,8 @@ public class CreateTaskRequest {
     String content;
     int priority;
     Long project_id;
-    LocalDate expired_date;
-    LocalDate created_date;
+    Date expired_date;
+    Date created_date;
     List<CreateTaskUserRequest> combinations = new ArrayList<>();
 
 }

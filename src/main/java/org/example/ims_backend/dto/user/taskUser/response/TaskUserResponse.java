@@ -4,6 +4,8 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.Date;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,6 +16,6 @@ public class TaskUserResponse {
     Long task_id;
     Long combination_department_id;
     String combination_department_name;
-    LocalDate created_date;
+    Date created_date;
     String combination_name;
 }

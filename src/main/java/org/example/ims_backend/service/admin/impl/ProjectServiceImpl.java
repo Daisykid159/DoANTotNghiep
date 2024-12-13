@@ -38,7 +38,7 @@ public class ProjectServiceImpl implements ProjectService {
     DepartmentRepository departmentRepository;
     UserRepository userRepository;
     @Override
-    public Page<ProjectResponse> getProjects(Pageable pageable, String keyword, LocalDate fromCreatedDate, LocalDate toCreatedDate, LocalDate fromExpiredDate, LocalDate toExpiredDate) {
+    public Page<ProjectResponse> getProjects(Pageable pageable, String keyword, Date fromCreatedDate, Date toCreatedDate, Date fromExpiredDate, Date toExpiredDate) {
         Specification<Project> spec = Specification.where(ProjectSpecification
                         .hasKeyword(keyword))
                         .and(ProjectSpecification.createdDateBetween(fromCreatedDate,toCreatedDate))

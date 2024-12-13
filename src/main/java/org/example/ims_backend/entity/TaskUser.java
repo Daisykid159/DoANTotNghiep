@@ -8,6 +8,7 @@ import org.example.ims_backend.common.Role;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 @Table(name = "task_user")
 @Entity
@@ -35,9 +36,9 @@ public class TaskUser {
     private int isPin;
     @CreationTimestamp
     @Column(name = "CreatedDate")
-    private LocalDate createdDate;
+    private Date createdDate;
     @Column(name = "UpdatedDate")
-    private LocalDate updatedDate;
+    private Date updatedDate;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="DepartmentId")
     private Department department;

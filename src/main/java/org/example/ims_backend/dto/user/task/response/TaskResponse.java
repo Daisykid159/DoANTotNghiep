@@ -21,10 +21,10 @@ public class TaskResponse {
     String title;
     int priority;
     int progress;
-    LocalDate created_date;
-    LocalDate expired_date;
-    LocalDate completed_date;
-    LocalDate updated_date;
+    Date created_date;
+    Date expired_date;
+    Date completed_date;
+    Date updated_date;
     String assign_department;
     String assign_user_name;
     Long assign_user_id;

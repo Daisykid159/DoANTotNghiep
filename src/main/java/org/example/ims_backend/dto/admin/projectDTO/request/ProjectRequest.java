@@ -15,5 +15,5 @@ public class ProjectRequest {
     String project_name;
     String content;
     int status;
-    LocalDate expired_date;
+    Date expired_date;
 }

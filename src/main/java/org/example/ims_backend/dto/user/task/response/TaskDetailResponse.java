@@ -10,6 +10,7 @@ import org.example.ims_backend.dto.user.taskUser.response.TaskUserResponse;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -36,10 +37,10 @@ public class TaskDetailResponse {
     String content;
     int priority;
     Integer progress;
-    LocalDate expired_date;
-    LocalDate created_date;
-    LocalDate deleted_date;
-    LocalDate completed_date;
+    Date expired_date;
+    Date created_date;
+    Date deleted_date;
+    Date completed_date;
     boolean can_finished;
     List<ReportResponse> reports= new ArrayList<>();
     List<HistoryResponse> history = new ArrayList<>();

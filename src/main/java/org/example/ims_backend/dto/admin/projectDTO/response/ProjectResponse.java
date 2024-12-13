@@ -16,7 +16,7 @@ public class ProjectResponse {
     String content;
     Integer number_task;
     Integer status;
-    LocalDate created_date;
-    LocalDate expired_date;
-    LocalDate completed_date;
+    Date created_date;
+    Date expired_date;
+    Date completed_date;
 }

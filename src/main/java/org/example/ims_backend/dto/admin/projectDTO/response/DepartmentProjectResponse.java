@@ -4,6 +4,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -14,5 +15,5 @@ public class DepartmentProjectResponse {
     Long department_id;
     String department_name;
     Integer number_task;
-    LocalDate created_date;
+    Date created_date;
 }

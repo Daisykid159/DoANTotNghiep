@@ -7,6 +7,7 @@ import org.example.ims_backend.common.Active;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 @Table(name = "menu")
 @Entity
@@ -27,6 +28,6 @@ public class Menu {
     private int isActive;
     @CreationTimestamp
     @Column(name = "CreatedDate")
-    private LocalDate createdDate;
+    private Date createdDate;
 
 }

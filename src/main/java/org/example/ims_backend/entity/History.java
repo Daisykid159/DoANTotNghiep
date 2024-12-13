@@ -9,6 +9,7 @@ import org.example.ims_backend.common.StatusHistory;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 @Table(name = "history")
 @Entity
@@ -32,7 +33,7 @@ public class History {
     private User receiveUser;
     @CreationTimestamp
     @Column(name = "CreatedDate")
-    private LocalDate createdDate;
+    private Date createdDate;
     @Column(name = "Status")
     private int status;
     @Column(name = "Content")

@@ -4,6 +4,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -18,9 +19,9 @@ public class ReportResponse {
     int type;
     int status;
     String content;
-    LocalDate new_expired_date;
-    LocalDate created_date;
-    LocalDate completed_date;
+    Date new_expired_date;
+    Date created_date;
+    Date completed_date;
     Long review_user;
     String review_user_name;
 

@@ -14,7 +14,7 @@ import java.util.Date;
 import java.util.List;
 
 public interface ProjectService {
-    Page<ProjectResponse> getProjects(Pageable pageable, String keyword, LocalDate fromCreatedDate, LocalDate toCreatedDate, LocalDate fromExpiredDate, LocalDate toExpiredDate);
+    Page<ProjectResponse> getProjects(Pageable pageable, String keyword, Date fromCreatedDate, Date toCreatedDate, Date fromExpiredDate, Date toExpiredDate);
     boolean createProject(ProjectRequest projectRequest);
     boolean updateProject(ProjectRequest projectRequest);
     ProjectDetailResponse getProjectDetail(Long id);

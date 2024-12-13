@@ -4,6 +4,8 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.Date;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,5 +19,5 @@ public class HistoryResponse {
     Integer role;
     String content;
     String label_name;
-    LocalDate created_date;
+    Date created_date;
 }

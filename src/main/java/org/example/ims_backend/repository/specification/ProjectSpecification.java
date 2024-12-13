@@ -4,6 +4,7 @@ import org.example.ims_backend.entity.Project;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 public class ProjectSpecification {
     public static Specification<Project> hasKeyword(String keyword) {
@@ -15,7 +16,7 @@ public class ProjectSpecification {
             return builder.like(builder.lower(root.get("name")), likePattern);
         };
     }
-    public static Specification<Project> createdDateBetween(LocalDate from, LocalDate to) {
+    public static Specification<Project> createdDateBetween(Date from, Date to) {
         return (root, query, criteriaBuilder) -> {
             if (from != null && to != null) {
                 return criteriaBuilder.between(root.get("createdDate"), from, to);
@@ -28,7 +29,7 @@ public class ProjectSpecification {
             }
         };
     }
-    public static Specification<Project> expiredDateBetween(LocalDate from, LocalDate to) {
+    public static Specification<Project> expiredDateBetween(Date from, Date to) {
         return (root, query, criteriaBuilder) -> {
             if (from != null && to != null) {
                 return criteriaBuilder.between(root.get("expiredDate"), from, to);

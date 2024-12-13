@@ -28,10 +28,10 @@ public class ProjectController {
             @RequestParam(defaultValue = "0", required = false) int page,
             @RequestParam(defaultValue = "15", required = false) int size,
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) LocalDate fromCreatedDate,
-            @RequestParam(required = false)LocalDate toCreatedDate,
-            @RequestParam(required = false)LocalDate fromExpiredDate,
-            @RequestParam(required = false)LocalDate toExpiredDate
+            @RequestParam(required = false) Date fromCreatedDate,
+            @RequestParam(required = false)Date toCreatedDate,
+            @RequestParam(required = false)Date fromExpiredDate,
+            @RequestParam(required = false)Date toExpiredDate
             ) {
         PageRequest pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "expiredDate"));
         Page<ProjectResponse> projects = projectService.getProjects(pageable,keyword,fromCreatedDate,toCreatedDate,fromExpiredDate,toExpiredDate);

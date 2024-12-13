@@ -26,12 +26,12 @@ public class Project {
     private Integer status;
     @CreationTimestamp
     @Column(name = "CreatedDate")
-    private LocalDate createdDate;
+    private Date createdDate;
     @Column(name = "DeletedDate")
-    private LocalDate deletedDate;
+    private Date deletedDate;
     @Column(name = "ExpiredDate")
-    private LocalDate expiredDate;
+    private Date expiredDate;
     @Column(name = "CompletedDate")
-    private LocalDate completedDate;
+    private Date completedDate;
 
 }

@@ -69,9 +69,9 @@ public class TaskServiceImpl implements TaskService {
                     .state((int) resultArray[5])
                     .title((String) resultArray[6])
                     .priority((int) resultArray[7])
-                    .created_date((LocalDate) resultArray[9])
-                    .expired_date((LocalDate) resultArray[8])
-                    .completed_date((LocalDate) resultArray[12])
+                    .created_date((Date) resultArray[9])
+                    .expired_date((Date) resultArray[8])
+                    .completed_date((Date) resultArray[12])
                     .assign_department(assign_department.getDepartmentName())
                     .assign_user_name(assign_user.getFullName())
                     .assign_user_id(assign_user.getId())
@@ -197,7 +197,7 @@ public class TaskServiceImpl implements TaskService {
                         )){
                     taskUserRepository.save(
                             TaskUser.builder()
-                                    .createdDate(LocalDate.now())
+                                    .createdDate(new Date())
                                     .role(1)
                                     .task(task)
                                     .user(targetUser)
@@ -207,13 +207,13 @@ public class TaskServiceImpl implements TaskService {
                 }else {
                     TaskUser taskUser = taskUserRepository.findByUserAndTaskAndDepartment(targetUser, task, targetDepartment);
                     taskUser.setRole(1);
-                    taskUser.setUpdatedDate(LocalDate.now());
+                    taskUser.setUpdatedDate(new Date());
                     taskUserRepository.save(taskUser);
 
                 }
                 TaskUser taskUser = taskUserRepository.findByUserAndTaskAndDepartment(task.getTargetUser(), task,task.getTargetDepartment());
                 taskUser.setRole(3);
-                taskUser.setUpdatedDate(LocalDate.now());
+                taskUser.setUpdatedDate(new Date());
                 taskUserRepository.save(taskUser);
                 historyService.addHistory(user, targetUser, task, handoverTaskRequest.getContent(), 1);
                 task.setTargetUser(targetUser);
@@ -224,7 +224,7 @@ public class TaskServiceImpl implements TaskService {
 
             for(TaskUserRequest taskUserRequest : handoverTaskRequest.getCombinations()){
                     TaskUser taskUser = TaskUser.builder()
-                            .createdDate(LocalDate.now())
+                            .createdDate(new Date())
                             .role(2)
                             .task(task)
                             .user(userRepository.findById(taskUserRequest.getCombination_id()).orElseThrow(() -> new RuntimeException("User not found"))

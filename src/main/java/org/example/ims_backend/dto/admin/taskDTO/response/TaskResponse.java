@@ -4,6 +4,8 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.Date;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -12,8 +14,8 @@ import java.time.LocalDate;
 public class TaskResponse {
     Long task_id;
     String task_title;
-    LocalDate created_date;
-    LocalDate expired_date;
+    Date created_date;
+    Date expired_date;
     int status;
     Long assign_department_id;
     Long target_department_id;

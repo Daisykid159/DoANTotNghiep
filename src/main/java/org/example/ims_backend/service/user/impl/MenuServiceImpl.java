@@ -92,6 +92,10 @@ public class MenuServiceImpl implements MenuService {
                 userDepartmentGenals.add(UserDepartmentGenal.builder()
                         .user_id(departmentUser.getUser().getId())
                         .user_name(departmentUser.getUser().getUsername())
+                                .full_name(departmentUser.getUser().getFullName())
+                                .IsDepartmentMain(departmentUser.getDepartmentMain() ==1)
+                                .position_id(departmentUser.getPosition().getId())
+                                .position_name(departmentUser.getPosition().getPositionName())
                         .build());
             }
             departmentGenerals.add(DepartmentGeneral.builder()

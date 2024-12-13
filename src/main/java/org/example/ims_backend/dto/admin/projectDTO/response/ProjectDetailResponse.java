@@ -19,9 +19,9 @@ public class ProjectDetailResponse {
     private String content;
     private int number_task;
     private int status;
-    private LocalDate created_date;
-    private LocalDate expired_date;
-    private LocalDate completed_date;
+    private Date created_date;
+    private Date expired_date;
+    private Date completed_date;
     List<TaskResponse> tasks;
     List<DepartmentProjectResponse> departments;
 }

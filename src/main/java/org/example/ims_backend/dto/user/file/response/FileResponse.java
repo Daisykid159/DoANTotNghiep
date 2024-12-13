@@ -4,6 +4,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -21,7 +22,7 @@ public class FileResponse {
     String extension;
     Long size;
     boolean can_delete;
-    LocalDate created_date;
-    LocalDate updated_date;
-    LocalDate deleted_date;
+    Date created_date;
+    Date updated_date;
+    Date deleted_date;
 }

@@ -47,9 +47,9 @@ public class User {
     private String homeTown;
     @CreationTimestamp
     @Column(name = "CreatedDate")
-    private LocalDate createdDate;
+    private Date createdDate;
     @Column(name = "DeletedDate")
-    private LocalDate deletedDate;
+    private Date deletedDate;
     @Column( name = "IsAdmin")
     private int isAdmin;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
