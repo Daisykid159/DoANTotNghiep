@@ -18,9 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -111,27 +109,22 @@ public class MenuServiceImpl implements MenuService {
                             .users(userDepartmentGenals)
                     .build());
         }
-        MyInfo myInfo = getMyInfo(user);
-        Set<MyProject> projects = new HashSet<>();
-        for(MyDepartment myDepartment : myInfo.getDepartments()){
-            List<DepartmentProject> departmentProjects = departmentProjectRepository.findDepartmentProjectByDepartment(departmentRepository.findById(myDepartment.getDepartment_id()).orElseThrow(() -> new RuntimeException("false")));
-            for (DepartmentProject departmentProject : departmentProjects){
-                if(departmentProject.getProject().getStatus() != 3)
-                    projects.add(projectMapper.toMyProject(departmentProject));
-            }
-        }
         return GeneralResponse.builder()
                 .menus(menus)
                 .departments(departmentGenerals)
                 .number_notification(num_notification)
                 .userCurrent(getMyInfo(user))
-                .projectJoins(projects)
                 .build();
     }
     private MyInfo getMyInfo(User user){
         MyInfo myInfo = userMapper.toMyInfo(user);
         List<DepartmentUser> departmentUsers = departmentUserRepository.findByUser(user);
         List<MyDepartment> myDepartments = departmentUserMapper.toMyDepartment(departmentUsers);
+        for(MyDepartment myDepartment : myDepartments){
+            List<DepartmentProject> departmentProjects = departmentProjectRepository.findDepartmentProjectByDepartment(departmentRepository.findById(myDepartment.getDepartment_id()).orElseThrow(() -> new RuntimeException("false")));
+            List<MyProject> myProjects = projectMapper.toMyProject(departmentProjects);
+            myDepartment.setProjects(myProjects);
+        }
         myInfo.setDepartments(myDepartments);
         return myInfo;
     }
