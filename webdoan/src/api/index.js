@@ -79,8 +79,8 @@ const Api = (token) => {
     }
 
     const updateDepartment = (department_id, departmentName, department_parent_id, isActive) => {
-        return api.put(`/api/admin/updatePosition/${department_id}`, {
-            department_id, departmentName, department_parent_id, isActive
+        return api.put(`/api/admin/updateDepartment/${department_id}`, {
+            department_id, department_name: departmentName, parent_department_id: department_parent_id, isActive
         });
     }
 
@@ -103,11 +103,43 @@ const Api = (token) => {
     }
 
     const getListProject = (page, size, keyword = '', fromCreatedDate = '', toCreatedDate = '', fromExpiredDate = '', toExpiredDate = '') => {
-        return api.post(`api/admin/projects?page=${page}&size=${size}&keyword=${keyword}&fromCreatedDate=${fromCreatedDate}&toCreatedDate=${toCreatedDate}&fromExpiredDate=${fromExpiredDate}&toExpiredDate=${toExpiredDate}`);
+        return api.get(`api/admin/projects?page=${page}&size=${size}&keyword=${keyword}&fromCreatedDate=${fromCreatedDate}&toCreatedDate=${toCreatedDate}&fromExpiredDate=${fromExpiredDate}&toExpiredDate=${toExpiredDate}`);
     }
 
     const getDetailProject = id => {
         return api.get(`api/admin/project/${id}`);
+    }
+
+    const updateProject = (id, projectName, createDate, expiredDate, projectStatus, projectContent) => {
+        return api.put(`api/admin/updateProject/${id}`, {
+            project_name: projectName,
+            created_date: createDate,
+            expired_date: expiredDate,
+            status: projectStatus,
+            content: projectContent,
+        });
+    }
+
+
+    /* API cho User */
+    const getOverView = () => {
+        return api.get(`/api/user/overview`);
+    }
+
+    const createTask = (task) => {
+        return api.post(`/api/user/createTask`, task);
+    }
+
+    const getListMenu = () => {
+        return api.get(`api/user/menus`);
+    }
+
+    const getListTaskByMenu = (id) => {
+        return api.get(`api/user/getListMenuById?menu_id=${id}`);
+    }
+
+    const getDetailTask = (id) => {
+        return api.get(`api/user/TaskDetail?task_user_id=${id}`);
     }
 
     return {
@@ -128,6 +160,14 @@ const Api = (token) => {
         createPosition,
         getListProject,
         getDetailProject,
+        updateProject,
+
+        getDetailTask,
+
+        getOverView,
+        createTask,
+        getListMenu,
+        getListTaskByMenu,
     };
 };
 

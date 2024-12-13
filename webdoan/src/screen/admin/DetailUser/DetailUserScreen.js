@@ -181,18 +181,20 @@ const DetailUserScreen = () => {
     useEffect(() => {
         if(detailUser) {
             setUserName(detailUser.username);
-            setLastName(detailUser.lastName);
-            setFullName(detailUser.fullName);
+            setLastName(detailUser.lastName || '');
+            setFullName(detailUser.fullName || '');
+            setFirstName(detailUser.firstName || '');
             setGender(detailUser.gender);
-            setEmail(detailUser.email);
-            setPhone(detailUser.phone);
-            setAddress(detailUser.address);
+            setEmail(detailUser.email || '');
+            setDateOfBirth(detailUser.dateOfBirth || '');
+            setListSelectedDepartment(detailUser.department || []);
+            setPhone(detailUser.phone || '');
+            setAddress(detailUser.hometown || '');
             setIsActive(detailUser.active);
-            setIsAdminActive(detailUser.role);
+            setIsAdminActive(detailUser.isAdmin);
         }
     }, [detailUser]);
 
-    console.log(detailUser);
     return (
         <div className={cx('DetailUserScreen', 'container')}>
             <div className="col-md-12">
@@ -267,7 +269,6 @@ const DetailUserScreen = () => {
                     <input
                         type="date"
                         className="form-control"
-                        placeholder="Nhập họ và tên"
                         value={dateOfBirth}
                         onChange={e => setDateOfBirth(e.target.value)}
                     />
@@ -343,7 +344,7 @@ const DetailUserScreen = () => {
                     />
                 </div>
                 <div>
-                    {listSelectedDepartment.length !== 0 && (
+                    {listSelectedDepartment?.length !== 0 && (
                         <table className={cx('w-100', 'table')}>
                             <thead>
                             <tr className={cx('text-center', 'table_row')}>
@@ -355,7 +356,7 @@ const DetailUserScreen = () => {
                             </tr>
                             </thead>
                             <tbody>
-                            {listSelectedDepartment.map((item, index) => (
+                            {listSelectedDepartment?.map((item, index) => (
                                 <RowDepartment
                                     item={item}
                                     index={index}

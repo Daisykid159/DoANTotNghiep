@@ -1,4 +1,5 @@
 import Api from "../../api";
+import {toast} from "react-toastify";
 
 export function updateData(data) {
     return {
@@ -19,12 +20,11 @@ export function actionGetListProject (token, page, size, keyword, fromCreatedDat
                 dispatch(updateData({
                     listProjectManagementResponse: [],
                 }))
-                alert("Lấy dữ liệu thất bại!");
+                toast.error('Lấy dữ liệu thất bại!');
                 console.log("Lỗi api actionGetListProject");
             }
         } catch (error) {
             console.log("Lỗi api actionGetListProject", error);
-            alert("Lỗi mạng Xin vui lòng kiểm tra lại kết nối internet");
         }
     };
 }
@@ -35,18 +35,34 @@ export function actionGetDetailProject (token, projectId) {
             const response = await Api(token).getDetailProject(projectId);
             if (response && response.data){
                 dispatch(updateData({
-                    listProjectManagementResponse: response.data,
+                    detailProject: response.data,
                 }))
             } else {
                 dispatch(updateData({
-                    listProjectManagementResponse: [],
+                    detailProject: {},
                 }))
-                alert("Lấy dữ liệu thất bại!");
+                toast.error('Lấy dữ liệu thất bại!');
                 console.log("Lỗi api actionGetDetailProject");
             }
         } catch (error) {
             console.log("Lỗi api actionGetDetailProject", error);
-            alert("Lỗi mạng Xin vui lòng kiểm tra lại kết nối internet");
+        }
+    };
+}
+
+export function actionUpdateProject (token, id, projectName, createDate, expiredDate, projectStatus, projectContent) {
+    return async (dispatch, getState) => {
+        try {
+            const response = await Api(token).updateProject(id, projectName, createDate, expiredDate, projectStatus, projectContent);
+            if (response && response.data){
+                dispatch(actionGetDetailProject(id))
+            } else {
+                dispatch(actionGetDetailProject(id))
+                toast.error("Cập nhập thông tin thất bại");
+                console.log("Lỗi api actionUpdateProject");
+            }
+        } catch (error) {
+            console.log("Lỗi api actionUpdateProject", error);
         }
     };
 }
@@ -54,4 +70,5 @@ export function actionGetDetailProject (token, projectId) {
 export default {
     actionGetListProject,
     actionGetDetailProject,
+    actionUpdateProject,
 };

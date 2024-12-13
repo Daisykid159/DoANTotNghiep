@@ -1,23 +1,47 @@
 import React, {useState} from "react";
 import styles from './CreateTaskStyle.module.scss'
 import classNames from "classnames/bind";
-import ListActionTarget from "../../../components/ListAction/ListActionTarget";
+import Select from 'react-select';
+import {useDispatch, useSelector} from "react-redux";
+import {useNavigate} from "react-router-dom";
+import {actionCreateTask} from "../../../redux-store/action/actionUser";
+import moment from "moment";
 
 const cx = classNames.bind(styles);
 
 const CreateTaskScreen = (props) => {
 
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const token = useSelector(state => state.reducerAuth.token);
+
+    const overViewUser = useSelector(state => state.reducerUser.overViewUser);
+
     const [titleTask, setTitleTask] = useState(props?.dataEdit?.title || '');
     const [assignTask, setAssignTask] = useState('');
     const [targetTask, setTargetTask] = useState('');
-    const [combinationTask, setCombinationTask] = useState('');
-    const [createTask, setCreateTask] = useState( '');
+    const [combinationTask, setCombinationTask] = useState([]);
     const [sourceTask, setSourceTask] = useState(null);
-    const [levelTask, setLevelTask] = useState(null);
-    const [createDate, setCreateDate] = useState(null);
-    const [deadlineTask, setDeadlineTask] = useState(null);
+    const [priorityTask, setPriorityTask] = useState(0);
+    const [createDate, setCreateDate] = useState(moment(new Date()).format("YYYY-MM-DDTHH:mm"));
+    const [expiredDate, setExpiredDate] = useState(moment(new Date()).format("YYYY-MM-DDTHH:mm"));
     const [contentTask, setContentTask] = useState('');
     const [uploadedFiles, setUploadedFiles] = useState([]);
+
+    const mapDepartmentsToOptions = (deps, level = 0) => {
+        return deps.map((dep) => ({
+            label: `${'----'.repeat(level)} ${dep.department_name}`,
+            options: [
+                ...dep.users.map((user) => ({
+                    value: `user-${user.user_id}`,
+                    label: `${'----'.repeat(level + 1)} 👤 ${user.user_name}`,
+                })),
+                ...mapDepartmentsToOptions(dep.children || [], level + 1),
+            ],
+        }));
+    };
+
+    const optionsUser = mapDepartmentsToOptions(overViewUser.departments);
 
     const handleFileUpload = (event) => {
         const files = Array.from(event.target.files); // Lấy danh sách các tệp được chọn
@@ -29,6 +53,39 @@ const CreateTaskScreen = (props) => {
             prevFiles.filter((_, i) => i !== index) // Loại bỏ tệp tại chỉ mục tương ứng
         );
     };
+
+    const handleCreateTask = () => {
+        const taskNew ={
+            "title": titleTask,
+            "assign_department": 1,
+            "assign_user": 51,
+            "target_department": 1,
+            "target_user": 50,
+            "content": contentTask,
+            "priority": priorityTask,
+            "project_id": 2,
+            "expired_date": moment(expiredDate).format("YYYY-MM-DDTHH:mm:ss"),
+            "created_date": moment(createDate).format("YYYY-MM-DDTHH:mm:ss"),
+            "combinations": [
+                {
+                    "combination_department": 2,
+                    "combination_user": 1,
+                    "created_date": "2024-12-04T15:33:25"
+                },
+                {
+                    "combination_department": 3,
+                    "combination_user": 2,
+                    "created_date": "2024-12-04T15:33:25"
+                },
+                {
+                    "combination_department": 4,
+                    "combination_user": 3,
+                    "created_date": "2024-12-04T15:33:25"
+                }
+            ]
+        }
+        // dispatch(actionCreateTask(token, taskNew, props.setShowModuleCreateTask));
+    }
 
     return (
         <div className={cx('CreateTaskScreen')}>
@@ -62,10 +119,11 @@ const CreateTaskScreen = (props) => {
                     <div className={cx('col-md-6', 'mb-3')}>
                         <div className={cx('d-flex', 'align-items-center')}>
                             <label className="col-md-3">Đơn vị người giao <span className={cx('text_red')}>*</span></label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Đơn vị người giao"
+                            <Select
+                                options={optionsUser}
+                                isSearchable
+                                className="w-100"
+                                placeholder="Tìm kiếm phòng ban hoặc người dùng..."
                             />
                         </div>
                     </div>
@@ -73,32 +131,26 @@ const CreateTaskScreen = (props) => {
                     <div className={cx('col-md-6', 'mb-3')}>
                         <div className={cx('d-flex', 'align-items-center')}>
                             <label className="col-md-3">Đơn vị người chủ trì <span className={cx('text_red')}>*</span></label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Đơn vị người chủ trì"
+                            <Select
+                                options={optionsUser}
+                                isSearchable
+                                className="w-100"
+                                placeholder="Tìm kiếm phòng ban hoặc người dùng..."
                             />
                         </div>
                     </div>
 
-                    <div className={cx('col-md-6', 'mb-3')}>
+                    <div className={cx('col-md-12', 'mb-3')}>
                         <div className={cx('d-flex', 'align-items-center')}>
-                            <label className="col-md-3">Đơn vị người phối hợp <span className={cx('text_red')}>*</span></label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Đơn vị người phối hợp"
-                            />
-                        </div>
-                    </div>
-
-                    <div className={cx('col-md-6', 'mb-3')}>
-                        <div className={cx('d-flex', 'align-items-center')}>
-                            <label className="col-md-3">Đơn vị người tạo <span className={cx('text_red')}>*</span></label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Đơn vị người tạo"
+                            <label className="col-md-125">Đơn vị người phối hợp <span className={cx('text_red')}>*</span></label>
+                            <Select
+                                options={optionsUser}
+                                isSearchable
+                                isMulti
+                                className="w-100"
+                                placeholder="Tìm kiếm phòng ban hoặc người dùng..."
+                                value={combinationTask}
+                                onChange={(selected) => setCombinationTask(selected)}
                             />
                         </div>
                     </div>
@@ -118,9 +170,11 @@ const CreateTaskScreen = (props) => {
                         <div className={cx('d-flex', 'align-items-center')}>
                             <label className="col-md-3">Mức độ quan trọng <span className={cx('text_red')}>*</span></label>
                             <input
-                                type="text"
+                                type="number"
                                 className="form-control"
                                 placeholder="Mức độ quan trọng"
+                                value={priorityTask}
+                                onChange={(e) => setPriorityTask(e.target.value)}
                             />
                         </div>
                     </div>
@@ -129,9 +183,10 @@ const CreateTaskScreen = (props) => {
                         <div className={cx('d-flex', 'align-items-center')}>
                             <label className="col-md-3">Ngày tạo <span className={cx('text_red')}>*</span></label>
                             <input
-                                type="date"
+                                type="datetime-local"
                                 className="form-control"
-                                placeholder="Tiêu đề nhiệm vụ"
+                                value={createDate}
+                                onChange={(e) => setCreateDate(e.target.value)}
                             />
                         </div>
                     </div>
@@ -140,9 +195,11 @@ const CreateTaskScreen = (props) => {
                         <div className={cx('d-flex', 'align-items-center')}>
                             <label className="col-md-3">Hạn xử lý <span className={cx('text_red')}>*</span></label>
                             <input
-                                type="date"
+                                type="datetime-local"
                                 className="form-control"
-                                placeholder="Tiêu đề nhiệm vụ"
+                                value={expiredDate}
+                                min={moment(createDate).format("YYYY-MM-DDTHH:mm")}
+                                onChange={(e) => setExpiredDate(e.target.value)}
                             />
                         </div>
                     </div>
@@ -154,6 +211,8 @@ const CreateTaskScreen = (props) => {
                                 className={cx("form-control", 'input_comment')}
                                 placeholder="Nội dung nhiệm vụ"
                                 rows="4"
+                                value={contentTask}
+                                onChange={(e) => setContentTask(e.target.value)}
                             />
                         </div>
                     </div>
@@ -193,11 +252,20 @@ const CreateTaskScreen = (props) => {
 
                     <div className={cx('col-md-12', 'mb-3', 'd-flex', 'justify-content-end')}>
                         <div className="d-flex justify-content-between">
-                            <button
-                                className="btn btn-success d-flex align-items-center me-2"
-                            >
-                                {props.dataEdit ? 'Chỉnh sửa' : 'TẠO MỚI'}
-                            </button>
+                            {props.dataEdit ? (
+                                <button
+                                    className="btn btn-success d-flex align-items-center me-2"
+                                >
+                                    Chỉnh sửa
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={() => handleCreateTask()}
+                                    className="btn btn-success d-flex align-items-center me-2"
+                                >
+                                    TẠO MỚI
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>

@@ -1,5 +1,6 @@
 import Api from "../../api";
 import {jwtDecode} from "jwt-decode";
+import {toast} from "react-toastify";
 
 export function updateData(data) {
     return {
@@ -13,6 +14,7 @@ export function actionLogin (username, password, nextToScreen) {
         try {
             const response = await Api().getTokenLogin(username, password);
             if (response && response.data){
+                toast.success('Đăng nhập thành công!');
                 const decoded = jwtDecode(response.data.result.token);
 
                 dispatch(updateData({
@@ -24,6 +26,8 @@ export function actionLogin (username, password, nextToScreen) {
 
                 if(decoded.scope === 'ADMIN') {
                     dispatch(actionGetGeneralAdmin(response.data.result.token));
+                } else {
+                    dispatch(actionGetOverViewUser(response.data.result.token));
                 }
 
                 localStorage.setItem('token', response.data.result.token);
@@ -34,10 +38,10 @@ export function actionLogin (username, password, nextToScreen) {
                     isLogin: false,
                     token: '',
                 }))
-                alert("Đăng nhập thất bại!");
+                toast.error('Đăng nhập thất bại!');
             }
         } catch (error) {
-            alert("Đăng nhập thất bại!");
+            toast.error('Đăng nhập thất bại!');
             dispatch(updateData({
                 isLogin: false,
                 token: '',
@@ -62,6 +66,8 @@ export function actionRefreshToken (token) {
 
                 if(decoded.scope === 'ADMIN') {
                     dispatch(actionGetGeneralAdmin(response.data.result.token));
+                } else {
+                    dispatch(actionGetOverViewUser(response.data.result.token));
                 }
 
                 localStorage.setItem('token', response.data.result.token);
@@ -92,8 +98,8 @@ export function actionLogout () {
                 userName: '',
                 token: '',
             }))
+            toast.success('Đăng xuất thành công!');
         } catch (error) {
-            alert("Lỗi mạng Xin vui lòng kiểm tra lại kết nối internet");
             dispatch(updateData({
                 token: '',
             }))
@@ -118,9 +124,27 @@ export function actionGetGeneralAdmin (token) {
     };
 }
 
+export function actionGetOverViewUser (token) {
+    return async (dispatch, getState) => {
+        try {
+            const response = await Api(token).getOverView();
+            if (response && response.data){
+                dispatch(updateData({
+                    overViewUser: response.data,
+                }))
+            } else {
+                console.log("Loi api actionGetGeneralAdmin");
+            }
+        } catch (error) {
+            console.log("Loi api actionGetGeneralAdmin", error)
+        }
+    };
+}
+
 export default {
     actionLogin,
     actionRefreshToken,
     actionLogout,
     actionGetGeneralAdmin,
+    actionGetOverViewUser,
 };

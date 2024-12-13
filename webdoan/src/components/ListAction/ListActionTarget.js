@@ -111,7 +111,7 @@ const ListActionTarget = (props) => {
             {showHandleAction && (
                 <HandleAction
                     typeAction={typeAction}
-                    title={'Iphone 12'}
+                    title={props.task.title}
                     handleCloseModule={handleCloseModule}
                     showFile={showFile}
                     showPercent={showPercent}

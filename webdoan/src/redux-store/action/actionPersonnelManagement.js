@@ -1,4 +1,5 @@
 import Api from "../../api";
+import {toast} from "react-toastify";
 
 export function updateData(data) {
     return {
@@ -19,12 +20,11 @@ export function actionGetListPersonnelManagement (token, page, size, username, f
                 dispatch(updateData({
                     listPersonnelManagementResponse: {},
                 }))
-                alert("Lấy dữ liệu thất bại!");
+                toast.error('Lấy dữ liệu thất bại!');
                 console.log("Lỗi api actionGetListPersonnelManagement");
             }
         } catch (error) {
             console.log("Lỗi api actionGetListPersonnelManagement", error);
-            alert("Lỗi mạng Xin vui lòng kiểm tra lại kết nối internet");
         }
     };
 }
@@ -34,15 +34,14 @@ export function actionCreatePersonnel (token, user, navigate) {
         try {
             const response = await Api(token).createPersonnelManagement(user);
             if (response && response.data){
-                alert("Nhân viên đã được thêm thành công");
+                toast.success('Thêm người dùng thành công!');
                 navigate('/');
             } else {
-                alert("Thêm nhân viên thất bại!");
+                toast.error('Thêm người dùng thất bại!');
                 console.log("Lỗi api actionCreatePersonnel");
             }
         } catch (error) {
             console.log("Lỗi api actionGetListPersonnelManagement", error);
-            alert("Lỗi mạng Xin vui lòng kiểm tra lại kết nối internet");
         }
     }
 }
@@ -52,15 +51,14 @@ export function actionUpdatePersonnel (token, user, navigate) {
         try {
             const response = await Api(token).updatePersonnelManagement(user);
             if (response && response.data){
-                alert("Nhân viên đã được cập nhật thông tin thành công");
+                toast.success('Cập nhật thông tin người dùng thành công!');
                 navigate('/');
             } else {
-                alert("Thêm nhân viên thất bại!");
+                toast.error('Cập nhật thông tin người dùng thất bại!');
                 console.log("Lỗi api actionCreatePersonnel");
             }
         } catch (error) {
             console.log("Lỗi api actionGetListPersonnelManagement", error);
-            alert("Lỗi mạng Xin vui lòng kiểm tra lại kết nối internet");
         }
     }
 }
@@ -78,7 +76,7 @@ export function actionGetPersonnel (token, userID) {
                     dispatch(updateData({
                         userSelected: {},
                     }))
-                    alert("Lấy thông tin nhân viên thất bại!");
+                    toast.error('Lấy thông tin người dùng thất bại!');
                     console.log("Lỗi api actionCreatePersonnel");
                 }
             } else {
@@ -88,7 +86,6 @@ export function actionGetPersonnel (token, userID) {
             }
         } catch (error) {
             console.log("Lỗi api actionGetListPersonnelManagement", error);
-            alert("Lỗi mạng Xin vui lòng kiểm tra lại kết nối internet");
             dispatch(updateData({
                 userSelected: {},
             }))
@@ -101,20 +98,20 @@ export function actionResetPasswordPersonnel (token, userID, newPassword) {
         try {
             const response = await Api(token).putPasswordNew(userID, newPassword);
             if (response && response.data){
-                alert("Đổi mật khẩu thành công!");
+                toast.success("Đổi mật khẩu thành công!");
             } else {
-                alert("Đổi mật khẩu thất bại!");
+                toast.error("Đổi mật khẩu thất bại!");
                 console.log("Lỗi api actionResetPasswordPersonnel");
             }
         } catch (error) {
             console.log("Lỗi api actionResetPasswordPersonnel", error);
-            alert("Lỗi mạng Xin vui lòng kiểm tra lại kết nối internet");
         }
     }
 }
 
 export default {
     actionGetListPersonnelManagement,
+    actionResetPasswordPersonnel,
     actionCreatePersonnel,
     actionUpdatePersonnel,
     actionGetPersonnel,

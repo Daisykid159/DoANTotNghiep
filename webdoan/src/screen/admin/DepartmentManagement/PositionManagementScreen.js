@@ -72,7 +72,7 @@ const PositionManagementScreen = () => {
             setShowModal(false);
             dispatch(actionCreatePosition(token, positionNameNew, isActiveNew))
         } else {
-            alert("Vui lòng nhập tên chức vụ")
+            alert("Vui lòng nhập tên chức vụ");
         }
     }
 
@@ -112,7 +112,7 @@ const PositionManagementScreen = () => {
                     </tr>
                     </thead>
                     <tbody>
-                    {listPositions.map((pos, index) => (
+                    {listPositions?.map((pos, index) => (
                         <RowPosition item={pos} index={index}/>
                     ))}
                     </tbody>

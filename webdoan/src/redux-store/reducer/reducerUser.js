@@ -1,13 +1,10 @@
 const INITIAL_STATE = {
-    isLogin: false,
-    isAdmin: false,
-    decoded: {},
-    token: '',
-    overViewAdmin: {},
-    overViewUser: {},
+    listMenu: [],
+    listTasks: [],
+    detailTask: {},
 };
 
-const reducerAuth = (state = INITIAL_STATE, action) => {
+const reducerUser = (state = INITIAL_STATE, action) => {
     let newState = { ...state };
     switch (action.type) {
         case 'UPDATE_DATA': {
@@ -22,4 +19,4 @@ const reducerAuth = (state = INITIAL_STATE, action) => {
     }
 };
 
-export default reducerAuth;
+export default reducerUser;

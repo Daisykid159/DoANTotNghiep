@@ -66,8 +66,8 @@ function HeaderAdmin () {
                     <Route path="/admin/DepartmentManagementScreen" element={<DepartmentManagementScreen />} />
                     <Route path="/admin/DetailUserScreen" element={<DetailUserScreen />} />
                     <Route path="/admin/ProjectManagementScreen" element={<ProjectManagementScreen />} />
-                    <Route path="/admin/DetailProjectScreen" element={<DetailProjectScreen />} />
-                    <Route path="/admin/DetailTaskAdminScreen" element={<DetailTaskAdminScreen />} />
+                    <Route path="/admin/DetailProjectScreen/:id" element={<DetailProjectScreen />} />
+                    <Route path="/admin/DetailTaskAdminScreen/:id" element={<DetailTaskAdminScreen />} />
                     <Route path="/admin/StatisticalAdminScreen" element={<StatisticalAdminScreen />} />
                     <Route path="/admin/PositionManagementScreen" element={<PositionManagementScreen />} />
                     <Route path="*" element={<NoPage />} />

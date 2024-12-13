@@ -11,7 +11,7 @@ const TaskList = ({ tasks, handleDetailTask, showFullTaskList = false }) => {
             <thead>
             <tr>
                 <th className={cx('w-40')}>
-                    <div className={cx('d-flex', 'align-items-center')}>
+                    <div className={cx('d-flex align-items-center')}>
                         <i className={cx('bx bx-envelope', 'icon_mail', 'me-3')}></i>
                         Tiêu đề
                     </div>
@@ -27,22 +27,22 @@ const TaskList = ({ tasks, handleDetailTask, showFullTaskList = false }) => {
             <tbody>
             {tasks.map((task) => (
                 <tr
-                    key={task.id} className={cx('text-center', 'w-90')}
+                    key={task.id} className={cx('text-center', 'w-90', task.has_read === 1 ? '' : 'fw-bold')}
                     onClick={() => handleDetailTask(task)}
                 >
                     <td className={cx('w-40', 'text_left')}>
                         <div className={cx('d-flex', 'align-items-center')}>
                             <i className={cx('bx bx-envelope', 'icon_mail', 'me-3')}></i>
-                            {task.title}
+                            {task.task_title || task.title}
                         </div>
                     </td>
-                    <td className={cx('text_left')}>{task.label_name}</td>
+                    <td className={cx('text_left')}>{task.assign_user_name}</td>
                     <td className={cx('text_left')}>{task.target_user_name}</td>
                     <td>{task.status}</td>
                     <td>{formatDate(task.created_date)}</td>
                     <td>{formatDate(task.expire_date)}</td>
                     <td>
-                        <progress value={task.progress} max="100" className={cx('w-100')}></progress>
+                        <progress value={task.progress || 0} max="100" className={cx('w-100')}></progress>
                     </td>
                 </tr>
             ))}
