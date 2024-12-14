@@ -13,7 +13,7 @@ public interface TaskUserMapper {
                 .combination_department_id(taskUser.getTask().getAssignDepartment().getId())
                 .combination_department_name(taskUser.getTask().getAssignDepartment().getDepartmentName())
                 .created_date(taskUser.getTask().getCreatedDate())
-                .combination_name(taskUser.getTask().getTitle())
+                .combination_name(taskUser.getUser().getFullName())
                 .build();
     }
 }
