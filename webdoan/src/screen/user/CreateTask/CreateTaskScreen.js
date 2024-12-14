@@ -6,6 +6,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import {actionCreateTask} from "../../../redux-store/action/actionUser";
 import moment from "moment";
+import {toast} from "react-toastify";
 
 const cx = classNames.bind(styles);
 
@@ -21,12 +22,14 @@ const CreateTaskScreen = (props) => {
     const [assignTask, setAssignTask] = useState('');
     const [targetTask, setTargetTask] = useState('');
     const [combinationTask, setCombinationTask] = useState([]);
+    const [assignDepartment, setAssignDepartment] = useState('');
     const [sourceTask, setSourceTask] = useState(null);
     const [priorityTask, setPriorityTask] = useState(0);
     const [createDate, setCreateDate] = useState(moment(new Date()).format("YYYY-MM-DDTHH:mm"));
     const [expiredDate, setExpiredDate] = useState(moment(new Date()).format("YYYY-MM-DDTHH:mm"));
     const [contentTask, setContentTask] = useState('');
     const [uploadedFiles, setUploadedFiles] = useState([]);
+    const [optionsProject, setOptionsProject] = useState([]);
 
     const mapDepartmentsToOptions = (deps, level = 0) => {
         return deps.map((dep) => ({
@@ -35,20 +38,20 @@ const CreateTaskScreen = (props) => {
                 ...dep.users.map((user) => ({
                     value: `${user.user_id}`,
                     label: `${'----'.repeat(level + 1)} 👤 ${user.user_name}`,
-                    user: user,
+                    department_id: dep.department_id,
                 })),
                 ...mapDepartmentsToOptions(dep.children || [], level + 1),
             ],
         }));
     };
 
-    const optionsUser = mapDepartmentsToOptions(overViewUser.departments);
-
-    const optionsProject = overViewUser.projectJoins?.map((project) => ({
-        value: project.project_id,
-        label: project.project_name,
-        description: project.content, // Mô tả bổ sung
+    const optionsAssignDepartment = overViewUser.userCurrent.departments.map((department) => ({
+        value: department.department_id,
+        label: department.department_name,
+        description: department, // Mô tả bổ sung
     }));
+
+    const optionsUser = mapDepartmentsToOptions(overViewUser.departments);
 
     const handleFileUpload = (event) => {
         const files = Array.from(event.target.files); // Lấy danh sách các tệp được chọn
@@ -62,36 +65,31 @@ const CreateTaskScreen = (props) => {
     };
 
     const handleCreateTask = () => {
+        if (!titleTask || !assignDepartment?.value || !targetTask?.department_id || !targetTask?.value || !sourceTask?.value) {
+            toast.error('Vui lòng nhập đủ thông tin cần thiết!');
+            return;
+        }
+
         const taskNew ={
             "title": titleTask,
-            "assign_department": 1,
+            "assign_department": assignDepartment?.value,
             "assign_user": overViewUser.userCurrent.user_id,
-            "target_department": 1,
-            "target_user": 50,
+            "target_department": targetTask?.department_id,
+            "target_user": targetTask?.value,
             "content": contentTask,
             "priority": priorityTask,
-            "project_id": 2,
+            "project_id": sourceTask?.value,
             "expired_date": moment(expiredDate).format("YYYY-MM-DDTHH:mm:ss"),
             "created_date": moment(createDate).format("YYYY-MM-DDTHH:mm:ss"),
-            "combinations": [
-                {
-                    "combination_department": 2,
-                    "combination_user": 1,
-                    "created_date": "2024-12-04T15:33:25"
-                },
-                {
-                    "combination_department": 3,
-                    "combination_user": 2,
-                    "created_date": "2024-12-04T15:33:25"
-                },
-                {
-                    "combination_department": 4,
-                    "combination_user": 3,
-                    "created_date": "2024-12-04T15:33:25"
+            "combinations": combinationTask?.map((combination) => {
+                return {
+                    "combination_department": combination.department_id,
+                    "combination_user": combination.value,
+                    "created_date": moment(createDate).format("YYYY-MM-DDTHH:mm:ss"),
                 }
-            ]
+            }) || [],
         }
-        // dispatch(actionCreateTask(token, taskNew, props.setShowModuleCreateTask));
+        dispatch(actionCreateTask(token, taskNew, props.setShowModuleCreateTask));
     }
 
     useEffect(() => {
@@ -100,6 +98,10 @@ const CreateTaskScreen = (props) => {
             label: `👤 ${overViewUser.userCurrent.user_name}`,
         });
     }, [overViewUser]);
+
+    useEffect(() => {
+
+    }, [assignDepartment])
 
     return (
         <div className={cx('CreateTaskScreen')}>
@@ -136,11 +138,20 @@ const CreateTaskScreen = (props) => {
                             <label className="col-md-3">Đơn vị người giao <span
                                 className={cx('text_red')}>*</span></label>
                             <Select
-                                options={optionsUser}
+                                options={optionsAssignDepartment}
                                 isSearchable
                                 className="w-100"
-                                placeholder="Tìm kiếm phòng ban hoặc người dùng..."
-                                value={assignTask}
+                                placeholder="Tìm kiếm phòng ban..."
+                                value={assignDepartment}
+                                onChange={(selected) => {
+                                    setAssignDepartment(selected);
+                                    setSourceTask('');
+                                    setOptionsProject(selected.description.projects?.map((project) => ({
+                                        value: project.project_id,
+                                        label: project.project_name,
+                                        description: project.content, // Mô tả bổ sung
+                                    })))
+                                }}
                             />
                         </div>
                     </div>
@@ -170,15 +181,21 @@ const CreateTaskScreen = (props) => {
                                 className="w-100"
                                 placeholder="Tìm kiếm phòng ban hoặc người dùng..."
                                 value={targetTask}
-                                onChange={(selected) => setTargetTask(selected)}
+                                onChange={(selected) => {
+                                    const isAlreadyInTask = combinationTask.some(task => task.value === selected.value);
+                                    if(selected.value == overViewUser.userCurrent.user_id || isAlreadyInTask) {
+                                        toast.error("Người này đang giữ vai trò khác")
+                                    } else {
+                                        setTargetTask(selected)
+                                    }
+                                }}
                             />
                         </div>
                     </div>
 
                     <div className={cx('col-md-6', 'mb-3')}>
                         <div className={cx('d-flex', 'align-items-center')}>
-                            <label className="col-md-3">Đơn vị người phối hợp <span
-                                className={cx('text_red')}>*</span></label>
+                            <label className="col-md-3">Đơn vị người phối hợp</label>
                             <Select
                                 options={optionsUser}
                                 isSearchable
@@ -186,8 +203,13 @@ const CreateTaskScreen = (props) => {
                                 className="w-100"
                                 placeholder="Tìm kiếm phòng ban hoặc người dùng..."
                                 value={combinationTask}
-                                onChange={(selected) => setCombinationTask(selected)}
-                            />
+                                onChange={(selected) => {
+                                    if(selected.value == overViewUser.userCurrent.user_id || selected.value === targetTask.value) {
+                                        toast.error("Người này đang giữ vai trò khác")
+                                    } else {
+                                        setTargetTask(selected)
+                                    }
+                                }}                            />
                         </div>
                     </div>
 
