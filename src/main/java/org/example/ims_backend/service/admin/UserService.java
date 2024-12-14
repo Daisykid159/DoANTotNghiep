@@ -18,7 +18,6 @@ public interface UserService {
     UpdateUserResponse getUser(Long id);
     boolean updateUser(UserUpdateRequest user);
     boolean deleteUser(Long id);
-    UserResponse getMyInfo();
     boolean updatePassword(Long id,String password);
     GeneralResponse getGeneralInfo();
     List<UserResponse> getFullUsers();

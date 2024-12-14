@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.ims_backend.dto.user.history.response.HistoryResponse;
 import org.example.ims_backend.entity.History;
 import org.example.ims_backend.entity.Task;
-import org.example.ims_backend.entity.TaskUser;
 import org.example.ims_backend.entity.User;
 import org.example.ims_backend.mapper.HistoryMapper;
 import org.example.ims_backend.repository.HistoryRepository;
@@ -42,12 +41,33 @@ public class HistoryServiceImpl implements HistoryService {
         List<History> historys = historyRepository.findAllByTask(task);
         List<HistoryResponse> historyResponses = new ArrayList<>();
         for(History history : historys){
+            String title = "";
+            switch (history.getStatus()){
+                case 0:
+                    title = "Tạo nhiệm vụ";
+                    break;
+                case 1:
+                    title = "Chuyển chủ trì";
+                    break;
+                case 2:
+                    title = "Thêm người phối hợp,";
+                    break;
+                case 3:
+                    title = "Hoàn thành nhiệm vụ";
+                    break;
+                case 4:
+                    title = " Thu hồi nhiệm vụ";
+                    break;
+                case 5:
+                    title = "Kết thúc nhiệm vụ";
+                    break;
+            }
            historyResponses.add(HistoryResponse.builder()
                    .history_id(history.getId())
                    .task_id(history.getTask().getId())
                    .create_user_id(history.getCreatedUser().getId())
                    .content(history.getContent())
-                   .label_name(history.getCreatedUser().getFullName()+"-"+history.getContent())
+                   .label_name(history.getCreatedUser().getFullName()+"-"+title)
                    .created_date(history.getCreatedDate())
                    .role(taskUserRepository.findByUserAndTask(history.getCreatedUser(),task).getRole())
                    .department_id(taskUserRepository.findByUserAndTask(history.getCreatedUser(),task).getDepartment().getId())
@@ -57,13 +77,11 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
     @Override
-    public boolean deleteHistory(Task task) {
+    public void deleteHistory(Task task) {
         try {
             historyRepository.deleteAllByTask(task);
-            return true;
         }catch (Exception e){
             log.error("Error in deleteHistory", e);
-            return false;
         }
     }
 }

@@ -86,13 +86,6 @@ public class UserServiceImpl implements UserService {
         return new PageImpl<>(userResponses, pageable, users.getTotalElements());
     }
 
-    public UserResponse getMyInfo() {
-        var context = SecurityContextHolder.getContext();
-        String username = context.getAuthentication().getName();
-        return userMapper.toUserResponse(userRepository.findByUsername(username)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
-    }
-
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public boolean updatePassword(Long id, String password) {

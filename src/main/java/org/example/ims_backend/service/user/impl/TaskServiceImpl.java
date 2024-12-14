@@ -107,19 +107,26 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public boolean evictTask(Long task_user_id) {
+    public boolean evictTask(Long task_id) {
             try {
-                TaskUser taskUser = taskUserRepository.findById(task_user_id).orElse(null);
-                assert taskUser != null;
-                if(taskUser.getHasRead() == 1){
-                    log.error("Task not evict");
-                    return false;
+                Task task = taskRepository.findById(task_id).orElseThrow(() -> new RuntimeException("Task not found"));
+                List<TaskUser> taskUsers = taskUserRepository.findByTask(task);
+                for (TaskUser taskUser : taskUsers){
+                    if(taskUser.getRole() != 0 && taskUser.getHasRead() == 1){
+                        return false;
+                    }
                 }
-                Task task = taskUser.getTask();
+                for (TaskUser taskUser : taskUsers){
+                    if (taskUser.getRole() != 0)
+                        taskUserRepository.delete(taskUser);
+                }
                 task.setStatus(4);
+                taskRepository.save(task);
+                historyService.addHistory(userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow(() -> new RuntimeException("User not found")),null, task, "Thu hồi nhiệm vụ", 4);
+
                 return true;
-            } catch (Exception e){
-                log.error("Error while evicting task with id: {}", task_user_id, e);
+            }catch(Exception e){
+                log.error("Error while evicting task with id: {}", task_id, e);
                 return false;
             }
     }
@@ -153,6 +160,7 @@ public class TaskServiceImpl implements TaskService {
                         .hasRead(0)
                         .build();
                 taskUserRepository.save(taskUser);
+                notificationService.addNotification(result, userRepository.findById(createTaskRequest.getAssign_user()).orElseThrow(() -> new RuntimeException("User not found")), userRepository.findById(createTaskUserRequest.getCombination_user()).orElseThrow(() -> new RuntimeException("User not found")), "Bạn được giao nhiệm vụ", 0);
             }
             taskUserRepository.save(TaskUser.builder()
                             .createdDate(createTaskRequest.getCreated_date())
@@ -170,6 +178,7 @@ public class TaskServiceImpl implements TaskService {
                     .user(userRepository.findById(createTaskRequest.getTarget_user()).orElse(null))
                     .task(result)
                     .build());
+            notificationService.addNotification(result, userRepository.findById(createTaskRequest.getAssign_user()).orElseThrow(() -> new RuntimeException("User not found")), userRepository.findById(createTaskRequest.getTarget_user()).orElseThrow(() -> new RuntimeException("User not found")), "Bạn được giao nhiệm vụ", 0);
             var context = SecurityContextHolder.getContext();
             User user = userRepository.findByUsername(context.getAuthentication().getName()).orElseThrow(() -> new RuntimeException("User not found"));
             historyService.addHistory(user, userRepository.findById(createTaskRequest.getTarget_user()).orElseThrow(() -> new RuntimeException("User not found")), result, createTaskRequest.getContent(), 0);
@@ -190,6 +199,7 @@ public class TaskServiceImpl implements TaskService {
             User targetUser = userRepository.findById(handoverTaskRequest.getTarget_user_id()).orElseThrow(() -> new RuntimeException("User not found"));
             Department targetDepartment = departmentRepository.findById(handoverTaskRequest.getTarget_department_id()).orElseThrow(() -> new RuntimeException("Department not found"));
             var context = SecurityContextHolder.getContext();
+            User targetOld = task.getTargetUser();
             User user = userRepository.findByUsername(context.getAuthentication().getName()).orElseThrow(() -> new RuntimeException("User not found"));
 
             if(task.getTargetUser().getId() != handoverTaskRequest.getTarget_user_id()){
@@ -219,6 +229,7 @@ public class TaskServiceImpl implements TaskService {
                 taskUser.setUpdatedDate(new Date());
                 taskUserRepository.save(taskUser);
                 historyService.addHistory(user, targetUser, task, handoverTaskRequest.getContent(), 1);
+                notificationService.addNotification(task, task.getTargetUser(),targetUser,"Chuyển xử lý",1);
                 task.setTargetUser(targetUser);
                 task.setTargetDepartment(targetDepartment);
                 taskRepository.save(task);
@@ -226,17 +237,18 @@ public class TaskServiceImpl implements TaskService {
 
 
             for(TaskUserRequest taskUserRequest : handoverTaskRequest.getCombinations()){
+                User coordinatorNew =  userRepository.findById(taskUserRequest.getCombination_id()).orElseThrow(() -> new RuntimeException("User not found"));
                     TaskUser taskUser = TaskUser.builder()
                             .createdDate(new Date())
                             .role(2)
                             .task(task)
-                            .user(userRepository.findById(taskUserRequest.getCombination_id()).orElseThrow(() -> new RuntimeException("User not found"))
-                            )
+                            .user(coordinatorNew)
                             .department(departmentRepository.findById(taskUserRequest.getDepartment_id()).orElseThrow(() -> new RuntimeException("Department not found")))
                             .hasRead(0)
                             .build();
                     taskUserRepository.save(taskUser);
                     historyService.addHistory(user, userRepository.findById(taskUserRequest.getCombination_id()).orElseThrow(() -> new RuntimeException("User not found")), task, handoverTaskRequest.getContent(), 2);
+                    notificationService.addNotification(task,targetOld,coordinatorNew,"Chuyển xử lý",1);
             }
             return true;
         }catch (Exception e){

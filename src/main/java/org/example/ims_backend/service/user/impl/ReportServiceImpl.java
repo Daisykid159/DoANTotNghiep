@@ -8,13 +8,17 @@ import org.example.ims_backend.dto.user.report.request.ReviewReportRequest;
 import org.example.ims_backend.dto.user.report.response.ReportResponse;
 import org.example.ims_backend.entity.Report;
 import org.example.ims_backend.entity.Task;
+import org.example.ims_backend.entity.User;
 import org.example.ims_backend.mapper.ReportMapper;
 import org.example.ims_backend.repository.ReportRepository;
 import org.example.ims_backend.repository.TaskRepository;
 import org.example.ims_backend.repository.UserRepository;
+import org.example.ims_backend.service.user.HistoryService;
+import org.example.ims_backend.service.user.NotificationService;
 import org.example.ims_backend.service.user.ReportService;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -26,19 +30,48 @@ public class ReportServiceImpl implements ReportService {
     TaskRepository taskRepository;
     UserRepository userRepository;
     ReportMapper reportMapper;
+    HistoryService historyService;
+    NotificationService notificationService;
     @Override
     public boolean createReport(ReportRequest reportRequest) {
         try {
-            reportRepository.save(
-                    Report.builder()
-                            .newExpiredDate(reportRequest.getNew_expired_date())
-                            .content(reportRequest.getContent())
-                            .status(0)
-                            .type(reportRequest.getType())
-                            .task(taskRepository.findById(reportRequest.getTask_id()).orElseThrow(() ->new Exception("Task not found")))
-                            .createUser(userRepository.findById(reportRequest.getUser_create_id()).orElseThrow(() ->new Exception("User not found")))
-                            .build()
-            );
+            User user = userRepository.findById(reportRequest.getUser_create_id()).orElseThrow(() ->new Exception("User not found"));
+            Task task = taskRepository.findById(reportRequest.getTask_id()).orElseThrow(() ->new Exception("Task not found"));
+            if(reportRequest.getType() == 3){
+                task.setExpiredDate(reportRequest.getNew_expired_date());
+                taskRepository.save(task);
+            }
+            Report report =Report.builder()
+                    .newExpiredDate(reportRequest.getNew_expired_date())
+                    .content(reportRequest.getContent())
+                    .status(0)
+                    .type(reportRequest.getType())
+                    .task(task)
+                    .createUser(user)
+                    .build();
+            if(reportRequest.getType() == 2){
+                report.setCompletedDate(new Date());
+            }
+            reportRepository.save(report);
+
+            if (reportRequest.getType() == 1){
+                task.setState(2);
+                taskRepository.save(task);
+                notificationService.addNotification(task,user,task.getAssignUser(),"Báo cáo tiến độ ",2);
+            } else if(reportRequest.getType() == 2){
+                task.setState(3);
+                taskRepository.save(task);
+                notificationService.addNotification(task,user,task.getAssignUser(),"Báo cáo hoàn thành nhiệm vụ",4);
+            }else if(reportRequest.getType() == 3){
+                task.setStatus(2);
+                taskRepository.save(task);
+                notificationService.addNotification(task,user,task.getAssignUser(),"Xin gia hạn",3);
+            }
+            else{
+                task.setStatus(1);
+                taskRepository.save(task);
+                notificationService.addNotification(task,user,task.getTargetUser(),"Yêu cầu báo cáo tiến độ",2);
+            }
             return true;
         }catch (Exception e){
             log.error("Error in createReport", e);
@@ -58,6 +91,13 @@ public class ReportServiceImpl implements ReportService {
                 report.setStatus(2);
             }
             reportRepository.save(report);
+            if(report.getType() == 2){
+                Task task = report.getTask();
+                task.setStatus(3);
+                taskRepository.save(task);
+                historyService.addHistory(task.getAssignUser(),task.getTargetUser(),task,"Hoàn thành nhiệm vụ",3);
+                notificationService.addNotification(task,task.getAssignUser(),task.getTargetUser(),"Nhiệm vụ đã hoàn thành",5);
+            }
             return true;
         }catch (Exception e){
             log.error("Error in reviewReport", e);
@@ -87,13 +127,11 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public boolean deleteReport(Task task) {
+    public void deleteReport(Task task) {
         try {
             reportRepository.deleteAllByTask(task);
-            return true;
         }catch (Exception e){
             log.error("Error in deleteReport", e);
-            return false;
         }
     }
 }

@@ -1,14 +1,17 @@
 package org.example.ims_backend.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 import org.example.ims_backend.common.HasRead;
 
 @Entity
 @Table(name = "notification_user")
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class NotificationUser {
     @Id
 

@@ -19,6 +19,7 @@ public interface TaskUserRepository extends JpaRepository<TaskUser, Long>, JpaSp
     List<TaskUser> findByTaskAndRole(Task task, Integer role);
     boolean existsByTaskAndUserAndDepartment(Task task, User user, Department department);
     void deleteAllByTask(Task task);
+    List<TaskUser> findByTask(Task task);
     @Query("SELECT COUNT(DISTINCT tu.task.id) " +
             "FROM TaskUser tu " +
             "WHERE tu.department.id = :departmentId"+

@@ -12,5 +12,5 @@ public interface ReportService {
     boolean reviewReport(ReviewReportRequest reviewReportRequest);
     boolean recallReport(Long id);
     List<ReportResponse> getReportList(Task task);
-    boolean deleteReport(Task task);
+    void deleteReport(Task task);
 }

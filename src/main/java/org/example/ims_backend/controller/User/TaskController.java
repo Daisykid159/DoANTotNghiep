@@ -40,8 +40,8 @@ public class TaskController {
         return taskService.searchTask(title, department_id, user_id, createTo, createFrom, expireTo, expireFrom, task_status, project_id, is_extend);
     }
     @PutMapping("/evictTask")
-    public boolean evictTask(@RequestParam Long task_user_id) {
-        return taskService.evictTask(task_user_id);
+    public boolean evictTask(@RequestParam Long task_id) {
+        return taskService.evictTask(task_id);
     }
     @PostMapping("/createTask")
     public boolean createTask(@RequestBody CreateTaskRequest createTaskRequest) {

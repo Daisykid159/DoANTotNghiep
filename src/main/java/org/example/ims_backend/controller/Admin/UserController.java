@@ -77,8 +77,4 @@ public class UserController {
     GeneralResponse getGeneral() {
         return userService.getGeneralInfo();
     }
-    @GetMapping("/my-info")
-    UserResponse getMyInfo() {
-        return userService.getMyInfo();
-    }
 }

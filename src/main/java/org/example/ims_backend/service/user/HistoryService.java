@@ -9,5 +9,5 @@ import java.util.List;
 public interface HistoryService {
     void addHistory(User createUser, User receiveUser, Task task, String content,int status);
     List<HistoryResponse> getHistoryList(Task task);
-    boolean deleteHistory(Task task);
+    void deleteHistory(Task task);
 }

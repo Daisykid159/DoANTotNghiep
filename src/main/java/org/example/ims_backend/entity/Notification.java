@@ -1,7 +1,8 @@
 package org.example.ims_backend.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 import org.example.ims_backend.common.TypeNotifi;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -11,6 +12,10 @@ import java.util.Date;
 @Entity
 @Table(name = "notification")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

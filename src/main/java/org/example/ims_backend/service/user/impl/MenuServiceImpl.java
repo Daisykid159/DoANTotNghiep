@@ -8,6 +8,8 @@ import org.example.ims_backend.common.MenuManager;
 import org.example.ims_backend.dto.user.GeneralResponse;
 import org.example.ims_backend.dto.user.menu.response.MenuResponse;
 import org.example.ims_backend.dto.user.response.*;
+import org.example.ims_backend.dto.user.user.request.UpdateUserRequest;
+import org.example.ims_backend.dto.user.user.response.UserResponse;
 import org.example.ims_backend.entity.*;
 import org.example.ims_backend.mapper.DepartmentUserMapper;
 import org.example.ims_backend.mapper.ProjectMapper;
@@ -116,6 +118,40 @@ public class MenuServiceImpl implements MenuService {
                 .userCurrent(getMyInfo(user))
                 .build();
     }
+
+    @Override
+    public UserResponse getMyInfo() {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("false"));
+        return userMapper.toMyInfoUp(user);
+    }
+
+    @Override
+    public boolean updateMyInfo(UpdateUserRequest updateUserRequest) {
+        try {
+            var context = SecurityContextHolder.getContext();
+            String username = context.getAuthentication().getName();
+            User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("false"));
+            user.setFirstName(updateUserRequest.getFirstName());
+            user.setLastName(updateUserRequest.getLastName());
+            user.setFullName(updateUserRequest.getFullName());
+            user.setPhone(updateUserRequest.getPhone());
+            user.setGender(updateUserRequest.getGender());
+            user.setDateOfBirth(updateUserRequest.getDateOfBirth());
+            user.setHomeTown(updateUserRequest.getHomeTown());
+            user.setEmail(updateUserRequest.getEmail());
+            user.setUsername(updateUserRequest.getUsername());
+            userRepository.save(user);
+            return true;
+        } catch (Exception e){
+            log.error("Error when update my info", e);
+            return false;
+        }
+
+
+    }
+
     private MyInfo getMyInfo(User user){
         MyInfo myInfo = userMapper.toMyInfo(user);
         List<DepartmentUser> departmentUsers = departmentUserRepository.findByUser(user);

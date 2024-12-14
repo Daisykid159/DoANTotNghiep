@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.example.ims_backend.entity.Notification;
+import org.example.ims_backend.entity.NotificationUser;
 import org.example.ims_backend.entity.Task;
+import org.example.ims_backend.entity.User;
 import org.example.ims_backend.repository.NotificationReqository;
 import org.example.ims_backend.repository.NotificationUserRepository;
 import org.example.ims_backend.service.user.NotificationService;
@@ -22,17 +24,42 @@ public class NotificationServiceImpl implements NotificationService {
     NotificationUserRepository notificationUserRepository;
     @Override
     @Transactional
-    public boolean deleteNotification(Task task) {
+    public void deleteNotification(Task task) {
         try {
             List<Notification> notifications = notificationReqository.findAllByTask(task);
             for(Notification notification : notifications){
                 notificationUserRepository.deleteAllByNotification(notification);
             }
             notificationReqository.deleteAllByTask(task);
-            return true;
         } catch (Exception e){
             log.error("Error in deleteNotification", e);
+        }
+    }
+
+    @Override
+    public boolean addNotification(Task task, User CreateUser, User toUser, String content, Integer type) {
+        try {
+            Notification notification = notificationReqository.save(
+                    Notification.builder()
+                            .content(content)
+                            .task(task)
+                            .createdUser(CreateUser)
+                            .type(type)
+                            .build()
+            );
+            notificationUserRepository.save(
+                    NotificationUser.builder()
+                            .notification(notification)
+                            .hasRead(0)
+                            .receiverUser(toUser)
+                            .build()
+            );
+
+            return true;
+        }catch (Exception e){
+            log.error("Error in addNotification", e);
             return false;
         }
     }
+
 }
