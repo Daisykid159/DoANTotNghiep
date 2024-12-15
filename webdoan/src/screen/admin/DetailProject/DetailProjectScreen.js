@@ -5,6 +5,7 @@ import TaskList from "../../../components/TaskList/TaskList";
 import {useDispatch, useSelector} from "react-redux";
 import {useNavigate, useParams} from "react-router-dom";
 import {actionGetDetailProject, actionUpdateProject} from "../../../redux-store/action/actionProjectManagement";
+import moment from "moment/moment";
 
 const cx = classNames.bind(styles);
 
@@ -15,8 +16,8 @@ const DetailProjectScreen = () => {
     const navigate = useNavigate();
     const token = useSelector(state => state.reducerAuth.token);
     const detailProject = useSelector(state => state.reducerProjectManagement.detailProject);
-    const [createDate, setCreateDate] = useState(detailProject?.created_date);
-    const [expiredDate, setExpiredDate] = useState(detailProject?.expired_date);
+    const [createDate, setCreateDate] = useState(moment(detailProject?.created_date).utc().format("YYYY-MM-DDTHH:mm"));
+    const [expiredDate, setExpiredDate] = useState(moment(detailProject?.expired_date).utc().format("YYYY-MM-DDTHH:mm"));
     const [projectName, setProjectName] = useState(detailProject?.project_name);
     const [projectStatus, setProjectStatus] = useState(detailProject?.status);
     const [projectContent, setProjectContent] = useState(detailProject?.content);
@@ -30,8 +31,8 @@ const DetailProjectScreen = () => {
     }
 
     useEffect(() => {
-        setCreateDate(detailProject?.created_date);
-        setExpiredDate(detailProject?.expired_date);
+        setCreateDate(moment(detailProject?.created_date).utc().format("YYYY-MM-DDTHH:mm"));
+        setExpiredDate(moment(detailProject?.expired_date).utc().format("YYYY-MM-DDTHH:mm"));
         setProjectName(detailProject?.project_name);
         setProjectStatus(detailProject?.status);
         setProjectContent(detailProject?.content);
@@ -71,9 +72,8 @@ const DetailProjectScreen = () => {
                 <div className={classNames("mb-3 d-flex align-items-center", "col-md-6")}>
                     <label className="col-md-4">Ngày tạo</label>
                     <input
-                        type="date"
+                        type="datetime-local"
                         className={cx("form-control")}
-                        placeholder="Từ ngày"
                         value={createDate}
                         readOnly={true}
                     />
@@ -82,9 +82,8 @@ const DetailProjectScreen = () => {
                 <div className={classNames("mb-3 d-flex align-items-center", "col-md-6")}>
                     <label className="col-md-2">Hạn xử lý</label>
                     <input
-                        type="date"
+                        type="datetime-local"
                         className={cx("form-control")}
-                        placeholder="Từ ngày"
                         value={expiredDate}
                         onChange={(e) => setExpiredDate(e.target.value)}
                     />
@@ -173,11 +172,13 @@ const DetailProjectScreen = () => {
                         </tr>
                         </thead>
                         <tbody>
-                        <tr className={cx('text-center', 'table_row')}>
-                            <td>1</td>
-                            <td className='text_left'>aaaaaaaa</td>
-                            <td className={cx('text_red')}>Xoá</td>
-                        </tr>
+                        {detailProject?.departments?.length > 0 && detailProject?.departments?.map((item, index) => (
+                            <tr className={cx('text-center', 'table_row')}>
+                                <td>{index+1}</td>
+                                <td className='text_left'>{item.department_name}</td>
+                                <td className={cx('text_red')}>Xoá</td>
+                            </tr>
+                        ))}
                         </tbody>
                     </table>
                 </div>

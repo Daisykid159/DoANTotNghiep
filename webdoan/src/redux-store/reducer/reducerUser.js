@@ -2,6 +2,7 @@ const INITIAL_STATE = {
     listMenu: [],
     listTasks: [],
     detailTask: {},
+    myInfo: {}
 };
 
 const reducerUser = (state = INITIAL_STATE, action) => {

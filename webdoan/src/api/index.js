@@ -126,6 +126,18 @@ const Api = (token) => {
         return api.get(`/api/user/overview`);
     }
 
+    const myInfo = () => {
+        return api.get(`api/user/myInfo`);
+    }
+
+    const updateMyInfo = (newInfo) => {
+        return api.put(`api/user/updateMyInfo`, newInfo);
+    }
+
+    const changePassword = (oldPassword, newPassword) => {
+        return api.put(`api/user/changePassword?oldPassword=${oldPassword}&newPassword=${newPassword}`);
+    }
+
     const createTask = (task) => {
         return api.post(`/api/user/createTask`, task);
     }
@@ -164,6 +176,18 @@ const Api = (token) => {
         return api.put(`/api/user/updateProcessing?task_user_id=${task_user_id}&processing=${progress}`);
     }
 
+    const reviewReport = (report_id, user_review_id, isApprove) => {
+        return api.put(`/api/user/reviewReport`, {
+            report_id: report_id,
+            user_review_id: user_review_id,
+            isApprove: isApprove,
+        });
+    }
+
+    const recallReport = (id) => {
+        return api.delete(`api/user/recallReport/${id}`);
+    }
+
     return {
         getTokenLogin,
         refreshToken,
@@ -187,6 +211,9 @@ const Api = (token) => {
         getDetailTask,
 
         getOverView,
+        myInfo,
+        updateMyInfo,
+        changePassword,
         createTask,
         getListMenu,
         getListTaskByMenu,
@@ -194,6 +221,8 @@ const Api = (token) => {
         processingHandover,
         evictTask,
         updateProcessing,
+        reviewReport,
+        recallReport,
     };
 };
 

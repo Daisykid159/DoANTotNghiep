@@ -1,6 +1,6 @@
 import Api from "../../api";
 import {toast} from "react-toastify";
-import {actionGetOverViewUser} from "./actionAuth";
+import {actionGetOverViewUser, actionLogout} from "./actionAuth";
 
 export function updateData(data) {
     return {
@@ -26,6 +26,61 @@ export function actionGetListMenu (token) {
             }
         } catch (error) {
             console.log("Lỗi api actionGetListMenu", error);
+        }
+    };
+}
+
+export function actionGetMyInfo (token) {
+    return async (dispatch, getState) => {
+        try {
+            const response = await Api(token).myInfo();
+            if (response && response.data){
+                dispatch(updateData({
+                    myInfo: response.data,
+                }))
+            } else {
+                dispatch(updateData({
+                    myInfo: {},
+                }))
+                toast.error('Lấy dữ liệu thất bại!');
+                console.log("Lỗi api actionGetMyInfo");
+            }
+        } catch (error) {
+            console.log("Lỗi api actionGetMyInfo", error);
+        }
+    };
+}
+
+export function actionUpdateMyInfo (token, newInfo) {
+    return async (dispatch, getState) => {
+        try {
+            const response = await Api(token).updateMyInfo(newInfo);
+            if (response && response.data){
+                dispatch(actionGetMyInfo(token));
+                toast.success('Cập nhật dữ liệu thành công!');
+            } else {
+                toast.error('Cập nhật dữ liệu thất bại!');
+                console.log("Lỗi api actionUpdateMyInfo");
+            }
+        } catch (error) {
+            console.log("Lỗi api actionUpdateMyInfo", error);
+        }
+    };
+}
+
+export function actionChangePassword (token, password, passwordNew) {
+    return async (dispatch, getState) => {
+        try {
+            const response = await Api(token).changePassword(password, passwordNew);
+            if (response && response.data){
+                dispatch(actionLogout());
+                toast.success('Đổi mật khẩu thành công!');
+            } else {
+                toast.error('Đổi mật khẩu thất bại!');
+                console.log("Lỗi api actionChangePassword");
+            }
+        } catch (error) {
+            console.log("Lỗi api actionChangePassword", error);
         }
     };
 }
@@ -151,9 +206,51 @@ export function actionUpdateProcessing (token, task_user_id, updateProcessing) {
             if (response && response.data){
                 dispatch(actionGetListMenu(token));
                 dispatch(actionGetOverViewUser(token));
-                toast.success('Thu hồi nhiệm vụ thành công!');
+                toast.success('Chỉnh sửa tiến độ nhiệm vụ thành công!');
             } else {
-                toast.error('Thu hồi nhiệm vụ thất bại!');
+                toast.error('Chỉnh sửa tiến độ nhiệm vụ thất bại!');
+                console.log("Lỗi api actionUpdateProcessing");
+            }
+        } catch (error) {
+            console.log("Lỗi api actionUpdateProcessing", error);
+        }
+    };
+}
+
+export function actionReviewReport (token, report_id, user_review_id, isApprove, task_user_id) {
+    return async (dispatch, getState) => {
+        try {
+            const response = await Api(token).reviewReport(report_id, user_review_id, isApprove);
+            if (response && response.data){
+                dispatch(actionGetDetailTask(token, task_user_id));
+                if(isApprove) {
+                    toast.success('Duyệt yêu cầu thành công!');
+                } else {
+                    toast.success('Từ chối yêu cầu thành công!');
+                }
+            } else {
+                if(isApprove) {
+                    toast.error('Duyệt yêu cầu thất bại!');
+                } else {
+                    toast.error('Từ chối yêu cầu thất bại!');
+                }
+                console.log("Lỗi api actionReviewReport");
+            }
+        } catch (error) {
+            console.log("Lỗi api actionReviewReport", error);
+        }
+    };
+}
+
+export function actionRecallReport (token, id, task_user_id) {
+    return async (dispatch, getState) => {
+        try {
+            const response = await Api(token).recallReport(id);
+            if (response && response.data){
+                dispatch(actionGetDetailTask(token, task_user_id));
+                toast.success('Thu hồi yêu câu thành công!');
+            } else {
+                toast.error('Thu hồi yêu cầu thất bại!');
                 console.log("Lỗi api actionSendReport");
             }
         } catch (error) {
@@ -164,6 +261,9 @@ export function actionUpdateProcessing (token, task_user_id, updateProcessing) {
 
 export default {
     actionGetListMenu,
+    actionGetMyInfo,
+    actionUpdateMyInfo,
+    actionChangePassword,
     actionGetListTaskByMenu,
     actionGetDetailTask,
     actionCreateTask,
@@ -171,4 +271,6 @@ export default {
     actionProcessingHandover,
     actionEvictTask,
     actionUpdateProcessing,
+    actionReviewReport,
+    actionRecallReport,
 };

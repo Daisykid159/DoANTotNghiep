@@ -24,15 +24,16 @@ const RowDepartment = ({ item, index, listPositions, handleDeleteItemDepartment 
     return (
         <tr className={cx('text-center', 'table_row')} key={index}>
             <td>{index + 1}</td>
-            <td className='text_left'>{item.label}</td>
+            <td className='text_left'>{item.department_name}</td>
             <td>
-                <Select
-                    options={listPositions}
-                    value={position || null}
-                    onChange={handleChosePosition}
-                    placeholder="Tìm phòng ban..."
-                    className="mb-3 w-100"
-                />
+                {item.position_name}
+                {/*<Select*/}
+                {/*    options={listPositions}*/}
+                {/*    value={position || null}*/}
+                {/*    onChange={handleChosePosition}*/}
+                {/*    placeholder="Tìm phòng ban..."*/}
+                {/*    className="mb-3 w-100"*/}
+                {/*/>*/}
             </td>
             <td>
                 <input

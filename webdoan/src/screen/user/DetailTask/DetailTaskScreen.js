@@ -8,7 +8,7 @@ import ListAction from "../../../components/ListAction";
 import CreateTaskScreen from "../CreateTask/CreateTaskScreen";
 import {useDispatch, useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
-import {actionGetDetailTask} from "../../../redux-store/action/actionUser";
+import {actionGetDetailTask, actionRecallReport, actionReviewReport} from "../../../redux-store/action/actionUser";
 
 const cx = classNames.bind(styles);
 
@@ -17,6 +17,8 @@ const DetailTaskScreen = (props) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const token = useSelector(state => state.reducerAuth.token);
+
+    const overViewUser = useSelector(state => state.reducerUser.overViewUser);
 
     const detailTask = useSelector(state => state.reducerUser.detailTask);
 
@@ -73,8 +75,8 @@ const DetailTaskScreen = (props) => {
 
                         <div className={cx('col-md-6', 'd-flex', 'mb-2')}>
                             <div className={cx('col-md-3', 'fw-bold')}>Người phối hợp:</div>
-                            <div className={cx('col-md-8')}>
-                                {detailTask.combinations?.length > 0 && detailTask.combinations?.map(item => (
+                            <div className={cx('col-md-8')}>F
+                                {detailTask?.combinations?.length > 0 && detailTask?.combinations?.map(item => (
                                     <div>{item.combination_department_name}/ {item.combination_name}</div>
                                 ))}
                             </div>
@@ -83,7 +85,7 @@ const DetailTaskScreen = (props) => {
                         <div className={cx('col-md-6', 'd-flex', 'mb-2')}>
                             <div className={cx('col-md-3', 'fw-bold')}>Người theo dõi:</div>
                             <div className={cx('col-md-8')}>
-                                {detailTask.combinations?.length > 0 && detailTask.combinations?.map(item => (
+                                {detailTask?.combinations?.length > 0 && detailTask?.combinations?.map(item => (
                                     <div>{item.department_name}/ {item.target_user_name}</div>
                                 ))}
                             </div>
@@ -134,7 +136,7 @@ const DetailTaskScreen = (props) => {
                         <div>Báo cáo</div>
                     </div>
 
-                    <table bordered className={cx("col-md-11", "table-fixed")}>
+                    <table bordered className={cx("col-md-12", "table-fixed")}>
                         <thead>
                         <tr>
                             <th>Người gửi</th>
@@ -142,6 +144,7 @@ const DetailTaskScreen = (props) => {
                             <th>Ngày gửi</th>
                             <th>Ngày duyệt</th>
                             <th>Trạng thái</th>
+                            <th>Hành động</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -166,6 +169,39 @@ const DetailTaskScreen = (props) => {
                                     <td>{formatDate(report.created_date)}</td>
                                     <td>{formatDate(report.completed_date || null)}</td>
                                     <td className={cx(report.status !== 0 && report.status !== 1 ? 'text_red' : 'text_green')}>{status}</td>
+                                    <td>
+                                        <div className="d-flex gap-2">
+                                            {(report.status === 0 && detailTask.role === 0) ? (
+                                                <div>
+                                                    <button
+                                                        className="btn btn-outline-primary px-4 me-3"
+                                                        onClick={() => {
+                                                            dispatch(actionReviewReport(token, report.report_id, parseInt(overViewUser.userCurrent.user_id, 10), true, detailTask.task_user_id))
+                                                        }}
+                                                    >
+                                                        Duyệt
+                                                    </button>
+                                                    <button
+                                                        className="btn btn-outline-warning px-4"
+                                                        onClick={() => {
+                                                            dispatch(actionReviewReport(token, report.report_id, parseInt(overViewUser.userCurrent.user_id, 10), false, detailTask.task_user_id))
+                                                        }}
+                                                    >
+                                                        Từ chối
+                                                    </button>
+                                                </div>
+                                            ) : report.can_evict ? (
+                                                <button
+                                                    className="btn btn-outline-danger px-4"
+                                                    onClick={() => {
+                                                        dispatch(actionRecallReport(token, report.report_id, detailTask.task_user_id))
+                                                    }}
+                                                >
+                                                    Thu hồi
+                                                </button>
+                                            ) : null}
+                                        </div>
+                                    </td>
                                 </tr>
                             )
                         })}

@@ -4,6 +4,8 @@ import styles from "./ProjectManagementStyle.module.scss";
 import { useNavigate } from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {actionGetListProject} from "../../../redux-store/action/actionProjectManagement";
+import {formatDate} from "../../../utils";
+import moment from "moment";
 
 const cx = classNames.bind(styles);
 
@@ -23,8 +25,7 @@ const ProjectManagementScreen = () => {
 
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [nameProjectNew, setNameProjectNew] = useState('');
-    const [createdDateNew, setCreatedDateNew] = useState(new Date());
-    const [expiredDateNew, setExpiredDateNew] = useState("");
+    const [expiredDateNew, setExpiredDateNew] = useState(moment(new Date()).utc().format("YYYY-MM-DDTHH:mm"));
     const [contentProjectNew, setContentProjectNew] = useState('');
 
     const listProjectManagementResponse = useSelector(state => state.reducerProjectManagement.listProjectManagementResponse);
@@ -155,8 +156,8 @@ const ProjectManagementScreen = () => {
                             >
                                 <td>{index + 1}</td>
                                 <td className={cx('text_left', 'ps-4', 'pe-4')}>{project.project_name}</td>
-                                <td>{project.created_date}</td>
-                                <td>{project.expired_date}</td>
+                                <td>{formatDate(project.created_date)}</td>
+                                <td>{formatDate(project.expired_date)}</td>
                                 <td>{project.number_task}</td>
                             </tr>
                         ))
@@ -243,20 +244,9 @@ const ProjectManagementScreen = () => {
                             </div>
 
                             <div className={classNames("mb-3 d-flex align-items-center", "col-md-12")}>
-                                <label className="col-md-2">Ngày tạo</label>
-                                <input
-                                    type="date"
-                                    className={cx("form-control")}
-                                    placeholder="Từ ngày"
-                                    value={createdDateNew}
-                                    onChange={(e) => setCreatedDateNew(e.target.value)}
-                                />
-                            </div>
-
-                            <div className={classNames("mb-3 d-flex align-items-center", "col-md-12")}>
                                 <label className="col-md-2">Hạn xử lý</label>
                                 <input
-                                    type="date"
+                                    type="datetime-local"
                                     className={cx("form-control")}
                                     placeholder="Từ ngày"
                                     value={expiredDateNew}

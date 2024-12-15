@@ -1,11 +1,64 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import styles from './SettingStyle.module.scss';
 import classNames from "classnames/bind";
 import Select from "react-select";
+import {useDispatch, useSelector} from "react-redux";
+import {useNavigate} from "react-router-dom";
+import {actionChangePassword, actionGetMyInfo, actionUpdateMyInfo} from "../../../redux-store/action/actionUser";
+import moment from "moment";
+import {toast} from "react-toastify";
 
 const cx = classNames.bind(styles);
 
 const SettingScreen = () => {
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const token = useSelector(state => state.reducerAuth.token);
+    const myInfo = useSelector(state => state.reducerUser.myInfo);
+
+
+    const [firstName, setFirstName] = useState(myInfo?.firstName);
+    const [lastName, setLastName] = useState(myInfo?.lastName);
+    const [fullName, setFulllName] = useState(myInfo?.fullName);
+    const [dateOfBirth, setDateOfBirth] = useState(myInfo?.dateOfBirth);
+    const [gender, setGender] = useState(myInfo?.gender);
+    const [phone, setPhone] = useState(myInfo?.phone);
+    const [email, setEmail] = useState(myInfo?.email);
+    const [address, setAddress] = useState(myInfo?.homeTown);
+
+    const [password, setPassword] = useState('');
+    const [passwordNew, setPasswordNew] = useState('');
+    const [passwordNew1, setPasswordNew1] = useState('');
+
+    const handleChanelPassword = () => {
+        if(passwordNew === passwordNew) {
+            if(passwordNew === password) {
+                toast.error('Mật khẩu mới phải khác mật khẩu cũ!')
+            } else {
+                dispatch(actionChangePassword(token, password, passwordNew));
+            }
+        }
+    }
+
+    const handleUpdateMyInfo = () => {
+        dispatch(actionUpdateMyInfo(token, {
+            "username": myInfo.username,
+            "fullName": fullName,
+            "lastName": lastName,
+            "firstName": firstName,
+            "email": email,
+            "phone": phone,
+            "homeTown": address,
+            "gender": gender,
+            "dateOfBirth": moment(dateOfBirth).utc().format('YYYY-MM-DD'),
+        }))
+    }
+
+    useEffect(() => {
+        dispatch(actionGetMyInfo(token));
+    }, [])
+
     return (
         <div className={cx('SettingScreen', 'container', 'col-md-12')}>
             <div className="d-flex justify-content-between align-items-center mb-4">
@@ -17,6 +70,7 @@ const SettingScreen = () => {
                 <div className="d-flex justify-content-between">
                     <button
                         className="btn btn-success d-flex align-items-center me-2"
+                        onClick={() => handleUpdateMyInfo()}
                     >
                         CẬP NHẬT
                     </button>
@@ -29,7 +83,7 @@ const SettingScreen = () => {
                     <input
                         type="text"
                         className="form-control"
-                        placeholder={"Nhập tên đăng nhập"}
+                        value={myInfo.username}
                         readOnly={true}
                     />
                 </div>
@@ -40,6 +94,8 @@ const SettingScreen = () => {
                         type="text"
                         className="form-control"
                         placeholder="Nhập tên"
+                        value={firstName}
+                        onChange={e => setFirstName(e.target.value)}
                     />
                 </div>
 
@@ -49,6 +105,8 @@ const SettingScreen = () => {
                         type="text"
                         className="form-control"
                         placeholder="Nhập họ và tên đệm"
+                        value={lastName}
+                        onChange={e => setLastName(e.target.value)}
                     />
                 </div>
 
@@ -58,6 +116,8 @@ const SettingScreen = () => {
                         type="text"
                         className="form-control"
                         placeholder="Nhập họ và tên"
+                        value={fullName}
+                        onChange={e => setFulllName(e.target.value)}
                     />
                 </div>
 
@@ -66,7 +126,8 @@ const SettingScreen = () => {
                     <input
                         type="date"
                         className="form-control"
-                        placeholder="Nhập họ và tên"
+                        value={dateOfBirth}
+                        onChange={e => setDateOfBirth(e.target.value)}
                     />
                 </div>
 
@@ -76,18 +137,18 @@ const SettingScreen = () => {
                         <div className="form-check form-check-inline">
                             <input
                                 className="form-check-input"
-                                type="radio" name="gender"
-                                id="male" value="male"
+                                type="radio" name="gender" id="male"
+                                checked={gender === 1}
+                                onChange={() => setGender(1)}
                             />
                             <label className="form-check-label" htmlFor="male">Nam</label>
                         </div>
                         <div className="form-check form-check-inline">
                             <input
                                 className="form-check-input"
-                                type="radio"
-                                name="gender"
-                                id="female"
-                                value="female"
+                                type="radio" name="gender" id="female"
+                                checked={gender === 0}
+                                onChange={() => setGender(0)}
                             />
                             <label className="form-check-label" htmlFor="female">Nữ</label>
                         </div>
@@ -111,6 +172,19 @@ const SettingScreen = () => {
                         type="text"
                         className="form-control"
                         placeholder={"Nhập tên số địa thoại"}
+                        value={phone}
+                        onChange={e => setPhone(e.target.value)}
+                    />
+                </div>
+
+                <div className="mb-3 d-flex align-items-center">
+                    <label className="col-md-2">Email:</label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Nhập Email"
+                        value={email}
+                        onChange={e => setEmail(e.target.value)}
                     />
                 </div>
 
@@ -120,6 +194,8 @@ const SettingScreen = () => {
                         type="text"
                         className="form-control"
                         placeholder="Nhập địa chỉ"
+                        value={address}
+                        onChange={e => setAddress(e.target.value)}
                     />
                 </div>
 
@@ -132,6 +208,8 @@ const SettingScreen = () => {
                                 type="text"
                                 className="form-control"
                                 placeholder="Nhập mật khẩu hiện tại"
+                                value={password}
+                                onChange={e => setPassword(e.target.value)}
                             />
                         </div>
                         <div className="mb-3 d-flex align-items-center col-md-12">
@@ -140,6 +218,8 @@ const SettingScreen = () => {
                                 type="password"
                                 className="form-control"
                                 placeholder="Nhập mật khẩu mới"
+                                value={passwordNew}
+                                onChange={e => setPasswordNew(e.target.value)}
                             />
                         </div>
                         <div className="mb-3 d-flex align-items-center col-md-12">
@@ -148,11 +228,14 @@ const SettingScreen = () => {
                                 type="password"
                                 className="form-control"
                                 placeholder="Nhập lại mật khẩu mới"
+                                value={passwordNew1}
+                                onChange={e => setPasswordNew1(e.target.value)}
                             />
                         </div>
                         <div className="d-flex justify-content-end">
                             <button
                                 className="btn btn-success d-flex align-items-center me-2"
+                                onClick={() => handleChanelPassword()}
                             >
                                 Đổi mật khẩu
                             </button>
