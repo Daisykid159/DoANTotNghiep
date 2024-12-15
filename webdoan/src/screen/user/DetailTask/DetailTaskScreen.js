@@ -20,12 +20,10 @@ const DetailTaskScreen = (props) => {
 
     const detailTask = useSelector(state => state.reducerUser.detailTask);
 
-    console.log(props.task.item);
     const [showAddComment, setShowAddComment] = useState();
     const [showModuleEditTask, setShowModuleEditTask] = useState(false);
 
     useEffect(() => {
-        console.log('props.task.item', props.task.item);
         dispatch(actionGetDetailTask(token, props.task.item.tu_id))
     }, [props.task.item]);
 
@@ -41,7 +39,7 @@ const DetailTaskScreen = (props) => {
                 </div>
 
                 <div>
-                    {moment(item.created_date).format('hh:mm A DD/MM/yyyy')}
+                    {moment(item.created_date).utc().format('hh:mm A DD/MM/yyyy')}
                 </div>
             </div>
         </div>
@@ -77,13 +75,13 @@ const DetailTaskScreen = (props) => {
                             <div className={cx('col-md-3', 'fw-bold')}>Người phối hợp:</div>
                             <div className={cx('col-md-8')}>
                                 {detailTask.combinations?.length > 0 && detailTask.combinations?.map(item => (
-                                    <div>{item.department_name}/ {item.target_user_name}</div>
+                                    <div>{item.combination_department_name}/ {item.combination_name}</div>
                                 ))}
                             </div>
                         </div>
 
                         <div className={cx('col-md-6', 'd-flex', 'mb-2')}>
-                            <div className={cx('col-md-3', 'fw-bold')}>Người theo dõi::</div>
+                            <div className={cx('col-md-3', 'fw-bold')}>Người theo dõi:</div>
                             <div className={cx('col-md-8')}>
                                 {detailTask.combinations?.length > 0 && detailTask.combinations?.map(item => (
                                     <div>{item.department_name}/ {item.target_user_name}</div>
@@ -147,15 +145,30 @@ const DetailTaskScreen = (props) => {
                         </tr>
                         </thead>
                         <tbody>
-                        {detailTask.reports?.length && detailTask.reports?.map((report, index) => (
-                            <tr key={index}>
-                                <td>{report.label_name}</td>
-                                <td className={cx('text_left')}>Báo cáo tiến độ</td>
-                                <td>{formatDate(report.created_date)}</td>
-                                <td>{formatDate(report.completed_date)}</td>
-                                <td className={cx('text_green')}>Đã duyệt</td>
-                            </tr>
-                        ))}
+                        {detailTask.reports?.length > 0 && detailTask.reports?.map((report, index) => {
+                            const status = report.status === 0 ? "Chờ duyệt" : report.status === 1 ? "Đã duyệt" : 'không duyệt'
+                            const nameReport =
+                                report.type === 0 ? "Yêu cầu báo cáo tiến độ"
+                                : report.type === 1 ? "Báo cáo tiến độ"
+                                        : report.type === 2 ? "Báo cáo hoàn thành"
+                                            : report.type === 3 ? `Xin gia hạn đến: ${moment(report?.new_expired_date).utc().format("HH:mm DD-MM-YYYY")}` : ''
+                            return (
+                                <tr key={index}>
+                                    <td>{report.create_user_name}</td>
+                                    <td className={cx('text_left')}>
+                                        <div>
+                                            {nameReport}
+                                        </div>
+                                        <div>
+                                            {`Ý kiến: ${report.content || ''}`}
+                                        </div>
+                                    </td>
+                                    <td>{formatDate(report.created_date)}</td>
+                                    <td>{formatDate(report.completed_date || null)}</td>
+                                    <td className={cx(report.status !== 0 && report.status !== 1 ? 'text_red' : 'text_green')}>{status}</td>
+                                </tr>
+                            )
+                        })}
                         </tbody>
                     </table>
                 </div>
@@ -166,7 +179,7 @@ const DetailTaskScreen = (props) => {
                         <div>File đính kèm</div>
                     </div>
                     <div className={cx('col-md-11')}>
-                        {detailTask.file_in_report_complete?.length > 0 && detailTask.file_in_report_complete?.map(item => (
+                        {detailTask.files?.length > 0 && detailTask.files?.map(item => (
                             <div className={cx('row_file')}>
                                 <div className={cx('text_file')}>{item.file_name}</div>
                                 <i className={cx('bx bx-cloud-download', 'icon_download')}></i>
@@ -181,7 +194,7 @@ const DetailTaskScreen = (props) => {
                         <div>Lịch sử tiến độ xử lý</div>
                     </div>
                     <div className={cx('col-md-11')}>
-                        {detailTask.timelines?.length > 0 && detailTask.timelines?.map(item => {
+                        {detailTask.history?.length > 0 && detailTask.history?.map(item => {
                             return itemRowTimeLines(item)
                         })}
                     </div>

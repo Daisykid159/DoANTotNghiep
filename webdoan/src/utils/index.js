@@ -1,5 +1,6 @@
 import moment from "moment";
 
 export function formatDate(date) {
-    return moment(date).format('DD/MM/yyyy');
+    if (!date) return '';
+    return moment(date).utc().format('DD/MM/yyyy');
 }

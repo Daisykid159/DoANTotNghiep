@@ -1,12 +1,51 @@
 import React, {useState} from "react";
 import styles from './ListActionStyle.module.scss';
 import classNames from "classnames/bind";
+import {useDispatch, useSelector} from "react-redux";
+import {useNavigate} from "react-router-dom";
+import Select from "react-select";
+import {toast} from "react-toastify";
+import {
+    actionEvictTask,
+    actionProcessingHandover,
+    actionSendReport,
+    actionUpdateProcessing
+} from "../../redux-store/action/actionUser";
+import moment from "moment";
 
 const cx = classNames.bind(styles);
 
 const HandleAction = (props) => {
 
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const token = useSelector(state => state.reducerAuth.token);
+    const overViewUser = useSelector(state => state.reducerUser.overViewUser);
+
+    const [targetTask, setTargetTask] = useState('');
+    const [combinationTask, setCombinationTask] = useState([]);
+    const [contentTask, setContentTask] = useState('');
+    const [expiredDate, setExpiredDate] = useState(moment(new Date).utc().format("YYYY-MM-DDTHH:mm"));
+    const [progress, setProgress] = useState(props.task.progress);
+
     const [uploadedFiles, setUploadedFiles] = useState([]);
+
+    const mapDepartmentsToOptions = (deps, level = 0) => {
+        return deps.map((dep) => ({
+            label: `${'----'.repeat(level)} ${dep.department_name}`,
+            options: [
+                ...dep.users.map((user) => ({
+                    value: `${user.user_id}`,
+                    label: `${'----'.repeat(level + 1)} 👤 ${user.user_name}`,
+                    user: user,
+                    department_id: dep.department_id,
+                })),
+                ...mapDepartmentsToOptions(dep.children || [], level + 1),
+            ],
+        }));
+    };
+
+    const optionsUser = mapDepartmentsToOptions(overViewUser.departments);
 
     const handleFileUpload = (event) => {
         const files = Array.from(event.target.files); // Lấy danh sách các tệp được chọn
@@ -18,6 +57,36 @@ const HandleAction = (props) => {
             prevFiles.filter((_, i) => i !== index) // Loại bỏ tệp tại chỉ mục tương ứng
         );
     };
+
+    const handleSendReport = () => {
+        // 0: Yêu cầu báo cáo tiến độ, 1: Báo cáo tiến độ, 2: Báo cáo hoàn thành, 3: Xin gia hạn
+        if(props.reportType === 0) {
+            dispatch(actionSendReport(token, props.task, 0, overViewUser.userCurrent.user_id, contentTask, null));
+        } else if (props.reportType === 1) {
+            dispatch(actionSendReport(token, props.task, 1, overViewUser.userCurrent.user_id, contentTask, null));
+        } else if (props.reportType === 2) {
+            dispatch(actionSendReport(token, props.task, 2, overViewUser.userCurrent.user_id, contentTask, null));
+        } else if (props.reportType === 3) {
+            dispatch(actionSendReport(token, props.task, 3, overViewUser.userCurrent.user_id, contentTask, expiredDate));
+        } else if (props.reportType === 101) { //// Chuyển xử lý nhiệm vụ
+            const combinations = combinationTask.map(combination => ({
+                "combination_id": combination.user.user_id,
+                "department_id": combination.department_id,
+            }))
+            dispatch(actionProcessingHandover(token, {
+                task_id: props.task.task_id,
+                target_user_id: targetTask.user.user_id,
+                target_department_id: targetTask.department_id,
+                combinations: combinations,
+                content: contentTask,
+            }));
+        } else if (props.reportType === 102) { //// Thu hồi nhiệm vụ
+            dispatch(actionEvictTask(token, props.task.task_id));
+        } else if (props.reportType === 103) { //// Cập nhật tiến độ nhiệm vụ
+            dispatch(actionUpdateProcessing(token, props.task.task_user_id, parseInt(progress, 10)));
+        }
+        props.handleCloseModule();
+    }
 
     return (
         <div className={cx('HandleAction')}>
@@ -43,22 +112,13 @@ const HandleAction = (props) => {
 
                     {props.showDate && (
                         <div className={cx('row', 'col-md-12', 'align-items-center', 'mb-3')}>
-                            <div className={cx('col-md-6', 'd-flex', 'align-items-center')}>
-                                <div className={cx('col-md-4')}>Ngày tạo:</div>
+                            <div className={cx('col-md-12', 'd-flex', 'align-items-center')}>
+                                <label className={cx('col-md-2')}>Hạn xử lý mới:</label>
                                 <input
-                                    value={new Date().toISOString().split("T")[0]} // Định dạng ngày thành YYYY-MM-DD
-                                    type="date"
+                                    type="datetime-local"
                                     className="form-control"
-                                    placeholder="Ngày tạo"
-                                />
-                            </div>
-
-                            <div className={cx('col-md-6', 'd-flex', 'align-items-center')}>
-                                <label className={cx('col-md-4')}>Hạn xử lý:</label>
-                                <input
-                                    type="date"
-                                    className="form-control"
-                                    placeholder="Hạn xử lý mới"
+                                    value={expiredDate}
+                                    onChange={(e) => setExpiredDate(e.target.value)}
                                 />
                             </div>
                         </div>
@@ -72,7 +132,56 @@ const HandleAction = (props) => {
                                     type="number"
                                     className="form-control"
                                     placeholder="Nhập phần trăm hoàn thành"
+                                    value={progress}
+                                    onChange={e => setProgress(e.target.value)}
                                 />
+                            </div>
+                        </div>
+                    )}
+
+                    {props.showTransferProcessing && (
+                        <div className={cx('col-md-12', 'mb-3', 'row')}>
+                            <div className={cx('col-md-12', 'mb-3')}>
+                                <div className={cx('d-flex', 'align-items-center')}>
+                                    <label className="col-md-3">Đơn vị người chủ trì</label>
+                                    <Select
+                                        options={optionsUser}
+                                        isSearchable
+                                        className="w-100"
+                                        placeholder="Tìm kiếm phòng ban hoặc người dùng..."
+                                        value={targetTask}
+                                        onChange={(selected) => {
+                                            const isAlreadyInTask = combinationTask.some(task => task.value === selected.value);
+                                            if(isAlreadyInTask) {
+                                                toast.error("Người này đang giữ vai trò khác")
+                                            } else {
+                                                setTargetTask(selected)
+                                            }
+                                        }}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className={cx('col-md-12', 'mb-3')}>
+                                <div className={cx('d-flex', 'align-items-center')}>
+                                    <label className="col-md-3">Đơn vị người phối hợp</label>
+                                    <Select
+                                        options={optionsUser}
+                                        isSearchable
+                                        isMulti
+                                        className="w-100"
+                                        placeholder="Tìm kiếm phòng ban hoặc người dùng..."
+                                        value={combinationTask}
+                                        onChange={(selected) => {
+                                            const isAlreadyInTask = selected.some(task => task.value === targetTask.value);
+                                            if(isAlreadyInTask) {
+                                                toast.error("Người này đang giữ vai trò khác")
+                                            } else {
+                                                setCombinationTask(selected)
+                                            }
+                                        }}
+                                    />
+                                </div>
                             </div>
                         </div>
                     )}
@@ -85,6 +194,8 @@ const HandleAction = (props) => {
                                     className={cx("form-control", 'input_comment')}
                                     placeholder="Ý kiến xử lý"
                                     rows="3"
+                                    value={contentTask}
+                                    onChange={(e) => setContentTask(e.target.value)}
                                 />
                             </div>
                         </div>
@@ -132,7 +243,12 @@ const HandleAction = (props) => {
                         >
                             Huỷ
                         </button>
-                        <button className="btn btn-warning ms-3">Gửi</button>
+                        <button
+                            className="btn btn-warning ms-3"
+                            onClick={() => handleSendReport()}
+                        >
+                            Gửi
+                        </button>
                     </div>
                 </div>
             </div>

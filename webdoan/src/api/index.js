@@ -142,6 +142,28 @@ const Api = (token) => {
         return api.get(`api/user/TaskDetail?task_user_id=${id}`);
     }
 
+    const sendReport = (task_id, type, user_create_id, content, new_expired_date) => {
+        return api.post(`/api/user/sendReport`, {
+            task_id: task_id,
+            user_create_id: user_create_id,
+            content: content,
+            type: type,
+            new_expired_date: new_expired_date,
+        })
+    }
+
+    const processingHandover = (data) => {
+        return api.put(`api/user/processingHandover`, data);
+    }
+
+    const evictTask = (task_id) => {
+        return api.put(`api/user/evictTask?task_id=${task_id}`);
+    }
+
+    const updateProcessing = (task_user_id, progress) => {
+        return api.put(`/api/user/updateProcessing?task_user_id=${task_user_id}&processing=${progress}`);
+    }
+
     return {
         getTokenLogin,
         refreshToken,
@@ -168,6 +190,10 @@ const Api = (token) => {
         createTask,
         getListMenu,
         getListTaskByMenu,
+        sendReport,
+        processingHandover,
+        evictTask,
+        updateProcessing,
     };
 };
 

@@ -18,8 +18,10 @@
 .body_module_xu_ly_nhanh {
   margin: 4% auto;
   width: 60%;
-  height: 65vh;
+  height: 70vh;
+  overflow-y: auto;
   background-color: #fff;
+  position: relative;
 }
 
 .text_header_module_xu_ly_nhanh {
@@ -34,6 +36,16 @@
   justify-content: space-between;
 }
 
+.header_fixed {
+  position: sticky;
+  top: 0;
+}
+
 .btn_close_module {
   color: white;
+}
+
+.btn_footer {
+  padding: 5px 50px;
+  margin-right: 20px;
 }

@@ -25,8 +25,8 @@ const CreateTaskScreen = (props) => {
     const [assignDepartment, setAssignDepartment] = useState('');
     const [sourceTask, setSourceTask] = useState(null);
     const [priorityTask, setPriorityTask] = useState(0);
-    const [createDate, setCreateDate] = useState(moment(new Date()).format("YYYY-MM-DDTHH:mm"));
-    const [expiredDate, setExpiredDate] = useState(moment(new Date()).format("YYYY-MM-DDTHH:mm"));
+    const [createDate, setCreateDate] = useState(moment(new Date()).utc().format("YYYY-MM-DDTHH:mm"));
+    const [expiredDate, setExpiredDate] = useState(moment(new Date()).utc().format("YYYY-MM-DDTHH:mm"));
     const [contentTask, setContentTask] = useState('');
     const [uploadedFiles, setUploadedFiles] = useState([]);
     const [optionsProject, setOptionsProject] = useState([]);
@@ -79,13 +79,13 @@ const CreateTaskScreen = (props) => {
             "content": contentTask,
             "priority": priorityTask,
             "project_id": sourceTask?.value,
-            "expired_date": moment(expiredDate).format("YYYY-MM-DDTHH:mm:ss"),
-            "created_date": moment(createDate).format("YYYY-MM-DDTHH:mm:ss"),
+            "expired_date": moment(expiredDate).utc().format("YYYY-MM-DDTHH:mm:ss"),
+            "created_date": moment(createDate).utc().format("YYYY-MM-DDTHH:mm:ss"),
             "combinations": combinationTask?.map((combination) => {
                 return {
                     "combination_department": combination.department_id,
                     "combination_user": combination.value,
-                    "created_date": moment(createDate).format("YYYY-MM-DDTHH:mm:ss"),
+                    "created_date": moment(createDate).utc().format("YYYY-MM-DDTHH:mm:ss"),
                 }
             }) || [],
         }
@@ -173,7 +173,7 @@ const CreateTaskScreen = (props) => {
 
                     <div className={cx('col-md-6', 'mb-3')}>
                         <div className={cx('d-flex', 'align-items-center')}>
-                            <label className="col-md-3">Đơn vị người chủ trì <span
+                            <label className="col-md-3">Người chủ trì <span
                                 className={cx('text_red')}>*</span></label>
                             <Select
                                 options={optionsUser}
@@ -195,7 +195,7 @@ const CreateTaskScreen = (props) => {
 
                     <div className={cx('col-md-6', 'mb-3')}>
                         <div className={cx('d-flex', 'align-items-center')}>
-                            <label className="col-md-3">Đơn vị người phối hợp</label>
+                            <label className="col-md-3">Người phối hợp</label>
                             <Select
                                 options={optionsUser}
                                 isSearchable
@@ -204,10 +204,11 @@ const CreateTaskScreen = (props) => {
                                 placeholder="Tìm kiếm phòng ban hoặc người dùng..."
                                 value={combinationTask}
                                 onChange={(selected) => {
-                                    if(selected.value == overViewUser.userCurrent.user_id || selected.value === targetTask.value) {
+                                    const isAlreadyInTask = selected.some(task => task.value == overViewUser.userCurrent.user_id || task.value === targetTask.value);
+                                    if(isAlreadyInTask) {
                                         toast.error("Người này đang giữ vai trò khác")
                                     } else {
-                                        setTargetTask(selected)
+                                        setCombinationTask(selected)
                                     }
                                 }}                            />
                         </div>
@@ -260,7 +261,7 @@ const CreateTaskScreen = (props) => {
                                 type="datetime-local"
                                 className="form-control"
                                 value={expiredDate}
-                                min={moment(createDate).format("YYYY-MM-DDTHH:mm")}
+                                min={moment(createDate).utc().format("YYYY-MM-DDTHH:mm")}
                                 onChange={(e) => setExpiredDate(e.target.value)}
                             />
                         </div>

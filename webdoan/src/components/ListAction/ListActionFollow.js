@@ -5,10 +5,15 @@ import HandleAction from "./HandleAction";
 
 const cx = classNames.bind(styles);
 
-const ListActionFollow = () => {
+const ListActionFollow = (props) => {
 
     const [showHandleAction, setShowHandleAction] = useState(false);
-    const [typeAction, setTypeAction] = useState('')
+    const [typeAction, setTypeAction] = useState('');
+    const [showFile, setShowFile] = useState(false);
+    const [showPercent, setShowPercent] = useState(false);
+    const [showComment, setShowComment] = useState(false);
+    const [showDate, setShowDate] = useState(false);
+    const [reportType, setReportType] = useState(null);
 
     const handleCloseModule = () => {
         setShowHandleAction(false);
@@ -21,6 +26,9 @@ const ListActionFollow = () => {
                 onClick={() => {
                     setTypeAction("Yêu cầu báo cáo tiến độ")
                     setShowHandleAction(true);
+                    setShowComment(true);
+                    setShowFile(false);
+                    setReportType(0)
                 }}
             >
                 <i className={cx('bx bx-share', 'icon_action', 'me-2')}></i>
@@ -32,6 +40,9 @@ const ListActionFollow = () => {
                 onClick={() => {
                     setTypeAction("Báo cáo tiến độ")
                     setShowHandleAction(true);
+                    setShowComment(true)
+                    setShowFile(true)
+                    setTypeAction(1);
                 }}
             >
                 <i className={cx('bx bx-share', 'icon_action', 'me-2')}></i>
@@ -39,7 +50,17 @@ const ListActionFollow = () => {
             </div>
 
             {showHandleAction && (
-                <HandleAction typeAction={typeAction} title={'Iphone 12'} handleCloseModule={handleCloseModule} />
+                <HandleAction
+                    task={props.task}
+                    typeAction={typeAction}
+                    title={props.task.title}
+                    handleCloseModule={handleCloseModule}
+                    showFile={showFile}
+                    showPercent={showPercent}
+                    showComment={showComment}
+                    showDate={showDate}
+                    reportType={reportType}
+                />
             )}
         </div>
     )

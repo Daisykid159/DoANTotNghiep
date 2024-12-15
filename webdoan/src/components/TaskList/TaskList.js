@@ -5,7 +5,11 @@ import classNames from "classnames/bind";
 
 const cx = classNames.bind(styles);
 
-const TaskList = ({ tasks, handleDetailTask, showFullTaskList = false }) => {
+const TaskList = ({ tasks, handleDetailTask, showFullTaskList = false, showExpireNew = false }) => {
+    if (!tasks?.length) {
+        return null;
+    }
+
     return (
         <table bordered hover className={cx("col-md-12", 'table_task_list', showFullTaskList ? '' : "table-fixed")}>
             <thead>
@@ -16,11 +20,11 @@ const TaskList = ({ tasks, handleDetailTask, showFullTaskList = false }) => {
                         Tiêu đề
                     </div>
                 </th>
-                <th>Người chủ trì</th>
                 <th>Người giao</th>
-                <th>Trạng thái</th>
-                <th>Ngày tạo</th>
-                <th>Hạn xử lý</th>
+                <th>Người chủ trì</th>
+                <th>Mức độ ưu tiên</th>
+                {showExpireNew ? (<th>Hạn xử lý cũ</th>) : (<th>Ngày tạo</th>)}
+                {showExpireNew ? (<th>Hạn xử lý mới</th>) : (<th>Hạn xử lý</th>)}
                 <th>Tiến độ</th>
             </tr>
             </thead>
@@ -38,7 +42,7 @@ const TaskList = ({ tasks, handleDetailTask, showFullTaskList = false }) => {
                     </td>
                     <td className={cx('text_left')}>{task.assign_user_name}</td>
                     <td className={cx('text_left')}>{task.target_user_name}</td>
-                    <td>{task.status}</td>
+                    <td>{task.priority}</td>
                     <td>{formatDate(task.created_date)}</td>
                     <td>{formatDate(task.expire_date)}</td>
                     <td>

@@ -34,7 +34,7 @@ const TaskListScreen = () => {
         }
     ])
     const [chose, setChose] = useState(listChose[0])
-    const [showModule, setShowModule] = useState(false);
+    const [showModule, setShowModule] = useState(true);
     const [showModuleCreateTask, setShowModuleCreateTask] = useState(false);
     const [resetView, setResetView] = useState(false);
 
@@ -76,6 +76,10 @@ const TaskListScreen = () => {
             setChose(listChose[0]);
         }
     }, [resetView])
+
+    useEffect(() => {
+        setMenuSelected(listMenu[0]);
+    }, [listMenu])
 
     return (
         <div className={cx('TaskListScreen')}>

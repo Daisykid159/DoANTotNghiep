@@ -314,7 +314,7 @@ const DetailTaskAdminScreen = () => {
                 </div>
 
                 <div>
-                    {moment(item.created_date).format('hh:mm A DD/MM/yyyy')}
+                    {moment(item.created_date).utc().format('hh:mm A DD/MM/yyyy')}
                 </div>
             </div>
             {item.children && item.children.length && item.children.map(itemChildren => (
@@ -328,7 +328,7 @@ const DetailTaskAdminScreen = () => {
                     </div>
 
                     <div>
-                        {moment(itemChildren.created_date).format('hh:mm A DD/MM/yyyy')}
+                        {moment(itemChildren.created_date).utc().format('hh:mm A DD/MM/yyyy')}
                     </div>
                 </div>
             ))}
