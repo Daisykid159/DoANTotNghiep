@@ -6,15 +6,15 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface ReportMapper {
-    default ReportResponse toReportResponse(Report report){
+    default ReportResponse toReportResponse(Report report) {
 
         return ReportResponse.builder()
                 .report_id(report.getId())
                 .task_id(report.getTask().getId())
-                .create_user_id(report.getCreateUser().getId())
+                .create_user_id(report.getCreateUser().getId() )
                 .create_user_name(report.getCreateUser().getFullName())
-                .review_user(report.getReviewUser().getId())
-                .review_user_name(report.getReviewUser().getFullName())
+                .review_user(report.getReviewUser() != null ? report.getReviewUser().getId() : null)
+                .review_user_name(report.getReviewUser() != null ? report.getReviewUser().getFullName() : null)
                 .type(report.getType())
                 .status(report.getStatus())
                 .content(report.getContent())
@@ -24,3 +24,4 @@ public interface ReportMapper {
                 .build();
     }
 }
+
