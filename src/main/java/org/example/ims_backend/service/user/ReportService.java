@@ -13,4 +13,5 @@ public interface ReportService {
     boolean recallReport(Long id);
     List<ReportResponse> getReportList(Task task);
     void deleteReport(Task task);
+    boolean evictReport(Long id);
 }

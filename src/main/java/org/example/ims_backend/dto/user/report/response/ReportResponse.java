@@ -24,5 +24,6 @@ public class ReportResponse {
     Date completed_date;
     Long review_user;
     String review_user_name;
+    boolean can_evict;
 
 }

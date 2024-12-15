@@ -60,6 +60,8 @@ public class ProjectServiceImpl implements ProjectService {
             project.setName(projectRequest.getProject_name());
             project.setContent(projectRequest.getContent());
             project.setStatus(1);
+            project.setExpiredDate(projectRequest.getExpired_date());
+            project.setCreatedDate(new Date());
             projectRepository.save(project);
             return true;
         }catch (Exception e){

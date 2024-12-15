@@ -16,6 +16,7 @@ import org.example.ims_backend.repository.UserRepository;
 import org.example.ims_backend.service.user.HistoryService;
 import org.example.ims_backend.service.user.NotificationService;
 import org.example.ims_backend.service.user.ReportService;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -123,7 +124,14 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public List<ReportResponse> getReportList(Task task) {
-        return reportRepository.findAllByTask(task).stream().map(reportMapper::toReportResponse).toList();
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+        List<ReportResponse> reportResponses =reportRepository.findAllByTask(task).stream().map(reportMapper::toReportResponse).toList();
+        for (ReportResponse reportResponse: reportResponses){
+            reportResponse.setCan_evict(reportResponse.getStatus() == 0 && reportResponse.getCreate_user_id() == user.getId());
+        }
+        return reportResponses ;
     }
 
     @Override
@@ -132,6 +140,18 @@ public class ReportServiceImpl implements ReportService {
             reportRepository.deleteAllByTask(task);
         }catch (Exception e){
             log.error("Error in deleteReport", e);
+        }
+    }
+
+    @Override
+    public boolean evictReport(Long id) {
+        try {
+            Report report = reportRepository.findById(id).orElseThrow(() -> new Exception("Report not found"));
+            reportRepository.delete(report);
+            return true;
+        }catch (Exception e){
+            log.error("Error in evictReport", e);
+            return false;
         }
     }
 }
