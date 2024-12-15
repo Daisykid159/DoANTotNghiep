@@ -160,7 +160,7 @@ public class MenuServiceImpl implements MenuService {
             var context = SecurityContextHolder.getContext();
             String username = context.getAuthentication().getName();
             User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("false"));
-            if (!user.getPassword().equals(oldPassword)){
+            if (!passwordEncoder.matches(oldPassword, user.getPassword())){
                 return false;
             }
             user.setPassword(passwordEncoder.encode(newPassword));
