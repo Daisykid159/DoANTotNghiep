@@ -31,4 +31,11 @@ public class MenuController {
     public boolean updateMyInfo(@RequestBody UpdateUserRequest updateUserRequest) {
         return menuService.updateMyInfo(updateUserRequest);
     }
+    @PutMapping("/changePassword")
+    public boolean changePassword(
+            @RequestParam String oldPassword,
+            @RequestParam String newPassword
+    ) {
+        return menuService.changePassword(oldPassword, newPassword);
+    }
 }

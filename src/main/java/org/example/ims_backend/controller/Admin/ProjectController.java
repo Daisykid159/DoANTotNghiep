@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,10 +29,10 @@ public class ProjectController {
             @RequestParam(defaultValue = "0", required = false) int page,
             @RequestParam(defaultValue = "15", required = false) int size,
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) Date fromCreatedDate,
-            @RequestParam(required = false)Date toCreatedDate,
-            @RequestParam(required = false)Date fromExpiredDate,
-            @RequestParam(required = false)Date toExpiredDate
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fromCreatedDate,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date toCreatedDate,
+            @RequestParam(required = false)@DateTimeFormat(pattern = "yyyy-MM-dd") Date fromExpiredDate,
+            @RequestParam(required = false)@DateTimeFormat(pattern = "yyyy-MM-dd") Date toExpiredDate
             ) {
         PageRequest pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "expiredDate"));
         Page<ProjectResponse> projects = projectService.getProjects(pageable,keyword,fromCreatedDate,toCreatedDate,fromExpiredDate,toExpiredDate);

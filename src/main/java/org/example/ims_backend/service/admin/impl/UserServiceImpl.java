@@ -21,6 +21,7 @@ import org.example.ims_backend.entity.*;
 import org.example.ims_backend.mapper.UserMapper;
 import org.example.ims_backend.repository.UserRepository;
 import org.example.ims_backend.service.admin.DepartmentService;
+import org.example.ims_backend.service.admin.EmailService;
 import org.example.ims_backend.service.admin.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -46,6 +47,7 @@ public class UserServiceImpl implements UserService {
      PositionRepository positionRepository;
      DepartmentRepository departmentRepository;
      DepartmentService departmentService;
+     EmailService emailService;
      @Override
     @PreAuthorize("hasRole('ADMIN')")
     public boolean createUser(UserCreationRequest request) {
@@ -93,6 +95,7 @@ public class UserServiceImpl implements UserService {
             User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
             user.setPassword(passwordEncoder.encode(password));
             userRepository.save(user);
+            emailService.sendEmail(password, user.getEmail(), user.getUsername());
             return true;
         }catch (Exception e){
             log.error("Error when update password", e);

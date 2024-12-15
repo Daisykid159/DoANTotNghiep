@@ -12,4 +12,5 @@ public interface MenuService {
     GeneralResponse getOverview();
     UserResponse getMyInfo();
     boolean updateMyInfo(UpdateUserRequest updateUserRequest);
+    boolean changePassword(String oldPassword, String newPassword);
 }

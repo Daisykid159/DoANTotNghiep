@@ -17,6 +17,7 @@ import org.example.ims_backend.mapper.UserMapper;
 import org.example.ims_backend.repository.*;
 import org.example.ims_backend.service.user.MenuService;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ public class MenuServiceImpl implements MenuService {
     DepartmentUserMapper departmentUserMapper;
     DepartmentProjectRepository departmentProjectRepository;
     ProjectMapper projectMapper;
+    PasswordEncoder passwordEncoder;
     @Override
     public List<MenuResponse> getMenu() {
         var context = SecurityContextHolder.getContext();
@@ -150,6 +152,24 @@ public class MenuServiceImpl implements MenuService {
         }
 
 
+    }
+
+    @Override
+    public boolean changePassword(String oldPassword, String newPassword) {
+        try {
+            var context = SecurityContextHolder.getContext();
+            String username = context.getAuthentication().getName();
+            User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("false"));
+            if (!user.getPassword().equals(oldPassword)){
+                return false;
+            }
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(user);
+            return true;
+        }catch (Exception e){
+            log.error("Error when change password", e);
+            return false;
+        }
     }
 
     private MyInfo getMyInfo(User user){
