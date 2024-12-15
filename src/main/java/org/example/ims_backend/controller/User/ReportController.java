@@ -25,8 +25,4 @@ public class ReportController {
     public boolean RecallReport(@PathVariable Long id) {
         return reportService.recallReport(id);
     }
-    @DeleteMapping("/evictReport/{id}")
-    public boolean EvictReport(@PathVariable Long id) {
-        return reportService.evictReport(id);
-    }
 }

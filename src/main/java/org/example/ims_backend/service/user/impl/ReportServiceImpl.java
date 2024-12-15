@@ -110,12 +110,8 @@ public class ReportServiceImpl implements ReportService {
     public boolean recallReport(Long id) {
         try {
             Report report = reportRepository.findById(id).orElseThrow(() -> new Exception("Report not found"));
-            if(report.getStatus() == 0){
                 reportRepository.delete(report);
                 return true;
-            }else {
-                return false;
-            }
         }catch (Exception e){
             log.error("Error in recallReport", e);
             return false;
@@ -143,15 +139,4 @@ public class ReportServiceImpl implements ReportService {
         }
     }
 
-    @Override
-    public boolean evictReport(Long id) {
-        try {
-            Report report = reportRepository.findById(id).orElseThrow(() -> new Exception("Report not found"));
-            reportRepository.delete(report);
-            return true;
-        }catch (Exception e){
-            log.error("Error in evictReport", e);
-            return false;
-        }
-    }
 }
