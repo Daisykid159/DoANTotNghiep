@@ -75,7 +75,7 @@ const DetailTaskScreen = (props) => {
 
                         <div className={cx('col-md-6', 'd-flex', 'mb-2')}>
                             <div className={cx('col-md-3', 'fw-bold')}>Người phối hợp:</div>
-                            <div className={cx('col-md-8')}>F
+                            <div className={cx('col-md-8')}>
                                 {detailTask?.combinations?.length > 0 && detailTask?.combinations?.map(item => (
                                     <div>{item.combination_department_name}/ {item.combination_name}</div>
                                 ))}
