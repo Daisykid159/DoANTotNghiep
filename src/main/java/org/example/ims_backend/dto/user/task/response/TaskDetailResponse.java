@@ -42,6 +42,8 @@ public class TaskDetailResponse {
     Date deleted_date;
     Date completed_date;
     boolean can_finished;
+    Long project_id;
+    String project_name;
     List<ReportResponse> reports= new ArrayList<>();
     List<HistoryResponse> history = new ArrayList<>();
     List<TaskUserResponse> combinations = new ArrayList<>();

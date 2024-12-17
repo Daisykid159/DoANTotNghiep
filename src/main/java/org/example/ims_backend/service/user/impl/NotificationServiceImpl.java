@@ -3,13 +3,17 @@ package org.example.ims_backend.service.user.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.example.ims_backend.dto.user.notification.response.NotificationResponse;
 import org.example.ims_backend.entity.Notification;
 import org.example.ims_backend.entity.NotificationUser;
 import org.example.ims_backend.entity.Task;
 import org.example.ims_backend.entity.User;
+import org.example.ims_backend.mapper.NotificationMapper;
 import org.example.ims_backend.repository.NotificationReqository;
 import org.example.ims_backend.repository.NotificationUserRepository;
+import org.example.ims_backend.repository.UserRepository;
 import org.example.ims_backend.service.user.NotificationService;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +26,8 @@ import java.util.List;
 public class NotificationServiceImpl implements NotificationService {
     NotificationReqository notificationReqository;
     NotificationUserRepository notificationUserRepository;
+    UserRepository userRepository;
+    NotificationMapper notificationMapper;
     @Override
     @Transactional
     public void deleteNotification(Task task) {
@@ -37,7 +43,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public boolean addNotification(Task task, User CreateUser, User toUser, String content, Integer type) {
+    public void addNotification(Task task, User CreateUser, User toUser, String content, Integer type) {
         try {
             Notification notification = notificationReqository.save(
                     Notification.builder()
@@ -55,11 +61,18 @@ public class NotificationServiceImpl implements NotificationService {
                             .build()
             );
 
-            return true;
         }catch (Exception e){
             log.error("Error in addNotification", e);
-            return false;
         }
+    }
+
+    @Override
+    public List<NotificationResponse> getNotificationList() {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+        List<NotificationUser> notificationUsers = notificationUserRepository.findAllByReceiverUser(user);
+        return notificationUsers.stream().map(notificationMapper::toNotificationResponse).toList();
     }
 
 }

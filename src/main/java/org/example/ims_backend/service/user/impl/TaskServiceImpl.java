@@ -93,17 +93,29 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskDetailResponse TaskDetail(Long task_user_id) {
-        TaskUser taskUser = taskUserRepository.findById(task_user_id).orElseThrow(()-> new RuntimeException("false"));
-        TaskDetailResponse taskDetail = taskMapper.toTaskDetailResponse(taskUser);
-        taskDetail.setCombinations(taskUserRepository.findByTaskAndRole(taskUser.getTask(),2).stream().map(taskUserMapper::toTaskUserResponse).toList());
-        taskDetail.setFiles(fileService.getFiles(taskUser.getTask()));
-        taskDetail.setReports(reportService.getReportList(taskUser.getTask()));
-        taskDetail.setComments(commentService.getComments(taskUser.getTask()));
-        taskDetail.setHistory(historyService.getHistoryList(taskUser.getTask()));
+    public TaskDetailResponse TaskDetail(Long task_id) {
+        try {
+            var context = SecurityContextHolder.getContext();
+            String username = context.getAuthentication().getName();
+            User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+            Task task = taskRepository.findById(task_id).orElseThrow(() -> new RuntimeException("Task not found"));
+            TaskUser taskUser = taskUserRepository.findByUserAndTask(userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found")), taskRepository.findById(task_id).orElseThrow(() -> new RuntimeException("Task not found")));
+            TaskDetailResponse taskDetail = taskMapper.toTaskDetailResponse(taskUser);
+            taskDetail.setCombinations(taskUserRepository.findByTaskAndRole(task,2).stream().map(taskUserMapper::toTaskUserResponse).toList());
+            taskDetail.setFiles(fileService.getFiles(task));
+            taskDetail.setReports(reportService.getReportList(task));
+            taskDetail.setComments(commentService.getComments(task));
+            taskDetail.setHistory(historyService.getHistoryList(task));
+            if(taskUser.getHasRead() == 0) {
+                taskUser.setHasRead(1);
+                taskUserRepository.save(taskUser);
+            }
+            return taskDetail;
+        }catch (Exception e){
+            log.error("Error while getting task detail", e);
+            return new TaskDetailResponse();
+        }
 
-
-        return taskDetail;
     }
 
     @Override

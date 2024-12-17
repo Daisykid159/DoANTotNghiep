@@ -21,8 +21,8 @@ public class TaskController {
         return taskService.getListMuneById(menu_id);
     }
     @GetMapping("/TaskDetail")
-    public TaskDetailResponse TaskDetail(@RequestParam Long task_user_id) {
-        return taskService.TaskDetail(task_user_id);
+    public TaskDetailResponse TaskDetail(@RequestParam Long task_id) {
+        return taskService.TaskDetail(task_id);
     }
     @GetMapping("/searchTask")
     public List<Object[]> searchTask(

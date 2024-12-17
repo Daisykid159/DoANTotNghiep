@@ -92,7 +92,7 @@ public class ReportServiceImpl implements ReportService {
                 report.setStatus(2);
             }
             reportRepository.save(report);
-            if(report.getType() == 2){
+            if(report.getType() == 2 && report.getStatus() == 1){
                 Task task = report.getTask();
                 task.setStatus(3);
                 taskRepository.save(task);

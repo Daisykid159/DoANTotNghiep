@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.ims_backend.dto.user.history.response.HistoryResponse;
 import org.example.ims_backend.entity.History;
 import org.example.ims_backend.entity.Task;
+import org.example.ims_backend.entity.TaskUser;
 import org.example.ims_backend.entity.User;
 import org.example.ims_backend.mapper.HistoryMapper;
 import org.example.ims_backend.repository.HistoryRepository;
@@ -38,44 +39,43 @@ public class HistoryServiceImpl implements HistoryService {
 
     @Override
     public List<HistoryResponse> getHistoryList(Task task) {
-        List<History> historys = historyRepository.findAllByTask(task);
+        List<History> histories = historyRepository.findAllByTask(task);
         List<HistoryResponse> historyResponses = new ArrayList<>();
-        for(History history : historys){
-            String title = "";
-            switch (history.getStatus()){
-                case 0:
-                    title = "Tạo nhiệm vụ";
-                    break;
-                case 1:
-                    title = "Chuyển chủ trì";
-                    break;
-                case 2:
-                    title = "Thêm người phối hợp,";
-                    break;
-                case 3:
-                    title = "Hoàn thành nhiệm vụ";
-                    break;
-                case 4:
-                    title = " Thu hồi nhiệm vụ";
-                    break;
-                case 5:
-                    title = "Kết thúc nhiệm vụ";
-                    break;
-            }
-           historyResponses.add(HistoryResponse.builder()
-                   .history_id(history.getId())
-                   .task_id(history.getTask().getId())
-                   .create_user_id(history.getCreatedUser().getId())
-                   .content(history.getContent())
-                   .label_name(history.getCreatedUser().getFullName()+"-"+title)
-                   .created_date(history.getCreatedDate())
-                   .role(taskUserRepository.findByUserAndTask(history.getCreatedUser(),task).getRole())
-                   .department_id(taskUserRepository.findByUserAndTask(history.getCreatedUser(),task).getDepartment().getId())
-                   .build());
+
+        for (History history : histories) {
+            // Map status to a title
+            String title = mapStatusToTitle(history.getStatus());
+
+            // Fetch taskUser only once
+            TaskUser taskUser = taskUserRepository.findByUserAndTask(history.getCreatedUser(), task);
+
+            // Build response
+            historyResponses.add(HistoryResponse.builder()
+                    .history_id(history.getId())
+                    .task_id(task.getId())
+                    .create_user_id(history.getCreatedUser().getId())
+                    .content(history.getContent())
+                    .label_name(history.getCreatedUser().getFullName() + " - " + title)
+                    .created_date(history.getCreatedDate())
+                    .role(taskUser != null ? taskUser.getRole() : null)
+                    .department_id(taskUser != null
+                            ? taskUser.getDepartment().getId()
+                            : null)
+                    .build());
         }
         return historyResponses;
     }
-
+    private String mapStatusToTitle(int status) {
+        return switch (status) {
+            case 0 -> "Tạo nhiệm vụ";
+            case 1 -> "Chuyển chủ trì";
+            case 2 -> "Thêm người phối hợp";
+            case 3 -> "Hoàn thành nhiệm vụ";
+            case 4 -> "Thu hồi nhiệm vụ";
+            case 5 -> "Kết thúc nhiệm vụ";
+            default -> "Trạng thái không xác định";
+        };
+    }
     @Override
     public void deleteHistory(Task task) {
         try {

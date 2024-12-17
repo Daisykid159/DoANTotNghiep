@@ -11,7 +11,6 @@ import org.mapstruct.Mapper;
 public interface TaskMapper {
     default
     TaskDetailResponse toTaskDetailResponse(TaskUser taskUser){
-
         return TaskDetailResponse.builder()
                 .task_id(taskUser.getTask().getId())
                 .task_user_id(taskUser.getId())
@@ -36,6 +35,8 @@ public interface TaskMapper {
                 .deleted_date(taskUser.getTask().getDeletedDate())
                 .created_date(taskUser.getTask().getCreatedDate())
                 .can_finished(taskUser.getTask().getStatus() == 3)
+                .project_id(taskUser.getTask().getProject().getId())
+                .project_name(taskUser.getTask().getProject().getName())
                 .build();
     }
 }
