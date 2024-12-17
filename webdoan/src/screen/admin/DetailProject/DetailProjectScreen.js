@@ -4,8 +4,14 @@ import styles from "./DetailProjectStyle.module.scss";
 import TaskList from "../../../components/TaskList/TaskList";
 import {useDispatch, useSelector} from "react-redux";
 import {useNavigate, useParams} from "react-router-dom";
-import {actionGetDetailProject, actionUpdateProject} from "../../../redux-store/action/actionProjectManagement";
+import {
+    actionGetDetailProject,
+    actionUpdateDepartmentOfProject,
+    actionUpdateProject
+} from "../../../redux-store/action/actionProjectManagement";
 import moment from "moment/moment";
+import Select from "react-select";
+import {actionUpdateListUserOfDepartment} from "../../../redux-store/action/actionDepartmentManagement";
 
 const cx = classNames.bind(styles);
 
@@ -15,12 +21,34 @@ const DetailProjectScreen = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const token = useSelector(state => state.reducerAuth.token);
+    const overViewAdmin = useSelector(state => state.reducerAuth.overViewAdmin);
     const detailProject = useSelector(state => state.reducerProjectManagement.detailProject);
     const [createDate, setCreateDate] = useState(moment(detailProject?.created_date).utc().format("YYYY-MM-DDTHH:mm"));
     const [expiredDate, setExpiredDate] = useState(moment(detailProject?.expired_date).utc().format("YYYY-MM-DDTHH:mm"));
     const [projectName, setProjectName] = useState(detailProject?.project_name);
     const [projectStatus, setProjectStatus] = useState(detailProject?.status);
     const [projectContent, setProjectContent] = useState(detailProject?.content);
+
+    const [departmentOfProject, setDepartmentOfProject] = useState(null);
+    const [listDepartmentOfProject, setListDepartmentOfProject] = useState(detailProject?.departments || null);
+
+    const flattenTreeForSelect = (tree, level = 0, parentLabel = "") => {
+        let flatList = [];
+        tree?.forEach((node) => {
+            flatList.push({
+                value: node.departmentId,
+                label: `${parentLabel}${node.departmentName}`,
+                ...node,
+            });
+            if (node.child_departments && node.child_departments.length > 0) {
+                flatList = flatList.concat(
+                    flattenTreeForSelect(node.child_departments, level + 1, `${parentLabel}--- `)
+                );
+            }
+        });
+        return flatList;
+    };
+    const flatList = flattenTreeForSelect(overViewAdmin.departments);
 
     const handleDetailTaskAdmin = (itemSelect) => {
         navigate(`/admin/DetailTaskAdminScreen/${itemSelect.task_id}`);
@@ -30,12 +58,38 @@ const DetailProjectScreen = () => {
         dispatch(actionUpdateProject(token, detailProject.project_id, projectName, createDate, expiredDate, projectStatus, projectContent));
     }
 
+    const handleDepartmentOfProject = (itemSelect) => {
+        setListDepartmentOfProject((prevSelectedList) => {
+            const isDuplicate = prevSelectedList.some((item) => (item.department_id && item.department_id === itemSelect.departmentId));
+
+            if (!isDuplicate) {
+                return [...prevSelectedList, {
+                    department_id: itemSelect.departmentId,
+                    department_name: itemSelect.departmentName,
+                }];
+            }
+
+            return prevSelectedList;
+        });
+    }
+
+    const handleDeleteDepartmentOfProject = (department_id) => {
+        setListDepartmentOfProject((prevSelectedList) =>
+            prevSelectedList.filter((item) => item.department_id !== department_id)
+        );
+    }
+
+    const handleUpdateListDepartmentOfProject = () => {
+        dispatch(actionUpdateDepartmentOfProject(token, detailProject.project_id, listDepartmentOfProject));
+    }
+
     useEffect(() => {
         setCreateDate(moment(detailProject?.created_date).utc().format("YYYY-MM-DDTHH:mm"));
         setExpiredDate(moment(detailProject?.expired_date).utc().format("YYYY-MM-DDTHH:mm"));
         setProjectName(detailProject?.project_name);
         setProjectStatus(detailProject?.status);
         setProjectContent(detailProject?.content);
+        setListDepartmentOfProject(detailProject?.departments);
     }, [detailProject]);
 
     useEffect(() => {
@@ -158,8 +212,24 @@ const DetailProjectScreen = () => {
                     <button
                         type="button"
                         className="btn btn-success col-md-2 margin_left_20"
-                    >Thêm phòng ban
+                        onClick={handleUpdateListDepartmentOfProject}
+                    >
+                        CẬP NHẬT
                     </button>
+                </div>
+
+                <div className="mb-3 d-flex align-items-center">
+                    <label className="col-md-2">Thêm phòng ban:</label>
+                    <Select
+                        options={flatList}
+                        value={departmentOfProject || null}
+                        onChange={(itemSelected) => {
+                            handleDepartmentOfProject(itemSelected);
+                            setDepartmentOfProject(itemSelected);
+                        }}
+                        placeholder="Tìm phòng ban..."
+                        className="mb-3 w-100"
+                    />
                 </div>
 
                 <div className="col-md-12">
@@ -172,11 +242,16 @@ const DetailProjectScreen = () => {
                         </tr>
                         </thead>
                         <tbody>
-                        {detailProject?.departments?.length > 0 && detailProject?.departments?.map((item, index) => (
+                        {listDepartmentOfProject?.map((item, index) => (
                             <tr className={cx('text-center', 'table_row')}>
-                                <td>{index+1}</td>
+                                <td>{index + 1}</td>
                                 <td className='text_left'>{item.department_name}</td>
-                                <td className={cx('text_red')}>Xoá</td>
+                                <td
+                                    className={cx('text_red')}
+                                    onClick={() => handleDeleteDepartmentOfProject(item.department_id)}
+                                >
+                                    Xoá
+                                </td>
                             </tr>
                         ))}
                         </tbody>
@@ -191,7 +266,8 @@ const DetailProjectScreen = () => {
                 </div>
 
                 <div>
-                    <TaskList tasks={detailProject?.tasks || []} handleDetailTask={handleDetailTaskAdmin} showFullTaskList={true}/>
+                    <TaskList tasks={detailProject?.tasks || []} handleDetailTask={handleDetailTaskAdmin}
+                              showFullTaskList={true}/>
                 </div>
             </div>
         </div>

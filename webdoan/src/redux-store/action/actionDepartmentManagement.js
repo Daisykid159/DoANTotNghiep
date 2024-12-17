@@ -50,6 +50,24 @@ export function actionGetListUserOfDepartment (token, id) {
     };
 }
 
+export function actionUpdateListUserOfDepartment (token, departmentId, listUserOfDepartment) {
+    return async (dispatch, getState) => {
+        try {
+            const response = await Api(token).updateListUsersOfDepartment(departmentId, listUserOfDepartment);
+            if (response && response.data){
+                dispatch(actionGetListUserOfDepartment(token, departmentId));
+                toast.success('Cập nhật danh sách người dùng trong phòng ban thành công!');
+            } else {
+                toast.error('Cập nhật danh sách người dùng trong phòng ban thất bại!');
+                dispatch(actionGetListUserOfDepartment(token, departmentId));
+                console.log("Lỗi api actionUpdateListUserOfDepartment");
+            }
+        } catch (error) {
+            console.log("Lỗi api actionUpdateListUserOfDepartment", error);
+        }
+    };
+}
+
 export function actionCreateDepartmentManagement (token, parentDepartmentId, departmentNewName, departmentNewIsActive, resetCreate) {
     return async (dispatch, getState) => {
         try {
@@ -147,6 +165,7 @@ export function actionCreatePosition (token, positionNameNew, isActiveNew) {
 export default {
     actionGetListDepartmentManagement,
     actionGetListUserOfDepartment,
+    actionUpdateListUserOfDepartment,
     actionGetListPositions,
     actionUpdatePosition,
     actionCreatePosition,

@@ -46,6 +46,10 @@ const Api = (token) => {
         return api.get(`/api/admin/general`);
     }
 
+    const getFullUser = () => {
+        return api.get(`/api/admin/fullUsers`);
+    }
+
     const createPersonnelManagement = (data) => {
         return api.post(`/api/admin/createUser`, data);
     }
@@ -70,6 +74,10 @@ const Api = (token) => {
         return api.get(`api/admin/UsersOfDepartment/${id}`);
     }
 
+    const updateListUsersOfDepartment = (id, listUser) => {
+        return api.put(`api/admin/updateUsersOfDepartment/${id}`, listUser);
+    }
+
     const createDepartment = (parentDepartmentId, departmentNewName, departmentNewIsActive) => {
         return api.post(`/api/admin/createDepartment`, {
             parent_department_id: parentDepartmentId,
@@ -82,6 +90,10 @@ const Api = (token) => {
         return api.put(`/api/admin/updateDepartment/${department_id}`, {
             department_id, department_name: departmentName, parent_department_id: department_parent_id, isActive
         });
+    }
+
+    const updateDepartmentOfProject = (department_id, listDepartment) => {
+        return api.put(`/api/admin/updateDepartmentOfProject/${department_id}`, listDepartment);
     }
 
     const getListPositions = () => {
@@ -199,8 +211,10 @@ const Api = (token) => {
         putPasswordNew,
         getListDepartmentManagement,
         getListUsersOfDepartment,
+        updateListUsersOfDepartment,
         updateDepartment,
         createDepartment,
+        updateDepartmentOfProject,
         getListPositions,
         updatePosition,
         createPosition,
@@ -211,6 +225,7 @@ const Api = (token) => {
         getDetailTask,
 
         getOverView,
+        getFullUser,
         myInfo,
         updateMyInfo,
         changePassword,

@@ -7,14 +7,17 @@ import {useDispatch, useSelector} from "react-redux";
 import {
     actionCreatePersonnel,
     actionGetPersonnel,
-    actionResetPasswordPersonnel
+    actionResetPasswordPersonnel, actionUpdatePersonnel
 } from "../../../redux-store/action/actionPersonnelManagement";
 
 const cx = classNames.bind(styles);
 
 const RowDepartment = ({ item, index, listPositions, handleDeleteItemDepartment }) => {
-    const [position, setPosition] = useState(item.position);
     const [isMain, setIsMain] = useState(item.isMain);
+
+    const initialPosition = listPositions.find(pos => pos.value === item.position_id) || null;
+
+    const [position, setPosition] = useState(initialPosition);
 
     const handleChosePosition = (itemPosition) => {
         setPosition(itemPosition);
@@ -24,16 +27,15 @@ const RowDepartment = ({ item, index, listPositions, handleDeleteItemDepartment 
     return (
         <tr className={cx('text-center', 'table_row')} key={index}>
             <td>{index + 1}</td>
-            <td className='text_left'>{item.department_name}</td>
+            <td className='text_left'>{item?.department_name || item?.departmentName}</td>
             <td>
-                {item.position_name}
-                {/*<Select*/}
-                {/*    options={listPositions}*/}
-                {/*    value={position || null}*/}
-                {/*    onChange={handleChosePosition}*/}
-                {/*    placeholder="Tìm phòng ban..."*/}
-                {/*    className="mb-3 w-100"*/}
-                {/*/>*/}
+                <Select
+                    options={listPositions}
+                    value={position || null}
+                    onChange={handleChosePosition}
+                    placeholder="Chọn chức vụ..."
+                    className="mb-3 w-100"
+                />
             </td>
             <td>
                 <input
@@ -76,6 +78,7 @@ const DetailUserScreen = () => {
     const [gender, setGender] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
+    const [errorPhone, setErrorPhone] = useState("");
     const [address, setAddress] = useState('');
     const [isActive, setIsActive] = useState(true);
     const [isAdminActive, setIsAdminActive] = useState(false);
@@ -109,6 +112,7 @@ const DetailUserScreen = () => {
             flatList.push({
                 value: node.departmentId,
                 label: `${parentLabel}${node.departmentName}`,
+                ...node,
             });
             if (node.child_departments && node.child_departments.length > 0) {
                 flatList = flatList.concat(
@@ -124,6 +128,7 @@ const DetailUserScreen = () => {
             flatList.push({
                 value: node.positionId,
                 label: `${parentLabel}${node.positionName}`,
+                ...node,
             });
         });
         return flatList;
@@ -151,9 +156,36 @@ const DetailUserScreen = () => {
             hometown: address,
             isActive: isActive === undefined ? true : isActive,
             isAdmin: isAdminActive === undefined ? false : isAdminActive,
-            department: listDepartmentCreate,
-        }
+            departments: listDepartmentCreate,
+        };
         dispatch(actionCreatePersonnel(token, userNew, navigate))
+    }
+
+    const handleUpdateUser = () => {
+        const listDepartmentCreate = listSelectedDepartment.map((department) => {
+            return {
+                "department_id": department?.value || department?.department_id,
+                "position_id": department.position?.value || department.position_id,
+                "isMain": department.isMain
+            }
+        });
+
+        const userNew = {
+            user_id: detailUser.user_id,
+            username: userName,
+            firstname: firstName,
+            lastname: lastName,
+            fullname: fullName,
+            dateofbirth: dateOfBirth,
+            gender: gender,
+            email: email,
+            phone: phone,
+            hometown: address,
+            isActive: isActive === undefined ? true : isActive,
+            isAdmin: isAdminActive === undefined ? false : isAdminActive,
+            departments: listDepartmentCreate,
+        }
+        dispatch(actionUpdatePersonnel(token, userNew, navigate))
     }
 
     const handleResetPassword = () => {
@@ -191,7 +223,7 @@ const DetailUserScreen = () => {
             setListSelectedDepartment(detailUser.department || []);
             setPhone(detailUser.phone || '');
             setAddress(detailUser.hometown || '');
-            setIsActive(detailUser.active);
+            setIsActive(detailUser.isActive);
             setIsAdminActive(detailUser.isAdmin);
         }
     }, [detailUser]);
@@ -214,6 +246,7 @@ const DetailUserScreen = () => {
                         (<button
                             type="button"
                             className="btn btn-success col-md-2 margin_left_20"
+                            onClick={handleUpdateUser}
                         >CẬP NHẬT</button>)
                     }
                 </div>
@@ -303,13 +336,24 @@ const DetailUserScreen = () => {
 
                 <div className="mb-3 d-flex align-items-center">
                     <label className="col-md-2">Số điện thoại:</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        placeholder={"Nhập số địa thoại"}
-                        value={phone}
-                        onChange={e => setPhone(e.target.value)}
-                    />
+                    <div className="col-md-10">
+                        <input
+                            type="text"
+                            className="form-control"
+                            placeholder={"Nhập số địa thoại"}
+                            value={phone}
+                            onChange={e => {
+                                const value = e.target.value;
+                                setPhone(value);
+                                if (value.length !== 10) {
+                                    setErrorPhone("Số điện thoại phải có tối thiểu 10 chữ số.");
+                                } else {
+                                    setErrorPhone("");
+                                }
+                            }}
+                        />
+                        {errorPhone && <p style={{ color: "red", marginTop: "5px" }}>{errorPhone}</p>}
+                    </div>
                 </div>
 
                 <div className="mb-3 d-flex align-items-center">
@@ -422,6 +466,7 @@ const DetailUserScreen = () => {
                         value={password}
                         onChange={e => setPassword(e.target.value)}
                     />
+
                 </div>)}
             </div>
         </div>

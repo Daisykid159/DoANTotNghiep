@@ -5,6 +5,7 @@ const INITIAL_STATE = {
     token: '',
     overViewAdmin: {},
     overViewUser: {},
+    listFullUser: [],
 };
 
 const reducerAuth = (state = INITIAL_STATE, action) => {

@@ -7,11 +7,61 @@ import {useDispatch, useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import {
     actionCreateDepartmentManagement,
-    actionGetListDepartmentManagement, actionGetListUserOfDepartment, actionUpdateDepartmentManagement
+    actionGetListDepartmentManagement,
+    actionGetListUserOfDepartment,
+    actionUpdateDepartmentManagement,
+    actionUpdateListUserOfDepartment
 } from "../../../redux-store/action/actionDepartmentManagement";
 import Select from "react-select";
 
 const cx = classNames.bind(styles);
+
+const RowUserOfDepartment = ({ item, index, listPositions, handleDeleteUserOfDepartment }) => {
+    const [isMain, setIsMain] = useState(item.isMain);
+
+    const initialPosition = listPositions.find(pos => pos.value === item.position_id) || null;
+
+    const [position, setPosition] = useState(initialPosition);
+
+    const handleChosePosition = (itemPosition) => {
+        setPosition(itemPosition);
+        item.position = itemPosition;
+    }
+
+    return (
+        <tr className={cx('text-center', 'table_row')} key={index}>
+            <td>{index + 1}</td>
+            <td className='text_left'>{item.user_name}</td>
+            <td>
+                <Select
+                    options={listPositions}
+                    value={position || null}
+                    onChange={handleChosePosition}
+                    placeholder="Chọn chức vụ..."
+                    className="mb-3 w-100"
+                />
+            </td>
+            <td>
+                <input
+                    type="checkbox"
+                    className="form-check-input"
+                    id="active"
+                    checked={isMain}
+                    onChange={(e) => {
+                        setIsMain(e.target.checked);
+                        item.isMain = e.target.checked;
+                    }}
+                />
+            </td>
+            <td
+                className={cx('text_red')}
+                onClick={() => handleDeleteUserOfDepartment(item)}
+            >
+                Xoá
+            </td>
+        </tr>
+    )
+}
 
 const DepartmentManagementScreen = () => {
 
@@ -19,7 +69,9 @@ const DepartmentManagementScreen = () => {
     const navigate = useNavigate();
 
     const token = useSelector(state => state.reducerAuth.token);
+    const overViewAdmin = useSelector(state => state.reducerAuth.overViewAdmin);
     const listDepartment = useSelector(state => state.reducerDepartmentManagement.listDepartment);
+    const listFullUser = useSelector(state => state.reducerAuth.listFullUser);
     const listUserOfDepartment = useSelector(state => state.reducerDepartmentManagement.listUserOfDepartment);
     const [activeModuleDepartment, setActiveModuleDepartment] = useState(false);
     const [nodeSelect, setNodeSelect] = useState(listDepartment[0]);
@@ -29,6 +81,8 @@ const DepartmentManagementScreen = () => {
     const [departmentNewName, setDepartmentNewName] = useState("");
     const [departmentNewIsActive, setDepartmentNewIsActive] = useState(true);
     const [selectedDepartmentCreate, setSelectedDepartmentCreate] = useState(null);
+    const [selectedListUserOfDepartment, setSelectedListUserOfDepartment] = useState(listUserOfDepartment);
+    const [listPositions, setListPositions] = useState([]);
 
     const handleNodeClick = (node) => {
         setNodeSelect(node);
@@ -64,8 +118,24 @@ const DepartmentManagementScreen = () => {
         });
         return flatList;
     };
-
+    const flattenTreeForSelect2 = (tree, level = 0, parentLabel = "") => {
+        let flatList = [];
+        tree.forEach((node) => {
+            flatList.push({
+                value: node.positionId,
+                label: `${parentLabel}${node.positionName}`,
+                ...node,
+            });
+        });
+        return flatList;
+    };
     const flatList = flattenTreeForSelect(listDepartment);
+
+    const flastListFullUser = listFullUser.map(user => ({
+        value: user.id,
+        label: `${user.fullName} - ${user.username}`,
+        ...user,
+    }))
 
     const handleChangeEdit = (item) => {
         setSelectedDepartment(item);
@@ -90,6 +160,39 @@ const DepartmentManagementScreen = () => {
         dispatch(actionUpdateDepartmentManagement(token, nodeSelect.departmentId, departmentName, selectedDepartment.value, departmentActive));
     }
 
+    const handleAddUserOfDepartment = (itemSelected) => {
+        setSelectedListUserOfDepartment((prevSelectedList) => {
+            const isDuplicate = prevSelectedList.some((item) => (item.user_id && item.user_id === itemSelected.id));
+
+            if (!isDuplicate) {
+                return [...prevSelectedList, {
+                    isActive: itemSelected.isActive,
+                    isMain: false,
+                    position_id: null,
+                    position_name: null,
+                    user_id: itemSelected.id,
+                    user_name: itemSelected.fullName,
+                }];
+            }
+
+            return prevSelectedList;
+        });
+    };
+
+    const handleDeleteUserOfDepartment = (itemSelected) => {
+        setSelectedListUserOfDepartment((prevSelectedList) => prevSelectedList.filter((item) => item.user_id !== itemSelected.user_id))
+    }
+
+    const handleUpdateListUserOfDepartment = () => {
+        const listUpdateUserOfDepartment = selectedListUserOfDepartment.map(user => ({
+            user_id: user.user_id,
+            department_id: nodeSelect.departmentId,
+            position_id: user.position_id || user.position.positionId,
+            isMain: user.isMain,
+        }));
+        dispatch(actionUpdateListUserOfDepartment(token, nodeSelect.departmentId, listUpdateUserOfDepartment));
+    }
+
     useEffect(() => {
         if(listDepartment.length > 0){
             dispatch(actionGetListUserOfDepartment(token, listDepartment[0]?.departmentId));
@@ -101,8 +204,19 @@ const DepartmentManagementScreen = () => {
     }, [listDepartment])
 
     useEffect(() => {
+        setSelectedListUserOfDepartment(listUserOfDepartment);
+    }, [listUserOfDepartment]);
+
+    useEffect(() => {
         dispatch(actionGetListDepartmentManagement(token))
     }, []);
+
+    useEffect(() => {
+        if(overViewAdmin.position?.length > 0){
+            const positions = flattenTreeForSelect2(overViewAdmin.position);
+            setListPositions(positions);
+        }
+    }, [overViewAdmin]);
 
     return (
         <div className={cx('DepartmentManagementScreen', 'container')}>
@@ -182,7 +296,12 @@ const DepartmentManagementScreen = () => {
                         </div>
                         <div className="mb-3 d-flex align-items-center">
                         <label className="col-md-3">Thêm người dùng vào phòng ban:</label>
-                            <input type="text" className="form-control" placeholder="Nhập phòng ban" value={'eGov - Beta'} />
+                            <Select
+                                options={flastListFullUser}
+                                onChange={handleAddUserOfDepartment}
+                                placeholder="Tìm người dùng..."
+                                className="mb-3 w-100"
+                            />
                         </div>
                     </div>
                     <div>
@@ -191,6 +310,7 @@ const DepartmentManagementScreen = () => {
 
                             <button
                                 className="btn btn-info d-flex align-items-center"
+                                onClick={handleUpdateListUserOfDepartment}
                             >
                                 CẬP NHẬT
                             </button>
@@ -206,21 +326,8 @@ const DepartmentManagementScreen = () => {
                             </tr>
                             </thead>
                             <tbody>
-                            {listUserOfDepartment.map((item, index) => (
-                                <tr className={cx('text-center', 'table_row')} key={index}>
-                                    <td>{index + 1}</td>
-                                    <td className='text_left'>{item.user_name}</td>
-                                    <td>{item.position_name}</td>
-                                    <td>
-                                        <input
-                                            type="checkbox"
-                                            className="form-check-input"
-                                            id="active"
-                                            checked={item.isMain}
-                                        />
-                                    </td>
-                                    <td className={cx('text_red')}>Xoá</td>
-                                </tr>
+                            {selectedListUserOfDepartment?.map((item, index) => (
+                                <RowUserOfDepartment item={item} index={index} listPositions={listPositions} handleDeleteUserOfDepartment={handleDeleteUserOfDepartment} />
                             ))}
                             </tbody>
                         </table>

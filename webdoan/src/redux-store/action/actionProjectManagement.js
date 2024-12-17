@@ -55,9 +55,10 @@ export function actionUpdateProject (token, id, projectName, createDate, expired
         try {
             const response = await Api(token).updateProject(id, projectName, createDate, expiredDate, projectStatus, projectContent);
             if (response && response.data){
-                dispatch(actionGetDetailProject(id))
+                dispatch(actionGetDetailProject(token, id))
+                toast.success("Cập nhập thông tin thành công!")
             } else {
-                dispatch(actionGetDetailProject(id))
+                dispatch(actionGetDetailProject(token, id))
                 toast.error("Cập nhập thông tin thất bại");
                 console.log("Lỗi api actionUpdateProject");
             }
@@ -67,8 +68,27 @@ export function actionUpdateProject (token, id, projectName, createDate, expired
     };
 }
 
+export function actionUpdateDepartmentOfProject (token, projectId, listDepartment) {
+    return async (dispatch, getState) => {
+        try {
+            const response = await Api(token).updateDepartmentOfProject(projectId, listDepartment);
+            if (response && response.data){
+                dispatch(actionGetDetailProject(token, projectId));
+                toast.success('Cập nhật danh sách phòng ban tham gia dự án thành công!');
+            } else {
+                toast.error('Cập nhật danh sách phòng ban tham gia dự án thất bại!');
+                dispatch(actionGetDetailProject(token, projectId));
+                console.log("Lỗi api actionUpdateDepartmentOfProject");
+            }
+        } catch (error) {
+            console.log("Lỗi api actionUpdateDepartmentOfProject", error);
+        }
+    };
+}
+
 export default {
     actionGetListProject,
     actionGetDetailProject,
     actionUpdateProject,
+    actionUpdateDepartmentOfProject,
 };

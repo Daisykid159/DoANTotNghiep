@@ -26,6 +26,7 @@ export function actionLogin (username, password, nextToScreen) {
 
                 if(decoded.scope === 'ADMIN') {
                     dispatch(actionGetGeneralAdmin(response.data.result.token));
+                    dispatch(actionGetFullUser(response.data.result.token));
                 } else {
                     dispatch(actionGetOverViewUser(response.data.result.token));
                 }
@@ -66,6 +67,7 @@ export function actionRefreshToken (token) {
 
                 if(decoded.scope === 'ADMIN') {
                     dispatch(actionGetGeneralAdmin(response.data.result.token));
+                    dispatch(actionGetFullUser(response.data.result.token));
                 } else {
                     dispatch(actionGetOverViewUser(response.data.result.token));
                 }
@@ -141,10 +143,28 @@ export function actionGetOverViewUser (token) {
     };
 }
 
+export function actionGetFullUser (token) {
+    return async (dispatch, getState) => {
+        try {
+            const response = await Api(token).getFullUser();
+            if (response && response.data){
+                dispatch(updateData({
+                    listFullUser: response.data,
+                }))
+            } else {
+                console.log("Loi api actionGetFullUser");
+            }
+        } catch (error) {
+            console.log("Loi api actionGetFullUser", error)
+        }
+    };
+}
+
 export default {
     actionLogin,
     actionRefreshToken,
     actionLogout,
     actionGetGeneralAdmin,
+    actionGetFullUser,
     actionGetOverViewUser,
 };
