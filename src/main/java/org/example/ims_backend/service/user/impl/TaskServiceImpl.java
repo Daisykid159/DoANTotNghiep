@@ -99,23 +99,35 @@ public class TaskServiceImpl implements TaskService {
             String username = context.getAuthentication().getName();
             User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
             Task task = taskRepository.findById(task_id).orElseThrow(() -> new RuntimeException("Task not found"));
-            TaskUser taskUser = taskUserRepository.findByUserAndTask(userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found")), taskRepository.findById(task_id).orElseThrow(() -> new RuntimeException("Task not found")));
-            TaskDetailResponse taskDetail = taskMapper.toTaskDetailResponse(taskUser);
-            taskDetail.setCombinations(taskUserRepository.findByTaskAndRole(task,2).stream().map(taskUserMapper::toTaskUserResponse).toList());
-            taskDetail.setFiles(fileService.getFiles(task));
-            taskDetail.setReports(reportService.getReportList(task));
-            taskDetail.setComments(commentService.getComments(task));
-            taskDetail.setHistory(historyService.getHistoryList(task));
-            if(taskUser.getHasRead() == 0) {
-                taskUser.setHasRead(1);
-                taskUserRepository.save(taskUser);
+            if(user.getIsAdmin() == 1){
+                List<TaskUser> taskUsers = taskUserRepository.findByTaskAndRole(task, 0);
+                TaskUser taskUser = taskUsers.isEmpty() ? new TaskUser(): taskUsers.get(0);
+                TaskDetailResponse taskDetail = taskMapper.toTaskDetailResponseOfAdmin(task, taskUser);
+                taskDetail.setCombinations(taskUserRepository.findByTaskAndRole(task, 2).stream().map(taskUserMapper::toTaskUserResponse).toList());
+                taskDetail.setFiles(fileService.getFiles(task));
+                taskDetail.setReports(reportService.getReportList(task));
+                taskDetail.setComments(commentService.getComments(task));
+                taskDetail.setHistory(historyService.getHistoryList(task));
+                return taskDetail;
+            }else {
+                TaskUser taskUser = taskUserRepository.findByUserAndTask(userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found")), taskRepository.findById(task_id).orElseThrow(() -> new RuntimeException("Task not found")));
+                TaskDetailResponse taskDetail = taskMapper.toTaskDetailResponse(taskUser);
+                taskDetail.setCombinations(taskUserRepository.findByTaskAndRole(task, 2).stream().map(taskUserMapper::toTaskUserResponse).toList());
+                taskDetail.setFiles(fileService.getFiles(task));
+                taskDetail.setReports(reportService.getReportList(task));
+                taskDetail.setComments(commentService.getComments(task));
+                taskDetail.setHistory(historyService.getHistoryList(task));
+                if (taskUser.getHasRead() == 0) {
+                    taskUser.setHasRead(1);
+                    taskUserRepository.save(taskUser);
+                }
+                return taskDetail;
+
             }
-            return taskDetail;
         }catch (Exception e){
             log.error("Error while getting task detail", e);
-            return new TaskDetailResponse();
+            throw new RuntimeException( e.getMessage());
         }
-
     }
 
     @Override

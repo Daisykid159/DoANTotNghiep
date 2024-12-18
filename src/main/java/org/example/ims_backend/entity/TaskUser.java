@@ -29,11 +29,11 @@ public class TaskUser {
     @JoinColumn(name = "UserId")
     private User user;
     @Column(name = "Role")
-    private int role;
+    private Integer role;
     @Column(name = "HasRead")
-    private int hasRead;
+    private Integer hasRead;
     @Column(name = "IsPin")
-    private int isPin;
+    private Integer isPin;
     @CreationTimestamp
     @Column(name = "CreatedDate")
     private Date createdDate;

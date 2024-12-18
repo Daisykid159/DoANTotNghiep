@@ -9,8 +9,15 @@ import org.example.ims_backend.mapper.FileMapper;
 import org.example.ims_backend.repository.FileRepository;
 import org.example.ims_backend.service.user.FileService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -33,5 +40,24 @@ public class FileServiceImpl implements FileService {
             log.error("Error in deleteFile", e);
             return false;
         }
+    }
+
+    @Override
+    public void storeFile(MultipartFile file , Path path) {
+        try {
+            Path targetLocation = path.resolve(
+                    Paths.get(Objects.requireNonNull(file.getOriginalFilename()))
+                            .normalize()
+                            .toAbsolutePath()
+            );
+            try (InputStream inputStream = file.getInputStream()) {
+                Files.copy(inputStream, targetLocation,
+                        StandardCopyOption.REPLACE_EXISTING);
+
+            }
+        } catch (Exception e){
+            log.error("Error in storeFile", e);
+        }
+
     }
 }

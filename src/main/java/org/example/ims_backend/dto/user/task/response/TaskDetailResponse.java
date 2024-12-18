@@ -21,10 +21,10 @@ import java.util.List;
 public class TaskDetailResponse {
     Long task_id;
     Long task_user_id;
-    int status;
-    int state;
+    Integer status;
+    Integer state;
     boolean can_edit;
-    int role;
+    Integer role;
     String title;
     Long assign_department_id;
     String assign_department_name;
@@ -35,7 +35,7 @@ public class TaskDetailResponse {
     Long target_user_id;
     String target_user_name;
     String content;
-    int priority;
+    Integer priority;
     Integer progress;
     Date expired_date;
     Date created_date;

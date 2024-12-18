@@ -39,4 +39,35 @@ public interface TaskMapper {
                 .project_name(taskUser.getTask().getProject().getName())
                 .build();
     }
+    default
+    TaskDetailResponse toTaskDetailResponseOfAdmin(Task  task, TaskUser taskUser){
+        return TaskDetailResponse.builder()
+
+                .task_id(task.getId())
+                .task_user_id(taskUser.getId() != null ? taskUser.getId() : null)
+                .status(task.getStatus())
+                .state(task.getState())
+                .can_edit(task.getStatus() != 3)
+                .role(taskUser.getRole() != null ? taskUser.getRole() : null)
+                .title(task.getTitle())
+                .assign_department_id(task.getAssignDepartment().getId())
+                .assign_department_name(task.getAssignDepartment().getDepartmentName())
+                .assign_user_id(task.getAssignUser().getId())
+                .assign_user_name(task.getAssignUser().getFullName())
+                .target_department_id(task.getTargetDepartment().getId())
+                .target_department_name(task.getTargetDepartment().getDepartmentName())
+                .target_user_id(task.getTargetUser().getId())
+                .target_user_name(task.getTargetUser().getFullName())
+                .content(task.getContent())
+                .progress(task.getProgress())
+                .priority(task.getPriority())
+                .expired_date(task.getExpiredDate())
+                .completed_date(task.getCompletedDate())
+                .deleted_date(task.getDeletedDate())
+                .created_date(task.getCreatedDate())
+                .can_finished(task.getStatus() == 3)
+                .project_id(task.getProject().getId())
+                .project_name(task.getProject().getName())
+                .build();
+    }
 }
