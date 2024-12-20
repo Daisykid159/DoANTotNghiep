@@ -22,29 +22,21 @@ const StatisticalScreen = () => {
 
     const data = [
         {
-            name: "Và Truyền Thông Tỉnh Tây Ninh/eGov - Beta/Tij xã Hòa Thành Test",
-            totalTasks: 1,
-            unfinishedInTime: 1,
-            unfinishedOverdue: 0,
-            finishedInTime: 0,
-            finishedOverdue: 0,
+            name: "Ban điều hành",
+            totalTasks: 40,
+            unfinishedInTime: 10,
+            unfinishedOverdue: 20,
+            finishedInTime: 5,
+            finishedOverdue: 5,
         },
         {
-            name: "Và Truyền Thông Tỉnh Tây Ninh/eGov - Beta/Sở TTTT test",
-            totalTasks: 8,
-            unfinishedInTime: 0,
-            unfinishedOverdue: 6,
-            finishedInTime: 1,
-            finishedOverdue: 1,
-        },
-        {
-            name: "eGov - Beta",
-            totalTasks: 12,
-            unfinishedInTime: 0,
-            unfinishedOverdue: 8,
-            finishedInTime: 1,
-            finishedOverdue: 3,
-        },
+            name: "Team LGSP",
+            totalTasks: 55,
+            unfinishedInTime: 15,
+            unfinishedOverdue: 20,
+            finishedInTime: 10,
+            finishedOverdue: 10,
+        }
     ];
 
     const handleDateChange = (event) => {

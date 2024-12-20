@@ -44,7 +44,7 @@ const TaskList = ({ tasks, handleDetailTask, showFullTaskList = false, showExpir
                     <td className={cx('text_left')}>{task.target_user_name}</td>
                     <td>{task.priority}</td>
                     <td>{formatDate(task.created_date)}</td>
-                    <td>{formatDate(task.expire_date)}</td>
+                    <td>{formatDate(task.expired_date)}</td>
                     <td>
                         <progress value={task.progress || 0} max="100" className={cx('w-100')}></progress>
                     </td>

@@ -120,6 +120,7 @@ const Chart = () => {
                 align: "left",
                 offsetX: 110,
             },
+            colors: ['#4CAF50', '#2196F3', '#F44336', '#FF9800'],
             responsive: [{
                 breakpoint: 480,
                 options: {
@@ -136,21 +137,25 @@ const Chart = () => {
     const [state3, setState3] = useState({
         series: [
             {
-                name: "Cột 1 (Chi phí)",
-                data: [10, 15, 20, 25], // Dữ liệu qua các năm
+                name: "Hoàn thành đúng hạn",
+                data: [10, 15], // Dữ liệu qua các năm
             },
             {
-                name: "Cột 2 (Doanh thu)",
-                data: [20, 25, 30, 35],
+                name: "Hoàn thành quá hạn",
+                data: [20, 25],
             },
             {
-                name: "Cột 3 (Lợi nhuận)",
-                data: [5, 10, 15, 20],
+                name: "Chưa hoàn thành quá hạn",
+                data: [5, 10],
             },
+            {
+                name: "Chưa hoàn thành còn hạn",
+                data: [5, 10],
+            }
         ],
         options: {
             title: {
-                text: "XYZ - Stock Analysis (2009 - 2016)",
+                text: "Tình hình nhiệm vụ của các phòng ban",
                 align: "left",
                 offsetX: 110,
             },
@@ -168,17 +173,18 @@ const Chart = () => {
             dataLabels: {
                 enabled: false,
             },
+            colors: ['#4CAF50', '#2196F3', '#F44336', '#FF9800'],
             stroke: {
                 show: true,
                 width: 2,
                 colors: ["transparent"],
             },
             xaxis: {
-                categories: ["2019", "2020", "2021", "2022"], // Các năm
+                categories: ["Ban điều hành", "Team LGSP"], // Các năm
             },
             yaxis: {
                 title: {
-                    text: "Đơn vị tính: Tỷ đồng", // Đơn vị chung cho các cột
+                    text: "Đơn vị tính: nhiệm vụ", // Đơn vị chung cho các cột
                 },
             },
             fill: {
@@ -186,7 +192,7 @@ const Chart = () => {
             },
             tooltip: {
                 y: {
-                    formatter: (val) => `${val} Tỷ đồng`, // Tooltip thêm đơn vị
+                    formatter: (val) => `${val} nhiệm vụ`, // Tooltip thêm đơn vị
                 },
             },
             legend: {
@@ -197,24 +203,25 @@ const Chart = () => {
     });
     const [state4, setState4] = React.useState({
         series: [{
-            name: 'PRODUCT A',
-            data: [44, 55, 41, 67, 22, 43]
+            name: 'Hoàn thành đúng hạn',
+            data: [4, 5, 4]
         }, {
-            name: 'PRODUCT B',
-            data: [13, 23, 20, 8, 13, 27]
+            name: 'Hoàn thành quá hạn',
+            data: [3, 3, 0]
         }, {
-            name: 'PRODUCT C',
-            data: [11, 17, 15, 15, 21, 14]
+            name: 'Chưa hoàn thành quá hạn',
+            data: [1, 7, 5]
         }, {
-            name: 'PRODUCT D',
-            data: [21, 7, 25, 13, 22, 8]
+            name: 'Chưa hoàn thành còn hạn',
+            data: [1, 7, 5]
         }],
         options: {
             title: {
-                text: "XYZ - Stock Analysis (2009 - 2016)",
+                text: "Tình hình nhiệm vụ của các dự án",
                 align: "left",
                 offsetX: 110,
             },
+            colors: ['#4CAF50', '#2196F3', '#F44336', '#FF9800'],
             chart: {
                 type: 'bar',
                 height: 350,
@@ -251,10 +258,8 @@ const Chart = () => {
                 },
             },
             xaxis: {
-                type: 'datetime',
-                categories: ['01/01/2011 GMT', '01/02/2011 GMT', '01/03/2011 GMT', '01/04/2011 GMT',
-                    '01/05/2011 GMT', '01/06/2011 GMT'
-                ],
+                type: 'text',
+                categories: ['CRM', 'HRM', 'Hệ thống Giám sát An ninh Mạng'],
             },
             legend: {
                 position: 'right',
@@ -264,8 +269,6 @@ const Chart = () => {
                 opacity: 1
             }
         },
-
-
     });
 
     return (

@@ -1,13 +1,13 @@
 import axios from 'axios';
-import reducerPersonnelManagement from "../redux-store/reducer/reducerPersonnelManagement";
-import {getListDepartmentManagement} from "../redux-store/action/actionDepartmentManagement";
+
+const BASEURL = 'http://localhost:8080'
 
 const Api = (token) => {
     let api
 
     if (token) {
         api = axios.create({
-            baseURL: 'http://localhost:8080',
+            baseURL: BASEURL,
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token || ''}`,
@@ -16,7 +16,7 @@ const Api = (token) => {
         });
     } else {
         api = axios.create({
-            baseURL: 'http://localhost:8080',
+            baseURL: BASEURL,
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -163,7 +163,7 @@ const Api = (token) => {
     }
 
     const getDetailTask = (id) => {
-        return api.get(`api/user/TaskDetail?task_user_id=${id}`);
+        return api.get(`api/user/TaskDetail?task_id=${id}`);
     }
 
     const sendReport = (task_id, type, user_create_id, content, new_expired_date) => {

@@ -99,34 +99,44 @@ const DetailTaskAdminScreen = () => {
                         <div>Nội dung công việc</div>
                     </div>
                     <div className={cx('task_content', 'row', 'col-md-12')}>
-                        <div className={cx('col-md-6', 'd-flex', 'mb-3')}>
+                        <div className={cx('col-md-6', 'd-flex', 'mb-3', 'align-items-center')}>
                             <div className={cx('col-md-4', 'fw-bold')}>Người giao:</div>
-                            <div
-                                className={cx('col-md-8')}>{detailTask.assign_department_name}/ {detailTask.assign_user_name}</div>
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Mức độ quan trọng"
+                                value={`${detailTask.assign_department_name}/ ${detailTask.assign_user_name}`}
+                            />
                         </div>
 
-                        <div className={cx('col-md-6', 'd-flex', 'mb-3')}>
+                        <div className={cx('col-md-6', 'd-flex', 'mb-3', 'align-items-center')}>
                             <div className={cx('col-md-4', 'fw-bold')}>Người chủ trì:</div>
-                            <div
-                                className={cx('col-md-8')}>{detailTask.target_department_name}/ {detailTask.target_user_name}</div>
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Mức độ quan trọng"
+                                value={`${detailTask.target_department_name}/ ${detailTask.target_user_name}`}
+                            />
                         </div>
 
                         <div className={cx('col-md-6', 'd-flex', 'mb-3')}>
                             <div className={cx('col-md-4', 'fw-bold')}>Người phối hợp:</div>
-                            <div className={cx('col-md-8')}>
-                                {detailTask?.combinations?.length > 0 && detailTask?.combinations?.map(item => (
-                                    <div>{item.combination_department_name}/ {item.combination_name}</div>
-                                ))}
-                            </div>
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Mức độ quan trọng"
+                                value={`${detailTask.target_department_name}/ Lê Dương Phong`}
+                            />
                         </div>
 
                         <div className={cx('col-md-6', 'd-flex', 'mb-3')}>
                             <div className={cx('col-md-4', 'fw-bold')}>Người theo dõi:</div>
-                            <div className={cx('col-md-8')}>
-                                {detailTask?.combinations?.length > 0 && detailTask?.combinations?.map(item => (
-                                    <div>{item.department_name}/ {item.target_user_name}</div>
-                                ))}
-                            </div>
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Mức độ quan trọng"
+                                value={`${detailTask.target_department_name}/ Chu Bá Nhất`}
+                            />
                         </div>
 
                         <div className={cx('col-md-6', 'd-flex', 'mb-3', 'align-items-center')}>
@@ -173,7 +183,7 @@ const DetailTaskAdminScreen = () => {
                                 type="text"
                                 className="form-control"
                                 placeholder="Mức độ quan trọng"
-                                value={priorityTask}
+                                value={detailTask?.project_name || null}
                             />
                         </div>
 

@@ -16,7 +16,6 @@ export function actionLogin (username, password, nextToScreen) {
             if (response && response.data){
                 toast.success('Đăng nhập thành công!');
                 const decoded = jwtDecode(response.data.result.token);
-
                 dispatch(updateData({
                     isLogin: true,
                     decoded: decoded,
@@ -30,7 +29,6 @@ export function actionLogin (username, password, nextToScreen) {
                 } else {
                     dispatch(actionGetOverViewUser(response.data.result.token));
                 }
-
                 localStorage.setItem('token', response.data.result.token);
                 localStorage.setItem('username', username);
                 localStorage.setItem('password', password);

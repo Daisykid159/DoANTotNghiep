@@ -26,7 +26,7 @@ const DetailTaskScreen = (props) => {
     const [showModuleEditTask, setShowModuleEditTask] = useState(false);
 
     useEffect(() => {
-        dispatch(actionGetDetailTask(token, props.task.item.tu_id))
+        dispatch(actionGetDetailTask(token, props.task.item.task_id))
     }, [props.task.item]);
 
     const itemRowTimeLines = (item) => (

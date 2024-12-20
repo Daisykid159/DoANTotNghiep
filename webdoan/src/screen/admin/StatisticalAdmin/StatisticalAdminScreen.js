@@ -121,7 +121,14 @@ const StatisticalAdminScreen = () => {
             <div className={cx('col-md-12', 'mt-4', 'StatisticalAdminScreen_body')}>
                 <TaskOverview/>
                 <Chart/>
-                <TableComponent data={data} />
+
+                <div className={cx('col-md-12', 'd-flex', 'align-items-center', 'justify-content-end', 'mt-4', 'mb-3')}>
+                    <button className="btn btn-primary btn-lg">
+                        Xuất báo cáo
+                    </button>
+                </div>
+
+                <TableComponent data={data}/>
             </div>
         </div>
     )
