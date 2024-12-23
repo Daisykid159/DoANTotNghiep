@@ -1,0 +1,35 @@
+.parent {
+  height: 40px;
+  align-items: center;
+  display: flex;
+}
+
+.list_child {
+  margin-left: 30px;
+  position: relative;
+}
+
+.list_child_border_left {
+  position: absolute;
+  top: 0;
+  bottom: 24px;
+  left: -2px;
+  border-left: 2px solid #787575;
+}
+
+.item_child {
+  position: relative;
+}
+
+.brank_child {
+  position: absolute;
+  left: -2px;
+  border-left: 2px solid #787575;;
+  border-bottom: 2px solid #787575;
+  border-bottom-left-radius: 10px;
+  width: 30px;
+}
+
+.text_child {
+  margin-left: 35px;
+}
