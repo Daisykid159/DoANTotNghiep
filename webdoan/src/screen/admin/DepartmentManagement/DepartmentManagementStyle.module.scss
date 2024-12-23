@@ -13,8 +13,9 @@
 }
 
 .tree_view {
-  flex: 0 0 auto;
-  width: 31%;
+  max-height: 80vh;
+  overflow-y: auto;
+  overflow-x: auto;
 }
 
 .border_left {

@@ -246,12 +246,12 @@ const DepartmentManagementScreen = () => {
                 </div>
             </div>
 
-            <div className={cx('row', 'DepartmentManagementScreen_body')}>
-                <div className={cx("col-md-4")}>
+            <div className={cx('row', 'DepartmentManagementScreen_body', 'col-md-12')}>
+                <div className={cx("col-md-4", 'tree_view')}>
                     <TreeComponent data={listDepartment} handleNodeClick={handleNodeClick}/>
                 </div>
 
-                <div className={cx("col-md-8", 'border_left')}>
+                <div className={cx("col-md-8", 'border_left', 'tree_view')}>
                     <div className="d-flex justify-content-between align-items-center mb-4">
                         <h4>Thông tin phòng ban</h4>
 
