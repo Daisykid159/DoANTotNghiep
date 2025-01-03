@@ -385,7 +385,7 @@ public class TaskServiceImpl implements TaskService {
                     .tasks(taskSearchResponses)
                     .avgTimeCompleted(1)
                     .build();
-            List<Task> taskOfDays = taskRepository.findDistinctByTaskUsersUserAndStatus(user, 6);
+            List<Task> taskOfDays = taskRepository.findDistinctByTaskUsersUserAndStatus(user, 5);
             if(taskOfDays.size() >= 100){
                 long time = 0L;
                 for (Task task : taskOfDays){
