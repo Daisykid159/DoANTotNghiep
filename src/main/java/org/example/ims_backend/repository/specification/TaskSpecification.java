@@ -1,35 +1,98 @@
 package org.example.ims_backend.repository.specification;
 
-import org.example.ims_backend.entity.Department;
-import org.example.ims_backend.entity.Project;
-import org.example.ims_backend.entity.Task;
+import jakarta.persistence.criteria.Join;
+import org.example.ims_backend.entity.*;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Date;
 
 public class TaskSpecification {
-    public static Specification<Task> getTaskByProject(Project project) {
+    public static Specification<Task> getTaskByPriority(Integer priority) {
         return (root, query, builder) -> {
-            if (project == null) {
+            if (priority == null) {
                 return builder.conjunction();
             }
-            return builder.equal(root.get("project"), project);
+            return builder.equal(root.get("priority"), priority);
         };
     }
-    public static Specification<Task> getTaskByDepartment(Department department) {
-        return (root, query, builder) -> {
-            if (department == null) {
-                return builder.conjunction();
+    public static Specification<Task> getTaskByDepartment(Long departmentId) {
+        return (root, query, criteriaBuilder) -> {
+            if(departmentId == null) {
+                return criteriaBuilder.conjunction();
             }
-            return builder.equal(root.get("department"), department);
+            // Join Task với TaskUser
+            Join<Task, TaskUser> taskUserJoin = root.join("taskUsers");
+
+            // Lọc theo userId
+            return criteriaBuilder.equal(taskUserJoin.get("department").get("id"), departmentId);
         };
     }
-    public static Specification<Task> getTaskByStatus(int status) {
+    public static Specification<Task> getTaskByStatus(Integer status) {
         return (root, query, builder) -> {
-            if (status == 0) {
+            if (status == null) {
                 return builder.conjunction();
             }
             return builder.equal(root.get("status"), status);
         };
     }
+    public static Specification<Task> getTaskByTitle(String title) {
+        return (root, query, builder) -> {
+            if (title == null || title.isEmpty()) {
+                return builder.conjunction();
+            }
+            String likePattern = "%" + title.toLowerCase() + "%";
+            return builder.or(
+                    builder.like(builder.lower(root.get("title")), likePattern));
+        };
+    }
+
+    public static Specification<Task> hasUser(Long userId) {
+        return (root, query, criteriaBuilder) -> {
+            if(userId == null) {
+                return criteriaBuilder.conjunction();
+            }
+            // Join Task với TaskUser
+            Join<Task, TaskUser> taskUserJoin = root.join("taskUsers");
+
+            // Lọc theo userId
+            return criteriaBuilder.equal(taskUserJoin.get("user").get("id"), userId);
+        };
+    }
+    public static Specification<Task> createdDateBetween(Date from, Date to) {
+        return (root, query, criteriaBuilder) -> {
+            if (from != null && to != null) {
+                return criteriaBuilder.between(root.get("createdDate"), from, to);
+            } else if (from != null) {
+                return criteriaBuilder.greaterThanOrEqualTo(root.get("createdDate"), from);
+            } else if (to != null) {
+                return criteriaBuilder.lessThanOrEqualTo(root.get("createdDate"), to);
+            } else {
+                return criteriaBuilder.conjunction();
+            }
+        };
+    }
+    public static Specification<Task> expiredDateBetween(Date from, Date to) {
+        return (root, query, criteriaBuilder) -> {
+            if (from != null && to != null) {
+                return criteriaBuilder.between(root.get("expiredDate"), from, to);
+            } else if (from != null) {
+                return criteriaBuilder.greaterThanOrEqualTo(root.get("expiredDate"), from);
+            } else if (to != null) {
+                return criteriaBuilder.lessThanOrEqualTo(root.get("expiredDate"), to);
+            } else {
+                return criteriaBuilder.conjunction();
+            }
+        };
+
+    }
+    public static Specification<Task> hasParticipant(User user) {
+        return (root, query, criteriaBuilder) -> {
+            // Join Task với TaskUser
+            Join<Task, TaskUser> taskUserJoin = root.join("taskUsers");
+
+            // Điều kiện: Người tìm kiếm phải tham gia
+            return criteriaBuilder.equal(taskUserJoin.get("user"), user);
+        };
+    }
+
 }

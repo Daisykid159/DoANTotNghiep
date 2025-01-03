@@ -10,7 +10,10 @@ import org.example.ims_backend.dto.admin.projectDTO.response.ProjectDetailRespon
 import org.example.ims_backend.dto.admin.projectDTO.response.ProjectResponse;
 import org.example.ims_backend.dto.admin.taskDTO.request.TaskRequest;
 import org.example.ims_backend.dto.admin.taskDTO.response.TaskResponse;
+import org.example.ims_backend.dto.user.project.response.DUProjectResponse;
+import org.example.ims_backend.dto.user.response.DepartmentGeneral;
 import org.example.ims_backend.entity.*;
+import org.example.ims_backend.mapper.DepartmentUserMapper;
 import org.example.ims_backend.mapper.ProjectMapper;
 import org.example.ims_backend.repository.*;
 import org.example.ims_backend.repository.specification.ProjectSpecification;
@@ -22,6 +25,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -36,6 +40,8 @@ public class ProjectServiceImpl implements ProjectService {
     TaskUserRepository taskUserRepository;
     DepartmentProjectRepository departmentProjectRepository;
     DepartmentRepository departmentRepository;
+    DepartmentUserRepository departmentUserRepository;
+    DepartmentUserMapper departmentUserMapper;
     UserRepository userRepository;
     @Override
     public Page<ProjectResponse> getProjects(Pageable pageable, String keyword, Date fromCreatedDate, Date toCreatedDate, Date fromExpiredDate, Date toExpiredDate) {
@@ -161,6 +167,25 @@ public class ProjectServiceImpl implements ProjectService {
                 .target_user_name(task.getTargetUser().getFullName())
                 .progress(task.getProgress())
                 .build();
+    }
+
+    @Override
+    public DUProjectResponse getUsersAndDepartmentsOfProject(Long id) {
+        try{
+            Project project = projectRepository.findById(id).orElseThrow(() -> new Exception("Project not found"));
+            List<DepartmentProject> departmentProjects = departmentProjectRepository.findByProject(project);
+            List<DepartmentGeneral> departmentGenerals =  new ArrayList<>();
+            for(DepartmentProject departmentProject : departmentProjects){
+                List<DepartmentUser> departmentUsers = departmentUserRepository.findByDepartment(departmentProject.getDepartment());
+                departmentGenerals.add(departmentUserMapper.toDepartmentGeneral(departmentUsers));
+            }
+            return DUProjectResponse.builder()
+                    .departments(departmentGenerals)
+                    .build();
+        }catch (Exception e){
+            log.error("Error: ", e);
+            return null;
+        }
     }
 
 }

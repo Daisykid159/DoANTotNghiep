@@ -8,6 +8,7 @@ import org.example.ims_backend.common.StatusTask;
 import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "task")
@@ -57,5 +58,7 @@ public class Task {
     private Date completedDate;
     @Column(name = "Progress")
     private Integer progress;
+    @OneToMany(mappedBy = "task", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<TaskUser> taskUsers;
 
 }

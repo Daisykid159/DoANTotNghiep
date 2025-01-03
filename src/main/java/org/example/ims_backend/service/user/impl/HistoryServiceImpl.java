@@ -73,6 +73,7 @@ public class HistoryServiceImpl implements HistoryService {
             case 3 -> "Hoàn thành nhiệm vụ";
             case 4 -> "Thu hồi nhiệm vụ";
             case 5 -> "Kết thúc nhiệm vụ";
+            case 6 -> "Trả lại nhiệm vụ";
             default -> "Trạng thái không xác định";
         };
     }

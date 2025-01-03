@@ -9,13 +9,16 @@ import org.example.ims_backend.dto.user.task.request.CreateTaskRequest;
 import org.example.ims_backend.dto.user.task.request.HandoverTaskRequest;
 import org.example.ims_backend.dto.user.task.response.TaskDetailResponse;
 import org.example.ims_backend.dto.user.task.response.TaskResponse;
+import org.example.ims_backend.dto.user.task.response.TaskSearchResponse;
 import org.example.ims_backend.dto.user.taskUser.request.CreateTaskUserRequest;
 import org.example.ims_backend.dto.user.taskUser.request.TaskUserRequest;
 import org.example.ims_backend.entity.*;
 import org.example.ims_backend.mapper.TaskMapper;
 import org.example.ims_backend.mapper.TaskUserMapper;
 import org.example.ims_backend.repository.*;
+import org.example.ims_backend.repository.specification.TaskSpecification;
 import org.example.ims_backend.service.user.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -88,8 +91,28 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<Object[]> searchTask(String title, Long department_id, Long user_id, LocalDate createTo, LocalDate createFrom, LocalDate expireTo, LocalDate expireFrom, int task_status, Long project_id, Boolean is_extend) {
-        return null;
+    public List<TaskSearchResponse> searchTask(String title, Long department_id, Long user_id, Date createTo, Date createFrom, Date expireTo, Date expireFrom, Integer task_status, Integer priority) {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+
+        Specification<Task> spec = Specification.where(TaskSpecification
+                        .hasParticipant(user)
+                        .and(TaskSpecification.getTaskByTitle(title))
+                        .and(TaskSpecification.getTaskByDepartment(department_id))
+                        .and(TaskSpecification.hasUser(user_id))
+                        .and(TaskSpecification.createdDateBetween(createFrom, createTo))
+                        .and(TaskSpecification.expiredDateBetween(expireFrom, expireTo))
+                        .and(TaskSpecification.getTaskByStatus(task_status))
+                        .and(TaskSpecification.getTaskByPriority(priority)));
+        List<Task> tasks = taskRepository.findAll(spec);
+        List<TaskSearchResponse> taskSearchResponses = new ArrayList<>();
+        for(Task task : tasks){
+            TaskUser taskUser = taskUserRepository.findByUserAndTask(user, task);
+            TaskSearchResponse taskSearchResponse = taskMapper.toTaskSearchResponse(taskUser);
+            taskSearchResponses.add(taskSearchResponse);
+        }
+        return taskSearchResponses;
     }
 
     @Override
@@ -313,6 +336,28 @@ public class TaskServiceImpl implements TaskService {
          return true;
         }catch (Exception e){
             log.error("Error while deleting task", e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean returnTask(Long task_id, String content) {
+        try {
+            Task task = taskRepository.findById(task_id).orElseThrow(() -> new RuntimeException("Task not found"));
+            historyService.addHistory(task.getTargetUser(), task.getAssignUser(), task, content, 6);
+            notificationService.addNotification(task, task.getTargetUser(), task.getAssignUser(), content, 6);
+            List<TaskUser> taskUsers = taskUserRepository.findByTask(task);
+            for(TaskUser taskUser : taskUsers){
+                if(taskUser.getRole() == 1 || taskUser.getRole() == 3){
+                    taskUserRepository.delete(taskUser);
+                }
+            }
+            task.setTargetUser(null);
+            task.setTargetDepartment(null);
+            taskRepository.save(task);
+            return true;
+        }catch (Exception e){
+            log.error("Error while returning task", e);
             return false;
         }
     }

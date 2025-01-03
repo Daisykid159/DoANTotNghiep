@@ -2,6 +2,7 @@ package org.example.ims_backend.mapper;
 
 import org.example.ims_backend.dto.user.task.request.CreateTaskRequest;
 import org.example.ims_backend.dto.user.task.response.TaskDetailResponse;
+import org.example.ims_backend.dto.user.task.response.TaskSearchResponse;
 import org.example.ims_backend.dto.user.taskUser.response.TaskUserResponse;
 import org.example.ims_backend.entity.Task;
 import org.example.ims_backend.entity.TaskUser;
@@ -37,6 +38,31 @@ public interface TaskMapper {
                 .can_finished(taskUser.getTask().getStatus() == 3)
                 .project_id(taskUser.getTask().getProject().getId())
                 .project_name(taskUser.getTask().getProject().getName())
+                .build();
+    }
+    default
+    TaskSearchResponse toTaskSearchResponse(TaskUser taskUser){
+        return TaskSearchResponse.builder()
+                .task_id(taskUser.getTask().getId())
+                .tu_id(taskUser.getId())
+                .has_read(taskUser.getHasRead())
+                .role(taskUser.getRole())
+                .status(taskUser.getTask().getStatus())
+                .state(taskUser.getTask().getState())
+                .title(taskUser.getTask().getTitle())
+                .priority(taskUser.getTask().getPriority())
+                .progress(taskUser.getTask().getProgress())
+                .created_date(taskUser.getTask().getCreatedDate())
+                .expired_date(taskUser.getTask().getExpiredDate())
+                .completed_date(taskUser.getTask().getCompletedDate())
+                .assign_department_id(taskUser.getTask().getAssignDepartment().getId())
+                .assign_department_name(taskUser.getTask().getAssignDepartment().getDepartmentName())
+                .assign_user_id(taskUser.getTask().getAssignUser().getId())
+                .assign_user_name(taskUser.getTask().getAssignUser().getFullName())
+                .target_department_id(taskUser.getTask().getTargetDepartment().getId())
+                .target_department_name(taskUser.getTask().getTargetDepartment().getDepartmentName())
+                .target_user_id(taskUser.getTask().getTargetUser().getId())
+                .target_user_name(taskUser.getTask().getTargetUser().getFullName())
                 .build();
     }
     default

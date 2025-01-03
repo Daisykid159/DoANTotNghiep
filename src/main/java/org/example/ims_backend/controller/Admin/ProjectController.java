@@ -6,6 +6,7 @@ import org.example.ims_backend.dto.admin.projectDTO.response.ProjectDetailRespon
 import org.example.ims_backend.dto.admin.projectDTO.response.ProjectResponse;
 import org.example.ims_backend.dto.admin.taskDTO.request.TaskRequest;
 import org.example.ims_backend.dto.admin.taskDTO.response.TaskResponse;
+import org.example.ims_backend.dto.user.project.response.DUProjectResponse;
 import org.example.ims_backend.service.admin.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -61,5 +62,9 @@ public class ProjectController {
     @GetMapping("/task/{id}")
     public TaskResponse getTaskDetail(@PathVariable Long id) {
         return projectService.getTaskDetail(id);
+    }
+    @GetMapping("/usersAndDepartmentsOfProject/{id}")
+    public DUProjectResponse getUsersAndDepartmentsOfProject(@PathVariable Long id) {
+        return projectService.getUsersAndDepartmentsOfProject(id);
     }
 }
