@@ -75,7 +75,7 @@ const CreateTaskScreen = (props) => {
     };
 
     const handleCreateTask = () => {
-        if (!titleTask || !assignDepartment?.value || !targetTask?.department_id || !targetTask?.value || !sourceTask?.value || !priorityTask?.value) {
+        if (!titleTask || !assignDepartment?.value || !targetTask?.department_id || !targetTask?.value || !sourceTask?.value || (!priorityTask?.value && priorityTask.value !== 0)) {
             toast.error('Vui lòng nhập đủ thông tin cần thiết!');
             return;
         }

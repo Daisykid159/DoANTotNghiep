@@ -22,6 +22,12 @@ const DetailTaskScreen = (props) => {
 
     const detailTask = useSelector(state => state.reducerUser.detailTask);
 
+    const listPriorityTask = [
+        { value: 0, label: 'Bình thường' },
+        { value: 1, label: 'Quan trọng' },
+        { value: 2, label: 'Rất quan trọng' },
+    ]
+
     const [showAddComment, setShowAddComment] = useState();
     const [showModuleEditTask, setShowModuleEditTask] = useState(false);
 
@@ -103,7 +109,7 @@ const DetailTaskScreen = (props) => {
 
                         <div className={cx('col-md-6', 'd-flex', 'mb-2')}>
                             <div className={cx('col-md-3', 'fw-bold')}>Mức độ ưu tiên:</div>
-                            <div className={cx('col-md-8')}>{detailTask.priority}</div>
+                            <div className={cx('col-md-8')}>{listPriorityTask[detailTask?.priority || 0].label}</div>
                         </div>
 
                         <div className={cx('col-md-6', 'd-flex', 'mb-2')}>
