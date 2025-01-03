@@ -2,10 +2,8 @@ package org.example.ims_backend.controller.User;
 
 import org.example.ims_backend.dto.user.task.request.CreateTaskRequest;
 import org.example.ims_backend.dto.user.task.request.HandoverTaskRequest;
-import org.example.ims_backend.dto.user.task.response.TaskDetailResponse;
-import org.example.ims_backend.dto.user.task.response.TaskOfDay;
-import org.example.ims_backend.dto.user.task.response.TaskResponse;
-import org.example.ims_backend.dto.user.task.response.TaskSearchResponse;
+import org.example.ims_backend.dto.user.task.request.ProcessingTimeRequest;
+import org.example.ims_backend.dto.user.task.response.*;
 import org.example.ims_backend.service.user.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -44,7 +42,7 @@ public class TaskController {
         return taskService.evictTask(task_id);
     }
     @PostMapping("/createTask")
-    public boolean createTask(@RequestBody CreateTaskRequest createTaskRequest) {
+    public TaskDetailResponse createTask(@RequestBody CreateTaskRequest createTaskRequest) {
         return taskService.createTask(createTaskRequest);
     }
     @PutMapping("/processingHandover")
@@ -69,4 +67,14 @@ public class TaskController {
     public TaskOfDay taskOfTheDay() {
         return taskService.taskOfTheDay();
     }
+    @PutMapping("/leaveProcessingTime/{id}")
+    public boolean leaveProcessingTime(@RequestBody List<ProcessingTimeRequest> processingTimeRequests,
+                                        @PathVariable Long id) {
+        return taskService.leaveProcessingTime(processingTimeRequests,id);
+    }
+    @GetMapping("/leaveProcessingTime")
+    public List<TaskLeaveProcessingTimeResponse> leaveProcessingTimeDetail() {
+        return taskService.leaveProcessingTimeDetail();
+    }
+
 }

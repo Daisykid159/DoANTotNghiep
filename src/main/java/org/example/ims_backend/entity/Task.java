@@ -38,10 +38,10 @@ public class Task {
     private User assignUser;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "TargetDepartment")
-    private Department TargetDepartment;
+    private Department targetDepartment;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "TargetUser")
-    private User TargetUser;
+    private User targetUser;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ProjectId")
     private Project project;

@@ -1,7 +1,9 @@
 package org.example.ims_backend.mapper;
 
+import org.example.ims_backend.common.ProcessingTime;
 import org.example.ims_backend.dto.user.task.request.CreateTaskRequest;
 import org.example.ims_backend.dto.user.task.response.TaskDetailResponse;
+import org.example.ims_backend.dto.user.task.response.TaskLeave;
 import org.example.ims_backend.dto.user.task.response.TaskSearchResponse;
 import org.example.ims_backend.dto.user.taskUser.response.TaskUserResponse;
 import org.example.ims_backend.entity.Task;
@@ -94,6 +96,26 @@ public interface TaskMapper {
                 .can_finished(task.getStatus() == 3)
                 .project_id(task.getProject().getId())
                 .project_name(task.getProject().getName())
+                .build();
+    }
+    default
+    TaskLeave toTaskLeave(Task task){
+        return TaskLeave.builder()
+                .task_id(task.getId())
+                .status(task.getStatus())
+                .state(task.getState())
+                .title(task.getTitle())
+                .priority(task.getPriority())
+                .progress(task.getProgress())
+                .created_date(task.getCreatedDate())
+                .new_expired_date(task.getExpiredDate())
+                .completed_date(task.getCompletedDate())
+                .assign_department(task.getAssignDepartment().getDepartmentName())
+                .assign_user_name(task.getAssignUser().getFullName())
+                .assign_user_id(task.getAssignUser().getId())
+                .target_department(task.getTargetDepartment().getDepartmentName())
+                .target_user_name(task.getTargetUser().getFullName())
+                .target_user_id(task.getTargetUser().getId())
                 .build();
     }
 }

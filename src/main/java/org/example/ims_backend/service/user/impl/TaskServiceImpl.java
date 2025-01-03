@@ -5,12 +5,11 @@ import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.example.ims_backend.common.ProcessingTime;
 import org.example.ims_backend.dto.user.task.request.CreateTaskRequest;
 import org.example.ims_backend.dto.user.task.request.HandoverTaskRequest;
-import org.example.ims_backend.dto.user.task.response.TaskDetailResponse;
-import org.example.ims_backend.dto.user.task.response.TaskOfDay;
-import org.example.ims_backend.dto.user.task.response.TaskResponse;
-import org.example.ims_backend.dto.user.task.response.TaskSearchResponse;
+import org.example.ims_backend.dto.user.task.request.ProcessingTimeRequest;
+import org.example.ims_backend.dto.user.task.response.*;
 import org.example.ims_backend.dto.user.taskUser.request.CreateTaskUserRequest;
 import org.example.ims_backend.dto.user.taskUser.request.TaskUserRequest;
 import org.example.ims_backend.entity.*;
@@ -182,7 +181,8 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public boolean createTask(CreateTaskRequest createTaskRequest) {
+    @Transactional
+    public TaskDetailResponse createTask(CreateTaskRequest createTaskRequest) {
         try {
             Task task = Task.builder()
                     .title(createTaskRequest.getTitle())
@@ -195,10 +195,11 @@ public class TaskServiceImpl implements TaskService {
                     .status(0)
                     .assignDepartment(departmentRepository.findById(createTaskRequest.getAssign_department()).orElse(null))
                     .assignUser(userRepository.findById(createTaskRequest.getAssign_user()).orElse(null))
-                    .TargetDepartment(departmentRepository.findById(createTaskRequest.getTarget_department()).orElse(null))
-                    .TargetUser(userRepository.findById(createTaskRequest.getTarget_user()).orElse(null))
+                    .targetDepartment(departmentRepository.findById(createTaskRequest.getTarget_department()).orElse(null))
+                    .targetUser(userRepository.findById(createTaskRequest.getTarget_user()).orElse(null))
                     .project(projectRepository.findById(createTaskRequest.getProject_id()).orElse(null))
                     .build();
+            if(task.getPriority() == 2) task.setState(4);
             Task result = taskRepository.save(task);
             for(CreateTaskUserRequest createTaskUserRequest : createTaskRequest.getCombinations()){
                 TaskUser taskUser = TaskUser.builder()
@@ -232,10 +233,10 @@ public class TaskServiceImpl implements TaskService {
             var context = SecurityContextHolder.getContext();
             User user = userRepository.findByUsername(context.getAuthentication().getName()).orElseThrow(() -> new RuntimeException("User not found"));
             historyService.addHistory(user, userRepository.findById(createTaskRequest.getTarget_user()).orElseThrow(() -> new RuntimeException("User not found")), result, createTaskRequest.getContent(), 0);
-            return true;
+            return TaskDetail(result.getId());
         }catch (Exception e){
             log.error("Error while creating task", e);
-            return false;
+            throw new RuntimeException( e.getMessage());
         }
 
 
@@ -399,6 +400,64 @@ public class TaskServiceImpl implements TaskService {
             throw new RuntimeException( e.getMessage());
         }
     }
+
+    @Override
+    @Transactional
+    public boolean leaveProcessingTime(List<ProcessingTimeRequest> processingTimeRequests, Long id) {
+        try {
+            for(ProcessingTimeRequest processingTimeRequest : processingTimeRequests){
+                Task task = taskRepository.findById(processingTimeRequest.getTask_id()).orElseThrow(() -> new RuntimeException("Task not found"));
+                System.out.println(processingTimeRequest.getNew_expired_date());
+                task.setExpiredDate(processingTimeRequest.getNew_expired_date());
+                taskRepository.save(task);
+            }
+            Task task = taskRepository.findById(id).orElseThrow(() -> new RuntimeException("Task not found"));
+            task.setState(0);
+            taskRepository.save(task);
+            return true;
+        }catch (Exception e){
+            log.error("Error while leaving processing time", e);
+            return false;
+        }
+    }
+
+    @Override
+    public List<TaskLeaveProcessingTimeResponse> leaveProcessingTimeDetail() {
+        try {
+            var context = SecurityContextHolder.getContext();
+            String username = context.getAuthentication().getName();
+            User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+            List<Task> tasks = taskRepository.findByTargetUserAndState(user, 4);
+            List<TaskLeaveProcessingTimeResponse> taskLeaveProcessingTimeResponses = new ArrayList<>();
+            for(Task task : tasks){
+                List<Task> taskProcessing = taskRepository.findByProjectAndTargetUser(task.getProject(), user);
+                List<TaskLeave> taskLeaves = new ArrayList<>();
+                for(Task task1 : taskProcessing){
+                    if(task1.getStatus() != 5 && task1.getPriority() != 2){
+                        Date new_expired_date = ProcessingTime.calculateOverlapAndNewExpire(task.getCreatedDate(),task.getExpiredDate(),task1.getCreatedDate(),task1.getExpiredDate());
+                        if(new_expired_date != task1.getExpiredDate()){
+                            task1.setExpiredDate(new_expired_date);
+                            taskLeaves.add(taskMapper.toTaskLeave(task1));
+                        }
+                    }
+                }
+                if(!taskLeaves.isEmpty()){
+                    task.setExpiredDate(null);
+                    taskLeaveProcessingTimeResponses.add(
+                            TaskLeaveProcessingTimeResponse.builder()
+                                    .taskImportant(taskMapper.toTaskLeave(task))
+                                    .TaskLeaves(taskLeaves)
+                                    .build()
+                    );
+                }
+            }
+            return taskLeaveProcessingTimeResponses;
+        }catch (Exception e){
+            log.error("Error while getting leave processing time detail", e);
+            throw new RuntimeException( e.getMessage());
+        }
+    }
+
     private Long timeCompleted(Task task){
         Instant createdDate = task.getCreatedDate().toInstant();
         Instant completedDate = task.getCompletedDate().toInstant();

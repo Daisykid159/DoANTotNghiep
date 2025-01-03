@@ -14,7 +14,10 @@ import java.util.List;
 public interface TaskRepository extends JpaRepository<Task, Long> , JpaSpecificationExecutor<Task> {
 
     List<Task> findByProject(Project project);
+    List<Task> findByProjectAndTargetUser(Project project, User user);
     Integer countByProject(Project project);
     boolean existsByIdAndStatus(Long id, Integer status);
     List<Task> findDistinctByTaskUsersUserAndStatus(User user, Integer status);
+    List<Task> findByTargetUserAndState(User user, Integer state);
+
 }
