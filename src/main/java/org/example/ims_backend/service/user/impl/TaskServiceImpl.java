@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.ims_backend.dto.user.task.request.CreateTaskRequest;
 import org.example.ims_backend.dto.user.task.request.HandoverTaskRequest;
 import org.example.ims_backend.dto.user.task.response.TaskDetailResponse;
+import org.example.ims_backend.dto.user.task.response.TaskOfDay;
 import org.example.ims_backend.dto.user.task.response.TaskResponse;
 import org.example.ims_backend.dto.user.task.response.TaskSearchResponse;
 import org.example.ims_backend.dto.user.taskUser.request.CreateTaskUserRequest;
@@ -23,6 +24,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -360,5 +363,46 @@ public class TaskServiceImpl implements TaskService {
             log.error("Error while returning task", e);
             return false;
         }
+    }
+
+    @Override
+    public TaskOfDay taskOfTheDay() {
+        try {
+            var context = SecurityContextHolder.getContext();
+            String username = context.getAuthentication().getName();
+            User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+            Specification<Task> spec = Specification.where(TaskSpecification
+                    .hasParticipant(user)
+                    .and(TaskSpecification.expiredDateToday()));
+            List<Task> tasks = taskRepository.findAll(spec);
+            List<TaskSearchResponse> taskSearchResponses = new ArrayList<>();
+            for(Task task : tasks){
+                TaskUser taskUser = taskUserRepository.findByUserAndTask(user, task);
+                TaskSearchResponse taskSearchResponse = taskMapper.toTaskSearchResponse(taskUser);
+                taskSearchResponses.add(taskSearchResponse);
+            }
+            TaskOfDay taskOfDay = TaskOfDay.builder()
+                    .tasks(taskSearchResponses)
+                    .avgTimeCompleted(1)
+                    .build();
+            List<Task> taskOfDays = taskRepository.findDistinctByTaskUsersUserAndStatus(user, 6);
+            if(taskOfDays.size() >= 100){
+                long time = 0L;
+                for (Task task : taskOfDays){
+                    time = time + timeCompleted(task);
+                }
+                taskOfDay.setAvgTimeCompleted((int) (time/taskOfDays.size()));
+            }
+            return taskOfDay;
+        }catch (Exception e){
+            log.error("Error while getting task of the day", e);
+            throw new RuntimeException( e.getMessage());
+        }
+    }
+    private Long timeCompleted(Task task){
+        Instant createdDate = task.getCreatedDate().toInstant();
+        Instant completedDate = task.getCompletedDate().toInstant();
+        Duration duration = Duration.between(createdDate, completedDate);
+        return duration.toHours();
     }
 }

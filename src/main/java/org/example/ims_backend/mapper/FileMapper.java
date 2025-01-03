@@ -12,7 +12,6 @@ public interface FileMapper {
                 .task_id(file.getTask().getId())
                 .user_id(file.getUser().getId())
                 .file_name(file.getFileName())
-                .file_local_name(file.getFileLocalName())
                 .file_path(file.getFilePath())
                 .extension(file.getExtension())
                 .size(file.getSize())

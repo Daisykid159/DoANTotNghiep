@@ -2,6 +2,7 @@ package org.example.ims_backend.repository;
 
 import org.example.ims_backend.entity.Project;
 import org.example.ims_backend.entity.Task;
+import org.example.ims_backend.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.query.Procedure;
@@ -15,4 +16,5 @@ public interface TaskRepository extends JpaRepository<Task, Long> , JpaSpecifica
     List<Task> findByProject(Project project);
     Integer countByProject(Project project);
     boolean existsByIdAndStatus(Long id, Integer status);
+    List<Task> findDistinctByTaskUsersUserAndStatus(User user, Integer status);
 }

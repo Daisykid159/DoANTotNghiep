@@ -3,6 +3,7 @@ package org.example.ims_backend.controller.User;
 import org.example.ims_backend.dto.user.task.request.CreateTaskRequest;
 import org.example.ims_backend.dto.user.task.request.HandoverTaskRequest;
 import org.example.ims_backend.dto.user.task.response.TaskDetailResponse;
+import org.example.ims_backend.dto.user.task.response.TaskOfDay;
 import org.example.ims_backend.dto.user.task.response.TaskResponse;
 import org.example.ims_backend.dto.user.task.response.TaskSearchResponse;
 import org.example.ims_backend.service.user.TaskService;
@@ -63,5 +64,9 @@ public class TaskController {
     public boolean returnTask(@RequestParam Long task_id,
                               @RequestParam String content) {
         return taskService.returnTask(task_id , content);
+    }
+    @GetMapping("/taskOfTheDay")
+    public TaskOfDay taskOfTheDay() {
+        return taskService.taskOfTheDay();
     }
 }

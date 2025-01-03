@@ -17,7 +17,6 @@ public class FileResponse {
     Long user_id;
     String user_name;
     String file_name;
-    String file_local_name;
     String file_path;
     String extension;
     Long size;

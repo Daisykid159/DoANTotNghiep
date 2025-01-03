@@ -3,6 +3,7 @@ package org.example.ims_backend.service.user;
 import org.example.ims_backend.dto.user.task.request.CreateTaskRequest;
 import org.example.ims_backend.dto.user.task.request.HandoverTaskRequest;
 import org.example.ims_backend.dto.user.task.response.TaskDetailResponse;
+import org.example.ims_backend.dto.user.task.response.TaskOfDay;
 import org.example.ims_backend.dto.user.task.response.TaskResponse;
 import org.example.ims_backend.dto.user.task.response.TaskSearchResponse;
 
@@ -20,4 +21,5 @@ public interface TaskService {
     boolean updateProcessing(Long task_user_id,Integer processing);
     boolean deleteTask(Long task);
     boolean returnTask(Long task_id , String content);
+    TaskOfDay taskOfTheDay();
 }

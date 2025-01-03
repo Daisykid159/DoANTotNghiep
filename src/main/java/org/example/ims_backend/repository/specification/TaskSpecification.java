@@ -4,6 +4,7 @@ import jakarta.persistence.criteria.Join;
 import org.example.ims_backend.entity.*;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.Calendar;
 import java.util.Date;
 
 public class TaskSpecification {
@@ -94,5 +95,20 @@ public class TaskSpecification {
             return criteriaBuilder.equal(taskUserJoin.get("user"), user);
         };
     }
+    public static Specification<Task> expiredDateToday() {
+        return (root, query, criteriaBuilder) -> {
+            // Lấy ngày hôm nay, loại bỏ thời gian
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+            Date today = calendar.getTime();
+
+            // So sánh chỉ phần ngày của `expiredDate` với ngày hôm nay
+            return criteriaBuilder.equal(criteriaBuilder.function("DATE", Date.class, root.get("expiredDate")), today);
+        };
+    }
+
 
 }
