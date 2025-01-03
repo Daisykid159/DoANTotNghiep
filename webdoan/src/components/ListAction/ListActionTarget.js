@@ -66,7 +66,7 @@ const ListActionTarget = (props) => {
                     setShowFile(false);
                     setShowTransferProcessing(false);
                     setShowHandleAction(true);
-                    setReportType(null);
+                    setReportType(104);
                 }}
             >
                 <i className={cx('bx bx-revision', 'icon_action', 'me-2')}></i>

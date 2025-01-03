@@ -51,6 +51,27 @@ export function actionGetMyInfo (token) {
     };
 }
 
+export function actionGetNotificationList (token) {
+    return async (dispatch, getState) => {
+        try {
+            const response = await Api(token).getNotificationList();
+            if (response && response.data){
+                dispatch(updateData({
+                    listNotification: response.data,
+                }))
+            } else {
+                dispatch(updateData({
+                    listNotification: [],
+                }))
+                toast.error('Lấy dữ liệu thất bại!');
+                console.log("Lỗi api actionGetNotificationList");
+            }
+        } catch (error) {
+            console.log("Lỗi api actionGetNotificationList", error);
+        }
+    };
+}
+
 export function actionUpdateMyInfo (token, newInfo) {
     return async (dispatch, getState) => {
         try {
@@ -127,6 +148,40 @@ export function actionGetDetailTask (token, taskUserId) {
     };
 }
 
+export function actionGetListUserOfProject (token, projectId) {
+    return async (dispatch, getState) => {
+        try {
+            const response = await Api(token).usersAndDepartmentsOfProject(projectId);
+            if (response && response.data){
+                dispatch(updateData({
+                    listUserOfProject: response.data,
+                }))
+            } else {
+                console.log("Lỗi api actionGetListUserOfProject");
+            }
+        } catch (error) {
+            console.log("Lỗi api actionGetListUserOfProject", error);
+        }
+    };
+}
+
+export function actionGetListTaskOfTheDay (token) {
+    return async (dispatch, getState) => {
+        try {
+            const response = await Api(token).listTaskOfTheDay();
+            if (response && response.data){
+                dispatch(updateData({
+                    taskOfTheDay: response.data,
+                }))
+            } else {
+                console.log("Lỗi api actionGetListTaskOfTheDay");
+            }
+        } catch (error) {
+            console.log("Lỗi api actionGetListTaskOfTheDay", error);
+        }
+    };
+}
+
 export function actionCreateTask (token, task, setShowModuleCreateTask) {
     return async (dispatch, getState) => {
         try {
@@ -199,6 +254,24 @@ export function actionEvictTask (token, taskId) {
     };
 }
 
+export function actionReturnTask (token, taskId, content) {
+    return async (dispatch, getState) => {
+        try {
+            const response = await Api(token).returnTask(taskId, content);
+            if (response && response.data){
+                dispatch(actionGetListMenu(token));
+                dispatch(actionGetOverViewUser(token));
+                toast.success('Trả lại nhiệm vụ thành công!');
+            } else {
+                toast.error('Trả lại nhiệm vụ thất bại!');
+                console.log("Lỗi api actionReturnTask");
+            }
+        } catch (error) {
+            console.log("Lỗi api actionReturnTask", error);
+        }
+    };
+}
+
 export function actionUpdateProcessing (token, task_user_id, updateProcessing) {
     return async (dispatch, getState) => {
         try {
@@ -262,14 +335,18 @@ export function actionRecallReport (token, id, task_user_id) {
 export default {
     actionGetListMenu,
     actionGetMyInfo,
+    actionGetNotificationList,
     actionUpdateMyInfo,
     actionChangePassword,
     actionGetListTaskByMenu,
     actionGetDetailTask,
+    actionGetListUserOfProject,
+    actionGetListTaskOfTheDay,
     actionCreateTask,
     actionSendReport,
     actionProcessingHandover,
     actionEvictTask,
+    actionReturnTask,
     actionUpdateProcessing,
     actionReviewReport,
     actionRecallReport,

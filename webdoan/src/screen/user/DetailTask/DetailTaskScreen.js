@@ -113,7 +113,7 @@ const DetailTaskScreen = (props) => {
 
                         <div className={cx('col-md-12', 'd-flex', 'mb-2')}>
                             <div className={cx('col-md-1', 'fw-bold')}>Nội dung:</div>
-                            <div className={cx('col-md-10')}>Người giao nhiệm vụ: Chọn duyệt/từ chối báo (nhập ý kiến xử lý từ chối) cáo tiến độ. Hệ thống xử lý chuyển màn hình hiển thị cho phép nhập ý kiến xử lý từ chối cáo tiến độ.Người giao nhiệm vụ: Chọn duyệt/từ chối báo (nhập ý kiến xử lý từ chối) cáo tiến độ. Hệ thống xử lý chuyển màn hình hiển thị cho phép nhập ý kiến xử lý từ chối cáo tiến độ.Người giao nhiệm vụ: Chọn duyệt/từ chối báo (nhập ý kiến xử lý từ chối) cáo tiến độ. Hệ thống xử lý chuyển màn hình hiển thị cho phép nhập ý kiến xử lý từ chối cáo tiến độ.Người giao nhiệm vụ: Chọn duyệt/từ chối báo (nhập ý kiến xử lý từ chối) cáo tiến độ. Hệ thống xử lý chuyển màn hình hiển thị cho phép nhập ý kiến xử lý từ chối cáo tiến độ.Người giao nhiệm vụ: Chọn duyệt/từ chối báo (nhập ý kiến xử lý từ chối) cáo tiến độ. Hệ thống xử lý chuyển màn hình hiển thị cho phép nhập ý kiến xử lý từ chối cáo tiến độ</div>
+                            <div className={cx('col-md-10')}>{detailTask.content || ""}</div>
                         </div>
 
                         <div className={cx('col-md-12', 'mb-2')}>

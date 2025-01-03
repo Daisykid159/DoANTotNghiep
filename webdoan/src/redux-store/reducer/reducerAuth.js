@@ -6,6 +6,7 @@ const INITIAL_STATE = {
     overViewAdmin: {},
     overViewUser: {},
     listFullUser: [],
+    listNotification: []
 };
 
 const reducerAuth = (state = INITIAL_STATE, action) => {

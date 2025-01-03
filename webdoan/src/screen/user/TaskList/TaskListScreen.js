@@ -7,8 +7,12 @@ import DetailTaskScreen from "../DetailTask/DetailTaskScreen";
 import CreateTaskScreen from "../CreateTask/CreateTaskScreen";
 import QuicklyHandleTasksScreen from "../QuicklyHandleTasks/QuicklyHandleTasksScreen";
 import {useDispatch, useSelector} from "react-redux";
-import {useNavigate} from "react-router-dom";
-import {actionGetListMenu, actionGetListTaskByMenu} from "../../../redux-store/action/actionUser";
+import {useLocation, useNavigate} from "react-router-dom";
+import {
+    actionGetListMenu,
+    actionGetListTaskByMenu,
+    actionGetListTaskOfTheDay
+} from "../../../redux-store/action/actionUser";
 
 const cx = classNames.bind(styles);
 
@@ -17,6 +21,12 @@ const TaskListScreen = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const token = useSelector(state => state.reducerAuth.token);
+
+    const location = useLocation();
+    const query = new URLSearchParams(location.search);
+
+    const itemSelectedId = query.get('itemID') || null;
+    const itemSelectedTitle = query.get('title') || null;
 
     const dataList = useSelector(state => state.reducerUser.listTasks);
 
@@ -62,11 +72,38 @@ const TaskListScreen = () => {
     }
 
     useEffect(() => {
-        dispatch(actionGetListMenu(token));
+        if(itemSelectedTitle && itemSelectedId) {
+            const updatedData = listChose.map((item, index) => {
+                return {
+                    idChose: index + 1,
+                    nameChose: item.nameChose,
+                    item: item.item || {},
+                }
+            })
+            updatedData.push({
+                idChose: listChose.length + 1,
+                nameChose: itemSelectedTitle,
+                item: {
+                    task_id: itemSelectedId,
+                },
+            })
+            setListChose(updatedData);
+            setChose(updatedData[updatedData.length-1]);
+            setShowModule(false);
+        }
     }, []);
 
     useEffect(() => {
-        setChose(listChose[0]);
+        dispatch(actionGetListMenu(token));
+        dispatch(actionGetListTaskOfTheDay(token));
+    }, []);
+
+    useEffect(() => {
+        if(itemSelectedId && itemSelectedTitle) {
+            setChose(listChose[listChose.length - 1]);
+        } else {
+            setChose(listChose[0]);
+        }
         dispatch(actionGetListTaskByMenu(token, menuSelected?.menu_id || 1))
     }, [menuSelected]);
 
@@ -145,7 +182,7 @@ const TaskListScreen = () => {
                 </div>
             </div>
 
-            {showModule && (<QuicklyHandleTasksScreen setShowModule={setShowModule}/>)}
+            {showModule && (<QuicklyHandleTasksScreen setShowModule={setShowModule} navigate={navigate} handleDetailTask={handleDetailTask} />)}
 
             <div
                 onClick={() => setShowModuleCreateTask(!showModuleCreateTask)}

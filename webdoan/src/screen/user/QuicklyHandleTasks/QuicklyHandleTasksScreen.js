@@ -1,18 +1,40 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import styles from './QuicklyHandleTasksStyle.module.scss';
 import classNames from "classnames/bind";
 import TaskList from "../../../components/TaskList/TaskList";
 import {useSelector} from "react-redux";
+import {get} from "axios";
 
 const cx = classNames.bind(styles);
 
 const QuicklyHandleTasksScreen = (props) => {
 
     const dataList = useSelector(state => state.reducerUser.listTasks);
-
     const priorityAboveZero = dataList.filter(item => item.priority > 0);
-
     const priorityOthers = dataList.filter(item => item.priority <= 0);
+
+    const taskOfTheDay = useSelector(state => state.reducerUser.taskOfTheDay);
+
+    const [showListTaskPriority, setShowListTaskPriority] = useState(true);
+    const [showListTaskWorkToday, setShowListTaskWorkToday] = useState(true);
+
+    const [textRecommendation, setTextRecommendation] = useState('');
+    const handleDetailTask = (itemSelect) => {
+        window.open(`/user/TaskDetail?itemID=${itemSelect.task_id}&title=${itemSelect.title}`, '_blank');
+    }
+
+    useEffect(() => {
+        const getAdviceMessage = (overtimeInHours) => {
+            if (overtimeInHours > 8 && overtimeInHours <= 10) {
+                return "Bạn nên cân nhắc làm thêm giờ để hoàn thành các công việc còn lại.";
+            } else if (overtimeInHours > 10) {
+                return "Bạn nên cân nhắc làm thêm giờ và xem xét xin gia hạn thời gian xử lý cho các công việc chưa hoàn thành.";
+            } else {
+                return "Bạn hãy tập trung hoàn thành công việc đúng hạn.";
+            }
+        };
+        setTextRecommendation(getAdviceMessage(taskOfTheDay?.avgTimeCompleted * taskOfTheDay?.tasks?.length));
+    }, [taskOfTheDay])
 
     return (
         <div className={cx('QuicklyHandleTasksScreen')}>
@@ -33,36 +55,41 @@ const QuicklyHandleTasksScreen = (props) => {
                             Danh sách nhiệm vụ cần lùi hạn xử lý
                         </div>
                         <button
-                            onClick={() => props.setShowModule(false)}
+                            onClick={() => setShowListTaskPriority(!showListTaskPriority)}
                             className={cx("btn", 'show_list')}
                         >
                             <i className='bx bx-chevron-down'></i>
                         </button>
                     </div>
 
-                    <div className={cx('p-3', 'container')}>
-                        <div className={cx('col-md-12')}>
-                            <div className={cx('text_header_module_xu_ly_nhanh', 'mb-2')}>
-                                Danh sách nhiệm vụ có mức độ ưu tiên cao
-                            </div>
-                            <TaskList tasks={priorityAboveZero} showFullTaskList={true}/>
-                        </div>
+                    {showListTaskPriority && (
+                        <div>
+                            <div className={cx('p-3', 'container')}>
+                                <div className={cx('col-md-12')}>
+                                    <div className={cx('text_header_module_xu_ly_nhanh', 'mb-2')}>
+                                        Danh sách nhiệm vụ có mức độ ưu tiên cao
+                                    </div>
+                                    <TaskList tasks={priorityAboveZero} handleDetailTask={handleDetailTask}
+                                              showFullTaskList={true}/>
+                                </div>
 
-                        <div className={cx('col-md-12')}>
-                            <div className={cx('text_header_module_xu_ly_nhanh', 'mb-2')}>Danh sách nhiệm vụ có thể lùi
-                                hạn xử lý
+                                <div className={cx('col-md-12')}>
+                                    <div className={cx('text_header_module_xu_ly_nhanh', 'mb-2')}>
+                                        Danh sách nhiệm vụ có thể lùi hạn xử lý
+                                    </div>
+                                    <TaskList tasks={priorityOthers} handleDetailTask={handleDetailTask}
+                                              showFullTaskList={true} showExpireNew={true}/>
+                                </div>
                             </div>
-                            <TaskList tasks={priorityOthers} showFullTaskList={true} showExpireNew={true}/>
+                            <div className={cx('col-md-12', 'container', 'd-flex', 'justify-content-end', 'mb-5')}>
+                                <button
+                                    className={cx("btn btn-primary", 'btn_footer')}
+                                >
+                                    Lùi hạn xử lý
+                                </button>
+                            </div>
                         </div>
-                    </div>
-
-                    <div className={cx('col-md-12', 'container', 'd-flex', 'justify-content-end', 'mb-5')}>
-                        <button
-                            className={cx("btn btn-primary", 'btn_footer')}
-                        >
-                            Lùi hạn xử lý
-                        </button>
-                    </div>
+                    )}
                 </div>
 
                 <div className={cx('p-3', 'container')}>
@@ -71,20 +98,24 @@ const QuicklyHandleTasksScreen = (props) => {
                             Danh sách nhiệm vụ cần hoàn thành trong ngày
                         </div>
                         <button
-                            onClick={() => props.setShowModule(false)}
+                            onClick={() => setShowListTaskWorkToday(!showListTaskWorkToday)}
                             className={cx("btn", 'show_list')}
                         >
                             <i className='bx bx-chevron-down'></i>
                         </button>
                     </div>
 
-                    <div className={cx('p-3', 'container')}>
-                        <TaskList tasks={dataList} showFullTaskList={true}/>
-                    </div>
+                    {showListTaskWorkToday && (
+                        <div>
+                            <div className={cx('p-3', 'container')}>
+                                <TaskList tasks={taskOfTheDay?.tasks} handleDetailTask={handleDetailTask} showFullTaskList={true}/>
+                            </div>
 
-                    <div className={cx('col-md-12', 'container', 'mb-5', 'fw-bold', 'text_red')}>
-                        Hôm nay bạn cần xử lý nhiều công việc, bạn nên cân nhắc làm thêm giờ hoặc xin gia hạn xử lý các nhiệm vụ chưa hoàn thành.
-                    </div>
+                            <div className={cx('col-md-12', 'container', 'mb-5', 'fw-bold', 'text_red')}>
+                                {textRecommendation}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

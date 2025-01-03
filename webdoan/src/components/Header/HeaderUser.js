@@ -11,6 +11,8 @@ import {useDispatch, useSelector} from "react-redux";
 import {actionLogout} from "../../redux-store/action/actionAuth";
 import SettingScreen from "../../screen/user/Setting/SettingScreen";
 import StatisticalScreen from "../../screen/user/Statistical/StatisticalScreen";
+import {actionGetNotificationList} from "../../redux-store/action/actionUser";
+import {formatDate} from "../../utils";
 
 const cx = classNames.bind(styles);
 
@@ -18,58 +20,17 @@ function HeaderUser () {
 
     const dispatch = useDispatch();
     const decoded = useSelector(state => state.reducerAuth.decoded);
+    const token = useSelector(state => state.reducerAuth.token);
 
-    const dataNotifi = [
-        {
-            "notification_id": 2456,
-            "from_user_id": 291,
-            "task_user_id": 3667,
-            "type": 18,
-            "title": "Nguyễn Thị Kim Hà",
-            "has_read": false,
-            "to_user_id": 314,
-            "content": "Nhiệm vụ: tesst tao nv nang cao 1 - tesst chinh sua",
-            "comment": "adsdasdasd",
-            "created_date": "2024-12-04T16:19:42",
-            "date_time_display": "04:19 04/12/2024",
-            "task_id": 815,
-            "task_status": 3
-        },
-        {
-            "notification_id": 2455,
-            "from_user_id": 291,
-            "task_user_id": 3704,
-            "type": 7,
-            "title": "Nguyễn Thị Kim Hà",
-            "has_read": false,
-            "to_user_id": 314,
-            "content": "Nhiệm vụ: Test kịch bản eGov - QLNV test",
-            "comment": null,
-            "created_date": "2024-12-04T14:50:07",
-            "date_time_display": "02:50 04/12/2024",
-            "task_id": 726,
-            "task_status": 0
-        },
-        {
-            "notification_id": 2454,
-            "from_user_id": 291,
-            "task_user_id": 3582,
-            "type": 10,
-            "title": "Nguyễn Thị Kim Hà",
-            "has_read": false,
-            "to_user_id": 314,
-            "content": "Nhiệm vụ: test 1",
-            "comment": null,
-            "created_date": "2024-12-04T13:58:08",
-            "date_time_display": "01:58 04/12/2024",
-            "task_id": 930,
-            "task_status": 4
-        }
-    ]
+    const dataNotification = useSelector(state => state.reducerUser.listNotification);
 
     const [textSearch, setTextSearch] = useState('');
     const [showNotification, setShowNotification] = useState(false);
     const [showCNUser, setShowCNUser] = useState(false);
+
+    useEffect(() => {
+        dispatch(actionGetNotificationList(token))
+    }, []);
 
     return (
         <Router>
@@ -94,14 +55,20 @@ function HeaderUser () {
 
                     <div
                         className={cx('notification')}
-                        onClick={() => setShowNotification(!showNotification)}
+                        onClick={() => {
+                            setShowCNUser(false);
+                            setShowNotification(!showNotification)
+                        }}
                     >
                         <IconBell />
                     </div>
 
                     <div
                         className={cx('flex', 'user', 'margin_left_10')}
-                        onClick={() => setShowCNUser(!showCNUser)}
+                        onClick={() => {
+                            setShowCNUser(!showCNUser);
+                            setShowNotification(false);
+                        }}
                     >
                         <div className={cx('text_name_user', 'margin_right_10')}>{decoded.sub}</div>
                         <div><IconArrowDown /></div>
@@ -112,6 +79,7 @@ function HeaderUser () {
             <div className={cx('screen')}>
                 <Routes>
                     <Route path="/" element={<TaskListScreen />} />
+                    <Route path="/user/TaskDetail" element={<TaskListScreen />} />
                     <Route path="/user/SettingScreen" element={<SettingScreen />} />
                     <Route path="/user/StatisticalScreen" element={<StatisticalScreen />} />
                     <Route path="*" element={<NoPage />} />
@@ -145,22 +113,28 @@ function HeaderUser () {
 
             {showNotification && (
                 <div className={cx('module_header', 'module_header_notification')}>
-                    {dataNotifi.length > 0 ? (
-                        dataNotifi.map((item, index) => (
+                    {dataNotification.length > 0 ? (
+                        dataNotification.map((item, index) => (
                             <div
                                 key={index}
                                 className={cx('item_notification')}
+                                onClick={() => {
+                                    window.open(`/user/TaskDetail?itemID=${item.task_id}&title=${item.task_title}`, '_blank');
+                                }}
                             >
-                                <div className={cx('d-flex', 'align-items-center')}>
-                                    <i className={cx('bx bx-user-circle', 'icon_user_notify')}></i>
-
+                                <div className={cx('d-flex', 'align-items-center', 'justify-content-between')}>
+                                    <div className={cx('type_notify')}><i className='bx bx-plus'></i> {item.content}</div>
+                                    <div>{formatDate(item.created_date)}</div>
+                                </div>
+                                <div className={cx('d-flex', 'align-items-center', 'mt-2')}>
+                                    <i className={cx('bx bx-user-circle', 'icon_user_notify', 'me-3')}></i>
                                     <div>
                                         <div>
-                                            {item.title}
+                                            {item.create_user_name}
                                         </div>
 
                                         <div>
-                                            {item.content}
+                                            {`Nhiệm vụ: ${item.task_title}`}
                                         </div>
                                     </div>
                                 </div>

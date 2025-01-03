@@ -142,6 +142,10 @@ const Api = (token) => {
         return api.get(`api/user/myInfo`);
     }
 
+    const getNotificationList = () => {
+        return api.get(`api/user/getNotificationList`);
+    }
+
     const updateMyInfo = (newInfo) => {
         return api.put(`api/user/updateMyInfo`, newInfo);
     }
@@ -166,6 +170,14 @@ const Api = (token) => {
         return api.get(`api/user/TaskDetail?task_id=${id}`);
     }
 
+    const usersAndDepartmentsOfProject = (project_id) => {
+        return api.get(`/api/admin/usersAndDepartmentsOfProject/${project_id}`);
+    }
+
+    const listTaskOfTheDay = () => {
+        return api.get(`api/user/taskOfTheDay`);
+    }
+
     const sendReport = (task_id, type, user_create_id, content, new_expired_date) => {
         return api.post(`/api/user/sendReport`, {
             task_id: task_id,
@@ -182,6 +194,10 @@ const Api = (token) => {
 
     const evictTask = (task_id) => {
         return api.put(`api/user/evictTask?task_id=${task_id}`);
+    }
+
+    const returnTask = (task_id, content) => {
+        return api.put(`/api/user/returnTask?task_id=${task_id}&content=${content}`)
     }
 
     const updateProcessing = (task_user_id, progress) => {
@@ -223,10 +239,13 @@ const Api = (token) => {
         updateProject,
 
         getDetailTask,
+        usersAndDepartmentsOfProject,
 
+        listTaskOfTheDay,
         getOverView,
         getFullUser,
         myInfo,
+        getNotificationList,
         updateMyInfo,
         changePassword,
         createTask,
@@ -235,6 +254,7 @@ const Api = (token) => {
         sendReport,
         processingHandover,
         evictTask,
+        returnTask,
         updateProcessing,
         reviewReport,
         recallReport,

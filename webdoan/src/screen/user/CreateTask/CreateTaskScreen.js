@@ -4,7 +4,7 @@ import classNames from "classnames/bind";
 import Select from 'react-select';
 import {useDispatch, useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
-import {actionCreateTask} from "../../../redux-store/action/actionUser";
+import {actionCreateTask, actionGetListUserOfProject} from "../../../redux-store/action/actionUser";
 import moment from "moment";
 import {toast} from "react-toastify";
 
@@ -17,6 +17,13 @@ const CreateTaskScreen = (props) => {
     const token = useSelector(state => state.reducerAuth.token);
 
     const overViewUser = useSelector(state => state.reducerUser.overViewUser);
+    const listUserOfProject = useSelector(state => state.reducerUser.listUserOfProject);
+
+    const listPriorityTask = [
+        { value: 0, label: 'Bình thường' },
+        { value: 1, label: 'Quan trọng' },
+        { value: 2, label: 'Rất quan trọng' },
+    ]
 
     const [titleTask, setTitleTask] = useState(props?.dataEdit?.title || '');
     const [assignTask, setAssignTask] = useState('');
@@ -24,22 +31,25 @@ const CreateTaskScreen = (props) => {
     const [combinationTask, setCombinationTask] = useState([]);
     const [assignDepartment, setAssignDepartment] = useState('');
     const [sourceTask, setSourceTask] = useState(null);
-    const [priorityTask, setPriorityTask] = useState(0);
-    const [createDate, setCreateDate] = useState(moment(new Date()).utc().format("YYYY-MM-DDTHH:mm"));
-    const [expiredDate, setExpiredDate] = useState(moment(new Date()).utc().format("YYYY-MM-DDTHH:mm"));
-    const [contentTask, setContentTask] = useState('');
+    const [priorityTask, setPriorityTask] = useState(listPriorityTask[props?.dataEdit?.priority || 0]);
+    const [createDate, setCreateDate] = useState(moment(props?.dataEdit?.created_date).utc().format("YYYY-MM-DDTHH:mm") || moment(new Date()).utc().format("YYYY-MM-DDTHH:mm"));
+    const [expiredDate, setExpiredDate] = useState(moment(props?.dataEdit?.expired_date).utc().format("YYYY-MM-DDTHH:mm") || moment(new Date()).utc().format("YYYY-MM-DDTHH:mm"));
+    const [contentTask, setContentTask] = useState(props?.dataEdit?.content || '');
     const [uploadedFiles, setUploadedFiles] = useState([]);
     const [optionsProject, setOptionsProject] = useState([]);
 
     const mapDepartmentsToOptions = (deps, level = 0) => {
+        if(deps.length === 0) return deps;
         return deps.map((dep) => ({
             label: `${'----'.repeat(level)} ${dep.department_name}`,
             options: [
+                // Duyệt qua users của department
                 ...dep.users.map((user) => ({
                     value: `${user.user_id}`,
-                    label: `${'----'.repeat(level + 1)} 👤 ${user.user_name}`,
+                    label: `${'----'.repeat(level + 1)} 👤 ${user.full_name}`,
                     department_id: dep.department_id,
                 })),
+                // Đệ quy xử lý departments con
                 ...mapDepartmentsToOptions(dep.children || [], level + 1),
             ],
         }));
@@ -51,7 +61,7 @@ const CreateTaskScreen = (props) => {
         description: department, // Mô tả bổ sung
     }));
 
-    const optionsUser = mapDepartmentsToOptions(overViewUser.departments);
+    const optionsUser = mapDepartmentsToOptions(listUserOfProject?.departments || []);
 
     const handleFileUpload = (event) => {
         const files = Array.from(event.target.files); // Lấy danh sách các tệp được chọn
@@ -65,7 +75,7 @@ const CreateTaskScreen = (props) => {
     };
 
     const handleCreateTask = () => {
-        if (!titleTask || !assignDepartment?.value || !targetTask?.department_id || !targetTask?.value || !sourceTask?.value) {
+        if (!titleTask || !assignDepartment?.value || !targetTask?.department_id || !targetTask?.value || !sourceTask?.value || !priorityTask?.value) {
             toast.error('Vui lòng nhập đủ thông tin cần thiết!');
             return;
         }
@@ -77,7 +87,7 @@ const CreateTaskScreen = (props) => {
             "target_department": targetTask?.department_id,
             "target_user": targetTask?.value,
             "content": contentTask,
-            "priority": priorityTask,
+            "priority": priorityTask?.value,
             "project_id": sourceTask?.value,
             "expired_date": moment(expiredDate).utc().format("YYYY-MM-DDTHH:mm:ss"),
             "created_date": moment(createDate).utc().format("YYYY-MM-DDTHH:mm:ss"),
@@ -92,6 +102,8 @@ const CreateTaskScreen = (props) => {
         dispatch(actionCreateTask(token, taskNew, props.setShowModuleCreateTask));
     }
 
+    console.log("dataEdit", props?.dataEdit);
+
     useEffect(() => {
         setAssignTask({
             value: `${overViewUser.userCurrent.user_id}`,
@@ -101,7 +113,7 @@ const CreateTaskScreen = (props) => {
 
     useEffect(() => {
 
-    }, [assignDepartment])
+    }, [props?.dataEdit])
 
     return (
         <div className={cx('CreateTaskScreen')}>
@@ -173,6 +185,38 @@ const CreateTaskScreen = (props) => {
 
                     <div className={cx('col-md-6', 'mb-3')}>
                         <div className={cx('d-flex', 'align-items-center')}>
+                            <label className="col-md-3">Nguồn nhiệm vụ <span className={cx('text_red')}>*</span></label>
+                            <Select
+                                options={optionsProject}
+                                isSearchable
+                                className="w-100"
+                                placeholder="Tìm kiếm dự án..."
+                                value={sourceTask}
+                                onChange={(selected) => {
+                                    setSourceTask(selected)
+                                    dispatch(actionGetListUserOfProject(token, selected.value))
+                                }}
+                            />
+                        </div>
+                    </div>
+
+                    <div className={cx('col-md-6', 'mb-3')}>
+                        <div className={cx('d-flex', 'align-items-center')}>
+                            <label className="col-md-3">Mức độ quan trọng <span
+                                className={cx('text_red')}>*</span></label>
+                            <Select
+                                options={listPriorityTask}
+                                isSearchable={false}
+                                className="w-100"
+                                placeholder="Chọn mức độ quan trọng"
+                                value={priorityTask}
+                                onChange={(selected) => setPriorityTask(selected)}
+                            />
+                        </div>
+                    </div>
+
+                    <div className={cx('col-md-6', 'mb-3')}>
+                        <div className={cx('d-flex', 'align-items-center')}>
                             <label className="col-md-3">Người chủ trì <span
                                 className={cx('text_red')}>*</span></label>
                             <Select
@@ -183,7 +227,7 @@ const CreateTaskScreen = (props) => {
                                 value={targetTask}
                                 onChange={(selected) => {
                                     const isAlreadyInTask = combinationTask.some(task => task.value === selected.value);
-                                    if(selected.value == overViewUser.userCurrent.user_id || isAlreadyInTask) {
+                                    if (selected.value == overViewUser.userCurrent.user_id || isAlreadyInTask) {
                                         toast.error("Người này đang giữ vai trò khác")
                                     } else {
                                         setTargetTask(selected)
@@ -205,40 +249,12 @@ const CreateTaskScreen = (props) => {
                                 value={combinationTask}
                                 onChange={(selected) => {
                                     const isAlreadyInTask = selected.some(task => task.value == overViewUser.userCurrent.user_id || task.value === targetTask.value);
-                                    if(isAlreadyInTask) {
+                                    if (isAlreadyInTask) {
                                         toast.error("Người này đang giữ vai trò khác")
                                     } else {
                                         setCombinationTask(selected)
                                     }
-                                }}                            />
-                        </div>
-                    </div>
-
-                    <div className={cx('col-md-6', 'mb-3')}>
-                        <div className={cx('d-flex', 'align-items-center')}>
-                            <label className="col-md-3">Nguồn nhiệm vụ <span className={cx('text_red')}>*</span></label>
-                            <Select
-                                options={optionsProject}
-                                isSearchable
-                                className="w-100"
-                                placeholder="Tìm kiếm dự án..."
-                                value={sourceTask}
-                                onChange={(selected) => setSourceTask(selected)}
-                            />
-                        </div>
-                    </div>
-
-                    <div className={cx('col-md-6', 'mb-3')}>
-                        <div className={cx('d-flex', 'align-items-center')}>
-                            <label className="col-md-3">Mức độ quan trọng <span
-                                className={cx('text_red')}>*</span></label>
-                            <input
-                                type="number"
-                                className="form-control"
-                                placeholder="Mức độ quan trọng"
-                                value={priorityTask}
-                                onChange={(e) => setPriorityTask(e.target.value)}
-                            />
+                                }}/>
                         </div>
                     </div>
 

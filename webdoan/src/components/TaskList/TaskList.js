@@ -10,6 +10,12 @@ const TaskList = ({ tasks, handleDetailTask, showFullTaskList = false, showExpir
         return null;
     }
 
+    const listPriorityTask = [
+        { value: 0, label: 'Bình thường' },
+        { value: 1, label: 'Quan trọng' },
+        { value: 2, label: 'Rất quan trọng' },
+    ]
+
     return (
         <table bordered hover className={cx("col-md-12", 'table_task_list', showFullTaskList ? '' : "table-fixed")}>
             <thead>
@@ -42,7 +48,7 @@ const TaskList = ({ tasks, handleDetailTask, showFullTaskList = false, showExpir
                     </td>
                     <td className={cx('text_left')}>{task.assign_user_name}</td>
                     <td className={cx('text_left')}>{task.target_user_name}</td>
-                    <td>{task.priority}</td>
+                    <td>{listPriorityTask[task?.priority]?.label}</td>
                     <td>{formatDate(task.created_date)}</td>
                     <td>{formatDate(task.expired_date)}</td>
                     <td>

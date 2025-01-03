@@ -7,7 +7,7 @@ import Select from "react-select";
 import {toast} from "react-toastify";
 import {
     actionEvictTask,
-    actionProcessingHandover,
+    actionProcessingHandover, actionReturnTask,
     actionSendReport,
     actionUpdateProcessing
 } from "../../redux-store/action/actionUser";
@@ -84,6 +84,8 @@ const HandleAction = (props) => {
             dispatch(actionEvictTask(token, props.task.task_id));
         } else if (props.reportType === 103) { //// Cập nhật tiến độ nhiệm vụ
             dispatch(actionUpdateProcessing(token, props.task.task_user_id, parseInt(progress, 10)));
+        } else if (props.reportType === 104) { //// Trả lại nhiệm vụ
+            dispatch(actionReturnTask(token, props.task.task_user_id, contentTask));
         }
         props.handleCloseModule();
     }

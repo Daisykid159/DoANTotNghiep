@@ -1,6 +1,10 @@
+import {actionGetListUserOfProject} from "../action/actionUser";
+
 const INITIAL_STATE = {
     listMenu: [],
     listTasks: [],
+    listUserOfProject: {},
+    taskOfTheDay: {},
     detailTask: {},
     myInfo: {}
 };

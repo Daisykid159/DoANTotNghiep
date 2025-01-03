@@ -28,6 +28,7 @@
   border: none;
   width: 90%;
   outline: none;
+  color: #343434;
   line-height: 18px;
   padding: 5px 10px;
 }
@@ -50,17 +51,18 @@
 
 .module_header {
   position: absolute;
-  top: 40px;
+  top: 50px;
   border-radius: 10px;
   background-color: #fafafa;
   border: 1px solid #cccccc;
-  right: 10px;
+  right: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
   overflow: hidden;
   z-index: 200;
+  max-width: 450px;
 }
 
 .row_module_header {
@@ -124,10 +126,15 @@
 .item_notification{
   margin: 10px;
   padding: 10px;
-  width: 90%;
-  border: 1px solid #4292EA;
+  width: 95%;
+  border: 1px solid rgba(0, 122, 254, 0.5);;
+}
+
+.type_notify {
+  color: #338BEB;
 }
 
 .icon_user_notify {
-  font-size: 30px;
+  font-size: 35px;
+  color: #338BEB;
 }
