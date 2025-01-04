@@ -1,6 +1,7 @@
 const INITIAL_STATE = {
     listMenu: [],
     listTasks: [],
+    listTasksSearch: [],
     listUserOfProject: {},
     taskOfTheDay: {},
     leaveProcessingTime: [],

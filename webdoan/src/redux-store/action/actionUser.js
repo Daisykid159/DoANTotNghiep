@@ -133,11 +133,11 @@ export function actionSearchTask (token, title, department_id, user_id, createTo
             const response = await Api(token).searchTask(title, department_id, user_id, createTo, createFrom, expireTo, expireFrom, task_status, priority);
             if (response && response.data){
                 dispatch(updateData({
-                    listTasks: response.data,
+                    listTasksSearch: response.data,
                 }))
             } else {
                 dispatch(updateData({
-                    listTasks: [],
+                    listTasksSearch: [],
                 }))
                 toast.error('Lấy dữ liệu thất bại!');
                 console.log("Lỗi api actionGetListTaskByMenu");
@@ -375,6 +375,23 @@ export function actionRecallReport (token, id, task) {
     };
 }
 
+export function actionLuiHanXuLy (token, id, data, closeModule) {
+    return async (dispatch, getState) => {
+        try {
+            const response = await Api(token).recallReport(id, data);
+            if (response && response.data){
+                closeModule(false);
+                toast.success('Lùi hạn xử lý nhiệm vụ thành công!');
+            } else {
+                toast.error('Lùi hạn xử lý nhiệm vụ thất bại!');
+                console.log("Lỗi api actionLuiHanXuLy");
+            }
+        } catch (error) {
+            console.log("Lỗi api actionLuiHanXuLy", error);
+        }
+    };
+}
+
 export function actionSaveFiles (token, file, taskId) {
     return async (dispatch, getState) => {
         try {
@@ -404,7 +421,7 @@ export function actionDownloadFile (token, file) {
                 link.remove();
                 window.URL.revokeObjectURL(url);
 
-                toast.success('Tải xuống file thành công!');
+                // toast.success('Tải xuống file thành công!');
             } else {
                 toast.error('Tải xuống file thất bại!');
                 console.log("Lỗi api actionDownloadFile");
@@ -437,4 +454,5 @@ export default {
     actionRecallReport,
     actionSaveFiles,
     actionDownloadFile,
+    actionLuiHanXuLy,
 };

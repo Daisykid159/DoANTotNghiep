@@ -102,18 +102,65 @@ const CreateTaskScreen = (props) => {
         dispatch(actionCreateTask(token, taskNew, props.setShowModuleCreateTask, uploadedFiles));
     }
 
-    console.log("dataEdit", props?.dataEdit);
-
     useEffect(() => {
-        setAssignTask({
-            value: `${overViewUser.userCurrent.user_id}`,
-            label: `👤 ${overViewUser.userCurrent.user_name}`,
-        });
+        if(props?.dataEdit) {
+            setAssignTask({
+                value: `${props?.dataEdit?.assign_user_id}`,
+                label: `👤 ${props?.dataEdit?.assign_user_name}`,
+            });
+        } else {
+            setAssignTask({
+                value: `${overViewUser.userCurrent.user_id}`,
+                label: `👤 ${overViewUser.userCurrent.user_name}`,
+            });
+        }
     }, [overViewUser]);
 
     useEffect(() => {
-
+        optionsAssignDepartment?.map(item => {
+            if (item.value === props?.dataEdit?.assign_department_id) {
+                setAssignDepartment(item);
+                setOptionsProject(item.description.projects?.map((project) => ({
+                    value: project.project_id,
+                    label: project.project_name,
+                    description: project.content, // Mô tả bổ sung
+                })))
+                item?.description?.projects?.map((project) => {
+                    if(project.project_id === props?.dataEdit?.project_id){
+                        setSourceTask({
+                            value: project.project_id,
+                            label: project.project_name,
+                            description: project.content,
+                        });
+                        dispatch(actionGetListUserOfProject(token, project.project_id));
+                    }
+                })
+            }
+        })
     }, [props?.dataEdit])
+
+    useEffect(() => {
+        optionsUser?.map(user => {
+            user?.options?.map(u => {
+                if(parseInt(u?.value, 10) === parseInt(props?.dataEdit?.target_user_id, 10)) {
+                    setTargetTask(u);
+                }
+            })
+        })
+
+        const tmp = [];
+        optionsUser?.map(user => {
+            user?.options?.map(u => {
+                props?.dataEdit?.combinations?.map(combination => {
+                    if(parseInt(u?.value, 10) === parseInt(combination.combination_id, 10)) {
+                        tmp.push(u);
+                    }
+                })
+
+            })
+        })
+        setCombinationTask(tmp);
+    }, [props?.dataEdit, listUserOfProject])
 
     return (
         <div className={cx('CreateTaskScreen')}>
@@ -147,6 +194,21 @@ const CreateTaskScreen = (props) => {
 
                     <div className={cx('col-md-6', 'mb-3')}>
                         <div className={cx('d-flex', 'align-items-center')}>
+                            <label className="col-md-3">Người giao <span
+                                className={cx('text_red')}>*</span></label>
+                            <Select
+                                options={optionsUser}
+                                isSearchable
+                                isDisabled
+                                className="w-100"
+                                placeholder="Tìm kiếm phòng ban hoặc người dùng..."
+                                value={assignTask}
+                            />
+                        </div>
+                    </div>
+
+                    <div className={cx('col-md-6', 'mb-3')}>
+                        <div className={cx('d-flex', 'align-items-center')}>
                             <label className="col-md-3">Đơn vị người giao <span
                                 className={cx('text_red')}>*</span></label>
                             <Select
@@ -164,21 +226,6 @@ const CreateTaskScreen = (props) => {
                                         description: project.content, // Mô tả bổ sung
                                     })))
                                 }}
-                            />
-                        </div>
-                    </div>
-
-                    <div className={cx('col-md-6', 'mb-3')}>
-                        <div className={cx('d-flex', 'align-items-center')}>
-                            <label className="col-md-3">Người giao <span
-                                className={cx('text_red')}>*</span></label>
-                            <Select
-                                options={optionsUser}
-                                isSearchable
-                                isDisabled
-                                className="w-100"
-                                placeholder="Tìm kiếm phòng ban hoặc người dùng..."
-                                value={assignTask}
                             />
                         </div>
                     </div>
@@ -227,9 +274,10 @@ const CreateTaskScreen = (props) => {
                                 value={targetTask}
                                 onChange={(selected) => {
                                     const isAlreadyInTask = combinationTask.some(task => task.value === selected.value);
-                                    if (selected.value == overViewUser.userCurrent.user_id || isAlreadyInTask) {
+                                    if (selected.value == assignTask.value || isAlreadyInTask) {
                                         toast.error("Người này đang giữ vai trò khác")
                                     } else {
+                                        console.log(selected)
                                         setTargetTask(selected)
                                     }
                                 }}

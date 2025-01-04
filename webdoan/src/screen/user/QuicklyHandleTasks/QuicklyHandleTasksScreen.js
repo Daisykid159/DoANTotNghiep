@@ -2,12 +2,17 @@ import React, {useEffect, useState} from "react";
 import styles from './QuicklyHandleTasksStyle.module.scss';
 import classNames from "classnames/bind";
 import TaskList from "../../../components/TaskList/TaskList";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {get} from "axios";
+import {useNavigate} from "react-router-dom";
+import {actionLuiHanXuLy} from "../../../redux-store/action/actionUser";
 
 const cx = classNames.bind(styles);
 
 const QuicklyHandleTasksScreen = (props) => {
+
+    const dispatch = useDispatch();
+    const token = useSelector(state => state.reducerAuth.token);
 
     const taskOfTheDay = useSelector(state => state.reducerUser.taskOfTheDay);
     const leaveProcessingTime = useSelector(state => state.reducerUser.leaveProcessingTime);
@@ -21,6 +26,12 @@ const QuicklyHandleTasksScreen = (props) => {
     const [textRecommendation, setTextRecommendation] = useState('');
     const handleDetailTask = (itemSelect) => {
         window.open(`/user/TaskDetail?itemID=${itemSelect.task_id}&title=${itemSelect.title}`, '_blank');
+    }
+
+    const handleLuiHanXuLy = () => {
+        leaveProcessingTime.map(item => {
+            dispatch(actionLuiHanXuLy(token, item?.taskImportant?.task_id, item?.taskLeaves, props.setShowModule));
+        })
     }
 
     useEffect(() => {
@@ -88,6 +99,7 @@ const QuicklyHandleTasksScreen = (props) => {
                             <div className={cx('col-md-12', 'container', 'd-flex', 'justify-content-end', 'mb-5')}>
                                 <button
                                     className={cx("btn btn-primary", 'btn_footer')}
+                                    onClick={() => handleLuiHanXuLy()}
                                 >
                                     Lùi hạn xử lý
                                 </button>

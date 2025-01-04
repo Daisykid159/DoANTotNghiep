@@ -247,6 +247,11 @@ const Api = (token) => {
         return api.get(`api/user/searchTask?title=${title}&department_id=${department_id}&user_id=${user_id}&createTo=${createTo}&createFrom=${createFrom}&expireTo=${expireTo}&expireFrom=${expireFrom}&task_status=${task_status}&priority=${priority}`);
     }
 
+    const putLeaveProcessingTime = (id, data) => {
+        return api.put(`api/user/leaveProcessingTime/${id}`, data);
+
+    }
+
     return {
         getTokenLogin,
         refreshToken,
@@ -293,6 +298,7 @@ const Api = (token) => {
         saveFiles,
         downloadFile,
         searchTask,
+        putLeaveProcessingTime,
     };
 };
 

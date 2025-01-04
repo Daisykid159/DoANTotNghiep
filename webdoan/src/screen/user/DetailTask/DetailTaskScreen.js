@@ -113,7 +113,7 @@ const DetailTaskScreen = (props) => {
 
                         <div className={cx('col-md-6', 'd-flex', 'mb-2')}>
                             <div className={cx('col-md-3', 'fw-bold')}>Hạn xử lý:</div>
-                            <div className={cx('col-md-8')}>{formatDate(detailTask.expire_date)}</div>
+                            <div className={cx('col-md-8')}>{formatDate(detailTask.expired_date)}</div>
                         </div>
 
                         <div className={cx('col-md-6', 'd-flex', 'mb-2')}>
@@ -123,12 +123,12 @@ const DetailTaskScreen = (props) => {
 
                         <div className={cx('col-md-6', 'd-flex', 'mb-2')}>
                             <div className={cx('col-md-3', 'fw-bold')}>Nguồn nhiệm vụ:</div>
-                            <div className={cx('col-md-8')}>{detailTask.target_organization_department_name}</div>
+                            <div className={cx('col-md-8')}>{detailTask?.project_name}</div>
                         </div>
 
                         <div className={cx('col-md-12', 'd-flex', 'mb-2')}>
                             <div className={cx('col-md-1', 'fw-bold')}>Nội dung:</div>
-                            <div className={cx('col-md-10')}>{detailTask.content || ""}</div>
+                            <div className={cx('col-md-10')}>{detailTask?.content || ""}</div>
                         </div>
 
                         <div className={cx('col-md-12', 'mb-2')}>

@@ -179,7 +179,7 @@ const TaskListScreen = () => {
                         ))}
                     </div>
                     {chose.idChose === 1 ? (<TaskList tasks={dataList} handleDetailTask={handleDetailTask}/>)
-                        : chose.idChose === 2 ? (<Search/>)
+                        : chose.idChose === 2 ? (<Search handleDetailTask={handleDetailTask} />)
                             : (<DetailTaskScreen task={chose}/>)}
                 </div>
             </div>
