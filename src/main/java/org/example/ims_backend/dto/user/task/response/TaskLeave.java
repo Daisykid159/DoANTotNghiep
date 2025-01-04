@@ -17,6 +17,7 @@ public class TaskLeave {
     int priority;
     int progress;
     Date created_date;
+    Date expired_date;
     Date new_expired_date;
     Date completed_date;
     String assign_department;

@@ -233,15 +233,16 @@ public class TaskServiceImpl implements TaskService {
             var context = SecurityContextHolder.getContext();
             User user = userRepository.findByUsername(context.getAuthentication().getName()).orElseThrow(() -> new RuntimeException("User not found"));
             historyService.addHistory(user, userRepository.findById(createTaskRequest.getTarget_user()).orElseThrow(() -> new RuntimeException("User not found")), result, createTaskRequest.getContent(), 0);
-            return TaskDetail(result.getId());
+            TaskDetailResponse taskDetailResponse=TaskDetail(result.getId());
+            TaskUser taskUser = taskUserRepository.findByUserAndTask(user, result);
+            taskUser.setHasRead(0);
+            taskUserRepository.save(taskUser);
+            return taskDetailResponse;
         }catch (Exception e){
             log.error("Error while creating task", e);
             throw new RuntimeException( e.getMessage());
         }
-
-
     }
-
     @Override
     @Transactional
     public boolean processingHandover(HandoverTaskRequest handoverTaskRequest) {
@@ -285,8 +286,6 @@ public class TaskServiceImpl implements TaskService {
                 task.setTargetDepartment(targetDepartment);
                 taskRepository.save(task);
             }
-
-
             for(TaskUserRequest taskUserRequest : handoverTaskRequest.getCombinations()){
                 User coordinatorNew =  userRepository.findById(taskUserRequest.getCombination_id()).orElseThrow(() -> new RuntimeException("User not found"));
                     TaskUser taskUser = TaskUser.builder()
@@ -434,15 +433,15 @@ public class TaskServiceImpl implements TaskService {
                 List<TaskLeave> taskLeaves = new ArrayList<>();
                 for(Task task1 : taskProcessing){
                     if(task1.getStatus() != 5 && task1.getPriority() != 2){
-                        Date new_expired_date = ProcessingTime.calculateOverlapAndNewExpire(task.getCreatedDate(),task.getExpiredDate(),task1.getCreatedDate(),task1.getExpiredDate());
+                        Date new_expired_date = ProcessingTime.calculateOverlapAndNewExpire(task.getCreatedDate(),task.getExpiredDate(),task1.getCreatedDate(),task1.getExpiredDate(),task1.getProject().getExpiredDate());
                         if(new_expired_date != task1.getExpiredDate()){
-                            task1.setExpiredDate(new_expired_date);
-                            taskLeaves.add(taskMapper.toTaskLeave(task1));
+                            TaskLeave taskLeave = taskMapper.toTaskLeave(task1);
+                            taskLeave.setNew_expired_date(new_expired_date);
+                            taskLeaves.add(taskLeave);
                         }
                     }
                 }
                 if(!taskLeaves.isEmpty()){
-                    task.setExpiredDate(null);
                     taskLeaveProcessingTimeResponses.add(
                             TaskLeaveProcessingTimeResponse.builder()
                                     .taskImportant(taskMapper.toTaskLeave(task))

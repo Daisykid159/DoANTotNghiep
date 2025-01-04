@@ -108,7 +108,7 @@ public interface TaskMapper {
                 .priority(task.getPriority())
                 .progress(task.getProgress())
                 .created_date(task.getCreatedDate())
-                .new_expired_date(task.getExpiredDate())
+                .expired_date(task.getExpiredDate())
                 .completed_date(task.getCompletedDate())
                 .assign_department(task.getAssignDepartment().getDepartmentName())
                 .assign_user_name(task.getAssignUser().getFullName())
