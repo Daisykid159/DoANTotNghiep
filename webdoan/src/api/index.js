@@ -243,6 +243,10 @@ const Api = (token) => {
         return api.get(`api/user/downloadFile/${id}`);
     }
 
+    const searchTask = (title, department_id, user_id, createTo, createFrom, expireTo, expireFrom, task_status, priority) => {
+        return api.get(`api/user/searchTask?title=${title}&department_id=${department_id}&user_id=${user_id}&createTo=${createTo}&createFrom=${createFrom}&expireTo=${expireTo}&expireFrom=${expireFrom}&task_status=${task_status}&priority=${priority}`);
+    }
+
     return {
         getTokenLogin,
         refreshToken,
@@ -288,6 +292,7 @@ const Api = (token) => {
         recallReport,
         saveFiles,
         downloadFile,
+        searchTask,
     };
 };
 

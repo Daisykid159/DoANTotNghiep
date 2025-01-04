@@ -99,7 +99,7 @@ const CreateTaskScreen = (props) => {
                 }
             }) || [],
         }
-        dispatch(actionCreateTask(token, taskNew, props.setShowModuleCreateTask));
+        dispatch(actionCreateTask(token, taskNew, props.setShowModuleCreateTask, uploadedFiles));
     }
 
     console.log("dataEdit", props?.dataEdit);

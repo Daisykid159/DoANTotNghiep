@@ -127,6 +127,27 @@ export function actionGetListTaskByMenu (token, menuId) {
     };
 }
 
+export function actionSearchTask (token, title, department_id, user_id, createTo, createFrom, expireTo, expireFrom, task_status, priority) {
+    return async (dispatch, getState) => {
+        try {
+            const response = await Api(token).searchTask(title, department_id, user_id, createTo, createFrom, expireTo, expireFrom, task_status, priority);
+            if (response && response.data){
+                dispatch(updateData({
+                    listTasks: response.data,
+                }))
+            } else {
+                dispatch(updateData({
+                    listTasks: [],
+                }))
+                toast.error('Lấy dữ liệu thất bại!');
+                console.log("Lỗi api actionGetListTaskByMenu");
+            }
+        } catch (error) {
+            console.log("Lỗi api actionGetListTaskByMenu", error);
+        }
+    };
+}
+
 export function actionGetDetailTask (token, taskUserId) {
     return async (dispatch, getState) => {
         try {
@@ -199,11 +220,16 @@ export function actionGetListLeaveProcessingTime (token) {
     };
 }
 
-export function actionCreateTask (token, task, setShowModuleCreateTask) {
+export function actionCreateTask (token, task, setShowModuleCreateTask, uploadedFiles) {
     return async (dispatch, getState) => {
         try {
             const response = await Api(token).createTask(task);
             if (response && response.data){
+                if(uploadedFiles.length > 0) {
+                    uploadedFiles.forEach((file) => {
+                        dispatch(actionSaveFiles(token, file, response.data.task_id))
+                    })
+                }
                 dispatch(actionGetListMenu(token));
                 setShowModuleCreateTask(false);
                 toast.success('Tạo nhiệm vụ thành công!');
@@ -396,6 +422,7 @@ export default {
     actionUpdateMyInfo,
     actionChangePassword,
     actionGetListTaskByMenu,
+    actionSearchTask,
     actionGetDetailTask,
     actionGetListUserOfProject,
     actionGetListTaskOfTheDay,

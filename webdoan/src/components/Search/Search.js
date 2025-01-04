@@ -59,6 +59,8 @@ const Search = () => {
             nguoiThamGia,
             // ... các giá trị khác
         });
+
+        dispatch(actionSearchTask(token))
     };
 
     return (
