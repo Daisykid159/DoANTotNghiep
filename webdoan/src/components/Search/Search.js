@@ -30,7 +30,7 @@ const Search = () => {
     ]
 
     const mapDepartmentsToOptions = (deps, level = 0) => {
-        return deps.map((dep) => ({
+        return deps?.map((dep) => ({
             label: `${'----'.repeat(level)} ${dep.department_name}`,
             options: [
                 ...dep.users.map((user) => ({
@@ -43,9 +43,9 @@ const Search = () => {
         }));
     };
 
-    const optionsUser = mapDepartmentsToOptions(overViewUser.departments);
+    const optionsUser = mapDepartmentsToOptions(overViewUser?.departments);
 
-    const optionsDepartment = overViewUser.departments.map((department) => ({
+    const optionsDepartment = overViewUser?.departments?.map((department) => ({
         value: department.department_id,
         label: department.department_name,
         description: department, // Mô tả bổ sung

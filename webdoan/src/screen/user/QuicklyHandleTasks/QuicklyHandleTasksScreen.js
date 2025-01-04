@@ -9,11 +9,11 @@ const cx = classNames.bind(styles);
 
 const QuicklyHandleTasksScreen = (props) => {
 
-    const dataList = useSelector(state => state.reducerUser.listTasks);
-    const priorityAboveZero = dataList.filter(item => item.priority > 0);
-    const priorityOthers = dataList.filter(item => item.priority <= 0);
-
     const taskOfTheDay = useSelector(state => state.reducerUser.taskOfTheDay);
+    const leaveProcessingTime = useSelector(state => state.reducerUser.leaveProcessingTime);
+
+    const priorityAboveZero = leaveProcessingTime.map((item) => item?.taskImportant);
+    const priorityOthers = leaveProcessingTime.flatMap((item) => item?.taskLeaves);
 
     const [showListTaskPriority, setShowListTaskPriority] = useState(true);
     const [showListTaskWorkToday, setShowListTaskWorkToday] = useState(true);
@@ -36,6 +36,10 @@ const QuicklyHandleTasksScreen = (props) => {
         setTextRecommendation(getAdviceMessage(taskOfTheDay?.avgTimeCompleted * taskOfTheDay?.tasks?.length));
     }, [taskOfTheDay])
 
+    if(leaveProcessingTime?.length === 0 && taskOfTheDay?.tasks?.length === 0) {
+        props.setShowModule(false)
+    }
+
     return (
         <div className={cx('QuicklyHandleTasksScreen')}>
             <div className={cx('body_module_xu_ly_nhanh')}>
@@ -49,7 +53,7 @@ const QuicklyHandleTasksScreen = (props) => {
                     </button>
                 </div>
 
-                <div className={cx('p-3', 'container')}>
+                {leaveProcessingTime?.length !== 0 && (<div className={cx('p-3', 'container')}>
                     <div className={cx('d-flex', 'position-relative')}>
                         <div className={cx('text_header_module_xu_ly_nhanh', 'col-md-12')}>
                             Danh sách nhiệm vụ cần lùi hạn xử lý
@@ -90,9 +94,9 @@ const QuicklyHandleTasksScreen = (props) => {
                             </div>
                         </div>
                     )}
-                </div>
+                </div>)}
 
-                <div className={cx('p-3', 'container')}>
+                {taskOfTheDay?.tasks?.length !== 0 && (<div className={cx('p-3', 'container')}>
                     <div className={cx('d-flex', 'position-relative')}>
                         <div className={cx('text_header_module_xu_ly_nhanh', 'col-md-12')}>
                             Danh sách nhiệm vụ cần hoàn thành trong ngày
@@ -108,7 +112,8 @@ const QuicklyHandleTasksScreen = (props) => {
                     {showListTaskWorkToday && (
                         <div>
                             <div className={cx('p-3', 'container')}>
-                                <TaskList tasks={taskOfTheDay?.tasks} handleDetailTask={handleDetailTask} showFullTaskList={true}/>
+                                <TaskList tasks={taskOfTheDay?.tasks} handleDetailTask={handleDetailTask}
+                                          showFullTaskList={true}/>
                             </div>
 
                             <div className={cx('col-md-12', 'container', 'mb-5', 'fw-bold', 'text_red')}>
@@ -116,7 +121,7 @@ const QuicklyHandleTasksScreen = (props) => {
                             </div>
                         </div>
                     )}
-                </div>
+                </div>)}
             </div>
         </div>
     )

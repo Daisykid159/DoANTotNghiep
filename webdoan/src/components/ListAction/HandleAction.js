@@ -7,7 +7,7 @@ import Select from "react-select";
 import {toast} from "react-toastify";
 import {
     actionEvictTask,
-    actionProcessingHandover, actionReturnTask,
+    actionProcessingHandover, actionReturnTask, actionSaveFiles,
     actionSendReport,
     actionUpdateProcessing
 } from "../../redux-store/action/actionUser";
@@ -81,11 +81,17 @@ const HandleAction = (props) => {
                 content: contentTask,
             }));
         } else if (props.reportType === 102) { //// Thu hồi nhiệm vụ
-            dispatch(actionEvictTask(token, props.task.task_id));
+            dispatch(actionEvictTask(token, props.task));
         } else if (props.reportType === 103) { //// Cập nhật tiến độ nhiệm vụ
-            dispatch(actionUpdateProcessing(token, props.task.task_user_id, parseInt(progress, 10)));
+            dispatch(actionUpdateProcessing(token, props.task, parseInt(progress, 10)));
         } else if (props.reportType === 104) { //// Trả lại nhiệm vụ
-            dispatch(actionReturnTask(token, props.task.task_user_id, contentTask));
+            dispatch(actionReturnTask(token, props.task, contentTask));
+        }
+
+        if(uploadedFiles?.length > 0) {
+            uploadedFiles.forEach((file) => {
+                dispatch(actionSaveFiles(token, file, props.task.task_id));
+            })
         }
         props.handleCloseModule();
     }

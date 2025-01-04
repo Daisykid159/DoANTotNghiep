@@ -8,7 +8,12 @@ import ListAction from "../../../components/ListAction";
 import CreateTaskScreen from "../CreateTask/CreateTaskScreen";
 import {useDispatch, useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
-import {actionGetDetailTask, actionRecallReport, actionReviewReport} from "../../../redux-store/action/actionUser";
+import {
+    actionDownloadFile,
+    actionGetDetailTask,
+    actionRecallReport,
+    actionReviewReport
+} from "../../../redux-store/action/actionUser";
 
 const cx = classNames.bind(styles);
 
@@ -52,6 +57,10 @@ const DetailTaskScreen = (props) => {
             </div>
         </div>
     )
+
+    const handleDownloadFile = (file) => {
+        dispatch(actionDownloadFile(token, file))
+    }
 
     if(!detailTask) {
         return null
@@ -182,7 +191,7 @@ const DetailTaskScreen = (props) => {
                                                     <button
                                                         className="btn btn-outline-primary px-4 me-3"
                                                         onClick={() => {
-                                                            dispatch(actionReviewReport(token, report.report_id, parseInt(overViewUser.userCurrent.user_id, 10), true, detailTask.task_user_id))
+                                                            dispatch(actionReviewReport(token, report.report_id, parseInt(overViewUser.userCurrent.user_id, 10), true, detailTask))
                                                         }}
                                                     >
                                                         Duyệt
@@ -190,7 +199,7 @@ const DetailTaskScreen = (props) => {
                                                     <button
                                                         className="btn btn-outline-warning px-4"
                                                         onClick={() => {
-                                                            dispatch(actionReviewReport(token, report.report_id, parseInt(overViewUser.userCurrent.user_id, 10), false, detailTask.task_user_id))
+                                                            dispatch(actionReviewReport(token, report.report_id, parseInt(overViewUser.userCurrent.user_id, 10), false, detailTask))
                                                         }}
                                                     >
                                                         Từ chối
@@ -200,7 +209,7 @@ const DetailTaskScreen = (props) => {
                                                 <button
                                                     className="btn btn-outline-danger px-4"
                                                     onClick={() => {
-                                                        dispatch(actionRecallReport(token, report.report_id, detailTask.task_user_id))
+                                                        dispatch(actionRecallReport(token, report.report_id, detailTask))
                                                     }}
                                                 >
                                                     Thu hồi
@@ -222,7 +231,10 @@ const DetailTaskScreen = (props) => {
                     </div>
                     <div className={cx('col-md-11')}>
                         {detailTask.files?.length > 0 && detailTask.files?.map(item => (
-                            <div className={cx('row_file')}>
+                            <div
+                                className={cx('row_file', 'mb-2')}
+                                onClick={() => handleDownloadFile(item)}
+                            >
                                 <div className={cx('text_file')}>{item.file_name}</div>
                                 <i className={cx('bx bx-cloud-download', 'icon_download')}></i>
                             </div>

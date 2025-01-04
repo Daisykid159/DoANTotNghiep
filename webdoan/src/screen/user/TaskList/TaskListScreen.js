@@ -9,6 +9,7 @@ import QuicklyHandleTasksScreen from "../QuicklyHandleTasks/QuicklyHandleTasksSc
 import {useDispatch, useSelector} from "react-redux";
 import {useLocation, useNavigate} from "react-router-dom";
 import {
+    actionGetListLeaveProcessingTime,
     actionGetListMenu,
     actionGetListTaskByMenu,
     actionGetListTaskOfTheDay
@@ -96,6 +97,7 @@ const TaskListScreen = () => {
     useEffect(() => {
         dispatch(actionGetListMenu(token));
         dispatch(actionGetListTaskOfTheDay(token));
+        dispatch(actionGetListLeaveProcessingTime(token));
     }, []);
 
     useEffect(() => {

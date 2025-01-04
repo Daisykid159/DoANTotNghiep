@@ -37,7 +37,7 @@ const DetailProjectScreen = () => {
         tree?.forEach((node) => {
             flatList.push({
                 value: node.departmentId,
-                label: `${parentLabel}${node.departmentName}`,
+                label: `${parentLabel}${node?.departmentName}`,
                 ...node,
             });
             if (node.child_departments && node.child_departments.length > 0) {
@@ -64,8 +64,8 @@ const DetailProjectScreen = () => {
 
             if (!isDuplicate) {
                 return [...prevSelectedList, {
-                    department_id: itemSelect.departmentId,
-                    department_name: itemSelect.departmentName,
+                    department_id: itemSelect?.departmentId,
+                    department_name: itemSelect?.departmentName,
                 }];
             }
 

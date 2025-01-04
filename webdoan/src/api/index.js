@@ -178,6 +178,10 @@ const Api = (token) => {
         return api.get(`api/user/taskOfTheDay`);
     }
 
+    const leaveProcessingTime = () => {
+        return api.get(`api/user/leaveProcessingTime`);
+    }
+
     const sendReport = (task_id, type, user_create_id, content, new_expired_date) => {
         return api.post(`/api/user/sendReport`, {
             task_id: task_id,
@@ -216,6 +220,29 @@ const Api = (token) => {
         return api.delete(`api/user/recallReport/${id}`);
     }
 
+    const saveFiles = async (file, taskId) => {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("task_id", taskId);
+
+        try {
+            const response = await fetch(`${BASEURL}/api/user/saveFiles`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: formData,
+            });
+
+            return response
+        } catch (error) {
+        }
+    }
+
+    const downloadFile = (id) => {
+        return api.get(`api/user/downloadFile/${id}`);
+    }
+
     return {
         getTokenLogin,
         refreshToken,
@@ -242,6 +269,7 @@ const Api = (token) => {
         usersAndDepartmentsOfProject,
 
         listTaskOfTheDay,
+        leaveProcessingTime,
         getOverView,
         getFullUser,
         myInfo,
@@ -258,6 +286,8 @@ const Api = (token) => {
         updateProcessing,
         reviewReport,
         recallReport,
+        saveFiles,
+        downloadFile,
     };
 };
 

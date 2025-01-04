@@ -182,6 +182,23 @@ export function actionGetListTaskOfTheDay (token) {
     };
 }
 
+export function actionGetListLeaveProcessingTime (token) {
+    return async (dispatch, getState) => {
+        try {
+            const response = await Api(token).leaveProcessingTime();
+            if (response && response.data){
+                dispatch(updateData({
+                    leaveProcessingTime: response.data,
+                }))
+            } else {
+                console.log("Lỗi api actionGetListLeaveProcessingTime");
+            }
+        } catch (error) {
+            console.log("Lỗi api actionGetListLeaveProcessingTime", error);
+        }
+    };
+}
+
 export function actionCreateTask (token, task, setShowModuleCreateTask) {
     return async (dispatch, getState) => {
         try {
@@ -205,10 +222,10 @@ export function actionSendReport (token, task, type, user_create_id, content, ne
         try {
             const response = await Api(token).sendReport(task.task_id, type, user_create_id, content, new_expired_date);
             if (response && response.data){
-                dispatch(actionGetDetailTask(token, task.task_user_id));
+                dispatch(actionGetDetailTask(token, task.task_id));
                 toast.success('Gửi yêu cầu thành công!');
             } else {
-                dispatch(actionGetDetailTask(token, task.task_user_id));
+                dispatch(actionGetDetailTask(token, task.task_id));
                 toast.error('Gửi yêu cầu thất bại!');
                 console.log("Lỗi api actionSendReport");
             }
@@ -236,10 +253,10 @@ export function actionProcessingHandover (token, dataProcess) {
     };
 }
 
-export function actionEvictTask (token, taskId) {
+export function actionEvictTask (token, task) {
     return async (dispatch, getState) => {
         try {
-            const response = await Api(token).evictTask(taskId);
+            const response = await Api(token).evictTask(task.task_id);
             if (response && response.data){
                 dispatch(actionGetListMenu(token));
                 dispatch(actionGetOverViewUser(token));
@@ -254,10 +271,10 @@ export function actionEvictTask (token, taskId) {
     };
 }
 
-export function actionReturnTask (token, taskId, content) {
+export function actionReturnTask (token, task, content) {
     return async (dispatch, getState) => {
         try {
-            const response = await Api(token).returnTask(taskId, content);
+            const response = await Api(token).returnTask(task.task_user_id, content);
             if (response && response.data){
                 dispatch(actionGetListMenu(token));
                 dispatch(actionGetOverViewUser(token));
@@ -272,10 +289,10 @@ export function actionReturnTask (token, taskId, content) {
     };
 }
 
-export function actionUpdateProcessing (token, task_user_id, updateProcessing) {
+export function actionUpdateProcessing (token, task, updateProcessing) {
     return async (dispatch, getState) => {
         try {
-            const response = await Api(token).updateProcessing(task_user_id, updateProcessing);
+            const response = await Api(token).updateProcessing(task.task_user_id, updateProcessing);
             if (response && response.data){
                 dispatch(actionGetListMenu(token));
                 dispatch(actionGetOverViewUser(token));
@@ -290,12 +307,12 @@ export function actionUpdateProcessing (token, task_user_id, updateProcessing) {
     };
 }
 
-export function actionReviewReport (token, report_id, user_review_id, isApprove, task_user_id) {
+export function actionReviewReport (token, report_id, user_review_id, isApprove, task) {
     return async (dispatch, getState) => {
         try {
-            const response = await Api(token).reviewReport(report_id, user_review_id, isApprove);
+            const response = await Api(token).reviewReport(report_id, task.user_review_id, isApprove);
             if (response && response.data){
-                dispatch(actionGetDetailTask(token, task_user_id));
+                dispatch(actionGetDetailTask(token, task.task_id));
                 if(isApprove) {
                     toast.success('Duyệt yêu cầu thành công!');
                 } else {
@@ -315,12 +332,12 @@ export function actionReviewReport (token, report_id, user_review_id, isApprove,
     };
 }
 
-export function actionRecallReport (token, id, task_user_id) {
+export function actionRecallReport (token, id, task) {
     return async (dispatch, getState) => {
         try {
             const response = await Api(token).recallReport(id);
             if (response && response.data){
-                dispatch(actionGetDetailTask(token, task_user_id));
+                dispatch(actionGetDetailTask(token, task.task_id));
                 toast.success('Thu hồi yêu câu thành công!');
             } else {
                 toast.error('Thu hồi yêu cầu thất bại!');
@@ -328,6 +345,46 @@ export function actionRecallReport (token, id, task_user_id) {
             }
         } catch (error) {
             console.log("Lỗi api actionSendReport", error);
+        }
+    };
+}
+
+export function actionSaveFiles (token, file, taskId) {
+    return async (dispatch, getState) => {
+        try {
+            await Api(token).saveFiles(file, parseInt(taskId, 10));
+            dispatch(actionGetDetailTask(token, taskId));
+        } catch (error) {
+            console.log("Lỗi api actionSaveFiles", error);
+        }
+    };
+}
+
+export function actionDownloadFile (token, file) {
+    return async (dispatch, getState) => {
+        try {
+            const response = await Api(token).downloadFile(file.file_id);
+            if (response && response.data){
+                const arrayBuffer = new Uint8Array([response.data]);
+                const blob = new Blob([arrayBuffer]);
+                const url = URL.createObjectURL(blob);
+
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = file.file_name; // Tên file khi tải xuống
+                document.body.appendChild(link);
+                link.click();
+
+                link.remove();
+                window.URL.revokeObjectURL(url);
+
+                toast.success('Tải xuống file thành công!');
+            } else {
+                toast.error('Tải xuống file thất bại!');
+                console.log("Lỗi api actionDownloadFile");
+            }
+        } catch (error) {
+            console.log("Lỗi api actionDownloadFile", error);
         }
     };
 }
@@ -342,6 +399,7 @@ export default {
     actionGetDetailTask,
     actionGetListUserOfProject,
     actionGetListTaskOfTheDay,
+    actionGetListLeaveProcessingTime,
     actionCreateTask,
     actionSendReport,
     actionProcessingHandover,
@@ -350,4 +408,6 @@ export default {
     actionUpdateProcessing,
     actionReviewReport,
     actionRecallReport,
+    actionSaveFiles,
+    actionDownloadFile,
 };
