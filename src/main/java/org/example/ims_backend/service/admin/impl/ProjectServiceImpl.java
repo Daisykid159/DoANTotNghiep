@@ -18,6 +18,7 @@ import org.example.ims_backend.mapper.ProjectMapper;
 import org.example.ims_backend.repository.*;
 import org.example.ims_backend.repository.specification.ProjectSpecification;
 import org.example.ims_backend.service.admin.ProjectService;
+import org.example.ims_backend.service.user.FileService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -43,6 +44,7 @@ public class ProjectServiceImpl implements ProjectService {
     DepartmentUserRepository departmentUserRepository;
     DepartmentUserMapper departmentUserMapper;
     UserRepository userRepository;
+    FileService fileService;
     @Override
     public Page<ProjectResponse> getProjects(Pageable pageable, String keyword, Date fromCreatedDate, Date toCreatedDate, Date fromExpiredDate, Date toExpiredDate) {
         Specification<Project> spec = Specification.where(ProjectSpecification
@@ -69,13 +71,12 @@ public class ProjectServiceImpl implements ProjectService {
             project.setExpiredDate(projectRequest.getExpired_date());
             project.setCreatedDate(new Date());
             projectRepository.save(project);
+            fileService.init(String.valueOf(project.getId()));
             return true;
         }catch (Exception e){
             log.error("Error: ", e);
             return false;
         }
-
-
     }
 
     @Override

@@ -12,4 +12,6 @@ public interface FileService {
     void deleteFile(Task task);
     boolean storeFile(MultipartFile file , Long taskId);
     Resource downloadFile(Long id);
+    void init(String link);
+    boolean deleteFile(Long id);
 }

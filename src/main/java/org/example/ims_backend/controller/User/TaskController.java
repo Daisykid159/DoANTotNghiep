@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import  java.util.*;
 @RestController
 @RequestMapping("/api/user")
@@ -28,13 +29,14 @@ public class TaskController {
             @RequestParam (required = false) String title,
             @RequestParam (required = false) Long department_id,
             @RequestParam (required = false) Long user_id,
-            @RequestParam (required = false)  @DateTimeFormat(pattern = "yyyy-MM-dd") Date createTo,
-            @RequestParam (required = false)  @DateTimeFormat(pattern = "yyyy-MM-dd") Date createFrom,
-            @RequestParam (required = false)  @DateTimeFormat(pattern = "yyyy-MM-dd") Date expireTo,
-            @RequestParam (required = false)  @DateTimeFormat(pattern = "yyyy-MM-dd") Date expireFrom,
+            @RequestParam (required = false) LocalDateTime createTo,
+            @RequestParam (required = false)   LocalDateTime createFrom,
+            @RequestParam (required = false)   LocalDateTime expireTo,
+            @RequestParam (required = false)   LocalDateTime expireFrom,
             @RequestParam (required = false) Integer task_status,
             @RequestParam (required = false) Integer priority
             ) {
+        System.out.println(createFrom + " " + createTo);
         return taskService.searchTask(title, department_id, user_id, createTo, createFrom, expireTo, expireFrom, task_status, priority);
     }
     @PutMapping("/evictTask")
@@ -76,5 +78,10 @@ public class TaskController {
     public List<TaskLeaveProcessingTimeResponse> leaveProcessingTimeDetail() {
         return taskService.leaveProcessingTimeDetail();
     }
+    @PutMapping("/updateTask")
+    public boolean updateTask(@RequestBody UpdateTaskResponse updateTaskResponse) {
+        return taskService.updateTask(updateTaskResponse);
+    }
+
 
 }

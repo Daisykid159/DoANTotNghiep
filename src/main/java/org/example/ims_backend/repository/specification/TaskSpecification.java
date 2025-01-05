@@ -4,6 +4,7 @@ import jakarta.persistence.criteria.Join;
 import org.example.ims_backend.entity.*;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -59,7 +60,7 @@ public class TaskSpecification {
             return criteriaBuilder.equal(taskUserJoin.get("user").get("id"), userId);
         };
     }
-    public static Specification<Task> createdDateBetween(Date from, Date to) {
+    public static Specification<Task> createdDateBetween(LocalDateTime from, LocalDateTime to) {
         return (root, query, criteriaBuilder) -> {
             if (from != null && to != null) {
                 return criteriaBuilder.between(root.get("createdDate"), from, to);
@@ -72,7 +73,7 @@ public class TaskSpecification {
             }
         };
     }
-    public static Specification<Task> expiredDateBetween(Date from, Date to) {
+    public static Specification<Task> expiredDateBetween(LocalDateTime from, LocalDateTime to) {
         return (root, query, criteriaBuilder) -> {
             if (from != null && to != null) {
                 return criteriaBuilder.between(root.get("expiredDate"), from, to);

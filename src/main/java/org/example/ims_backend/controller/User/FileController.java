@@ -33,4 +33,8 @@ public class FileController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + encodedFileName)
                 .body(file);
     }
+    @DeleteMapping("/deleteFile/{fileId}")
+    public boolean deleteFile(@PathVariable Long fileId) {
+        return fileService.deleteFile(fileId);
+    }
 }

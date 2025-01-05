@@ -5,6 +5,7 @@ import org.example.ims_backend.dto.user.task.request.CreateTaskRequest;
 import org.example.ims_backend.dto.user.task.response.TaskDetailResponse;
 import org.example.ims_backend.dto.user.task.response.TaskLeave;
 import org.example.ims_backend.dto.user.task.response.TaskSearchResponse;
+import org.example.ims_backend.dto.user.task.response.UpdateTaskResponse;
 import org.example.ims_backend.dto.user.taskUser.response.TaskUserResponse;
 import org.example.ims_backend.entity.Task;
 import org.example.ims_backend.entity.TaskUser;

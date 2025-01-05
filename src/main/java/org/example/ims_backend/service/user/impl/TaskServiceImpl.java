@@ -12,6 +12,7 @@ import org.example.ims_backend.dto.user.task.request.ProcessingTimeRequest;
 import org.example.ims_backend.dto.user.task.response.*;
 import org.example.ims_backend.dto.user.taskUser.request.CreateTaskUserRequest;
 import org.example.ims_backend.dto.user.taskUser.request.TaskUserRequest;
+import org.example.ims_backend.dto.user.taskUser.response.UpdateTaskUserResponse;
 import org.example.ims_backend.entity.*;
 import org.example.ims_backend.mapper.TaskMapper;
 import org.example.ims_backend.mapper.TaskUserMapper;
@@ -26,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -93,7 +95,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<TaskSearchResponse> searchTask(String title, Long department_id, Long user_id, Date createTo, Date createFrom, Date expireTo, Date expireFrom, Integer task_status, Integer priority) {
+    public List<TaskSearchResponse> searchTask(String title, Long department_id, Long user_id, LocalDateTime createTo, LocalDateTime createFrom, LocalDateTime expireTo, LocalDateTime expireFrom, Integer task_status, Integer priority) {
         var context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
         User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
@@ -237,6 +239,9 @@ public class TaskServiceImpl implements TaskService {
             TaskUser taskUser = taskUserRepository.findByUserAndTask(user, result);
             taskUser.setHasRead(0);
             taskUserRepository.save(taskUser);
+
+            //create link file
+            fileService.init(result.getProject().getId()+" "+result.getId());
             return taskDetailResponse;
         }catch (Exception e){
             log.error("Error while creating task", e);
@@ -454,6 +459,76 @@ public class TaskServiceImpl implements TaskService {
         }catch (Exception e){
             log.error("Error while getting leave processing time detail", e);
             throw new RuntimeException( e.getMessage());
+        }
+    }
+
+    @Override
+    @Transactional
+    public boolean updateTask(UpdateTaskResponse updateTaskResponse) {
+        try {
+            Task task = taskRepository.findById(updateTaskResponse.getTask_id()).orElseThrow(() -> new RuntimeException("Task not found"));
+            User assignUser = userRepository.findById(updateTaskResponse.getAssign_user()).orElseThrow(() -> new RuntimeException("User not found"));
+            Department assignDepartment = departmentRepository.findById(updateTaskResponse.getAssign_department()).orElseThrow(() -> new RuntimeException("Department not found"));
+            User targetUser = userRepository.findById(updateTaskResponse.getTarget_user()).orElseThrow(() -> new RuntimeException("User not found"));
+            Department targetDepartment = departmentRepository.findById(updateTaskResponse.getTarget_department()).orElseThrow(() -> new RuntimeException("Department not found"));
+            task.setTitle(updateTaskResponse.getTitle());
+            task.setContent(updateTaskResponse.getContent());
+            task.setPriority(updateTaskResponse.getPriority());
+            task.setExpiredDate(updateTaskResponse.getExpired_date());
+            task.setCreatedDate(updateTaskResponse.getCreated_date());
+            task.setProject(projectRepository.findById(updateTaskResponse.getProject_id()).orElseThrow(() -> new RuntimeException("Project not found")));
+            task.setAssignUser(assignUser);
+            task.setAssignDepartment(assignDepartment);
+            task.setTargetUser(targetUser);
+            task.setTargetDepartment(targetDepartment);
+            if(task.getPriority() == 2) task.setState(4);
+            taskRepository.save(task);
+            List<TaskUser> taskUsers = taskUserRepository.findByTask(task);
+            for(TaskUser taskUser : taskUsers){
+                if(taskUser.getRole() == 2){
+                    taskUserRepository.delete(taskUser);
+                }
+                else if(taskUser.getRole() == 0){
+                    if(assignUser.getId() != taskUser.getUser().getId() || assignDepartment.getId() != taskUser.getDepartment().getId()){
+                        taskUser.setUser(assignUser);
+                        taskUser.setDepartment(assignDepartment);
+                        taskUserRepository.save(taskUser);
+                    }
+                }
+                else if(taskUser.getRole() == 1){
+                    if(targetUser.getId() != taskUser.getUser().getId() || targetDepartment.getId() != taskUser.getDepartment().getId()){
+                        taskUser.setUser(targetUser);
+                        taskUser.setDepartment(targetDepartment);
+                        taskUserRepository.save(taskUser);
+                    }
+                }else if(taskUser.getRole() == 3){
+                    if(targetUser.getId() == taskUser.getUser().getId() && targetDepartment.getId() == taskUser.getDepartment().getId()){
+                        taskUserRepository.delete(taskUser);
+                    }else if(assignUser.getId() == taskUser.getUser().getId() && assignDepartment.getId() == taskUser.getDepartment().getId()){
+                        taskUserRepository.delete(taskUser);
+                    }
+                }
+            }
+            for(UpdateTaskUserResponse updateTaskUserResponse : updateTaskResponse.getCombinations()){
+                User user = userRepository.findById(updateTaskUserResponse.getCombination_user()).orElseThrow(() -> new RuntimeException("User not found"));
+                Department department = departmentRepository.findById(updateTaskUserResponse.getCombination_department()).orElseThrow(() -> new RuntimeException("Department not found"));
+                taskUserRepository.save(
+                        TaskUser.builder()
+                                .createdDate(new Date())
+                                .role(2)
+                                .task(task)
+                                .user(user)
+                                .department(department)
+                                .hasRead(0)
+                                .isPin(0)
+                                .updatedDate(new Date())
+                                .build()
+                );
+            }
+          return true;
+        }catch (Exception e){
+            log.error("Error while updating task", e);
+            return false;
         }
     }
 

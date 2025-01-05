@@ -1,5 +1,6 @@
 package org.example.ims_backend.dto.user.task.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -30,5 +31,4 @@ public class TaskSearchResponse {
     String target_department_name;
     String target_user_name;
     Long target_user_id;
-
 }
