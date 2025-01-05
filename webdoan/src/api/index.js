@@ -158,6 +158,10 @@ const Api = (token) => {
         return api.post(`/api/user/createTask`, task);
     }
 
+    const updateTask = (task) => {
+        return api.put(`/api/user/updateTask`, task);
+    }
+
     const getListMenu = () => {
         return api.get(`api/user/menus`);
     }
@@ -243,8 +247,8 @@ const Api = (token) => {
         return api.get(`api/user/downloadFile/${id}`);
     }
 
-    const searchTask = (title, department_id, user_id, createTo, createFrom, expireTo, expireFrom, task_status, priority) => {
-        return api.get(`api/user/searchTask?title=${title}&department_id=${department_id}&user_id=${user_id}&createTo=${createTo}&createFrom=${createFrom}&expireTo=${expireTo}&expireFrom=${expireFrom}&task_status=${task_status}&priority=${priority}`);
+    const searchTask = (title, department_id, user_id, createFrom, createTo, expireFrom, expireTo, task_status, priority) => {
+        return api.get(`api/user/searchTask?title=${title}&department_id=${department_id}&user_id=${user_id}&createFrom=${createFrom}&createTo=${createTo}&expireFrom=${expireFrom}&expireTo=${expireTo}&task_status=${task_status}&priority=${priority}`);
     }
 
     const putLeaveProcessingTime = (id, data) => {
@@ -286,6 +290,7 @@ const Api = (token) => {
         updateMyInfo,
         changePassword,
         createTask,
+        updateTask,
         getListMenu,
         getListTaskByMenu,
         sendReport,

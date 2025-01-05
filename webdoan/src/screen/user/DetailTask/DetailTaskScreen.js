@@ -52,7 +52,7 @@ const DetailTaskScreen = (props) => {
                 </div>
 
                 <div>
-                    {moment(item.created_date).utc().format('hh:mm A DD/MM/yyyy')}
+                    {moment(item.created_date).format('hh:mm A DD/MM/yyyy')}
                 </div>
             </div>
         </div>
@@ -169,7 +169,7 @@ const DetailTaskScreen = (props) => {
                                 report.type === 0 ? "Yêu cầu báo cáo tiến độ"
                                 : report.type === 1 ? "Báo cáo tiến độ"
                                         : report.type === 2 ? "Báo cáo hoàn thành"
-                                            : report.type === 3 ? `Xin gia hạn đến: ${moment(report?.new_expired_date).utc().format("HH:mm DD-MM-YYYY")}` : ''
+                                            : report.type === 3 ? `Xin gia hạn đến: ${moment(report?.new_expired_date).format("HH:mm DD-MM-YYYY")}` : ''
                             return (
                                 <tr key={index}>
                                     <td>{report.create_user_name}</td>

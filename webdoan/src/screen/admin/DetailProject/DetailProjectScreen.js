@@ -23,8 +23,8 @@ const DetailProjectScreen = () => {
     const token = useSelector(state => state.reducerAuth.token);
     const overViewAdmin = useSelector(state => state.reducerAuth.overViewAdmin);
     const detailProject = useSelector(state => state.reducerProjectManagement.detailProject);
-    const [createDate, setCreateDate] = useState(moment(detailProject?.created_date).utc().format("YYYY-MM-DDTHH:mm"));
-    const [expiredDate, setExpiredDate] = useState(moment(detailProject?.expired_date).utc().format("YYYY-MM-DDTHH:mm"));
+    const [createDate, setCreateDate] = useState(moment(detailProject?.created_date).format("YYYY-MM-DDTHH:mm"));
+    const [expiredDate, setExpiredDate] = useState(moment(detailProject?.expired_date).format("YYYY-MM-DDTHH:mm"));
     const [projectName, setProjectName] = useState(detailProject?.project_name);
     const [projectStatus, setProjectStatus] = useState(detailProject?.status);
     const [projectContent, setProjectContent] = useState(detailProject?.content);

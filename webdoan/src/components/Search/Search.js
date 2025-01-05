@@ -56,7 +56,12 @@ const Search = (props) => {
     }));
 
     const handleSubmit = () => {
-        dispatch(actionSearchTask(token, searchText, phongBan?.value || "", nguoiThamGia?.value || "", thoiGianTaoStart, thoiGianTaoEnd, hanXuLyStart, hanXuLyEnd, trangThai, nhomNhiemVu));
+        dispatch(actionSearchTask(token, searchText, phongBan?.value || "", nguoiThamGia?.value || "",
+            thoiGianTaoStart ? moment(thoiGianTaoStart).format("yyyy-MM-DDT00:00:00") : "",
+            thoiGianTaoEnd ? moment(thoiGianTaoEnd).format("yyyy-MM-DDT23:59:59") : "",
+            hanXuLyStart ? moment(hanXuLyStart).format("yyyy-MM-DDT00:00:00") : "",
+            hanXuLyEnd ? moment(hanXuLyEnd).format("yyyy-MM-DDT23:59:59") : "",
+            trangThai, nhomNhiemVu));
     };
 
     return (

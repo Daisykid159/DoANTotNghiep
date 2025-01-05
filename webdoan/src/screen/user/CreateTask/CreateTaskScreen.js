@@ -4,7 +4,7 @@ import classNames from "classnames/bind";
 import Select from 'react-select';
 import {useDispatch, useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
-import {actionCreateTask, actionGetListUserOfProject} from "../../../redux-store/action/actionUser";
+import {actionCreateTask, actionGetListUserOfProject, actionUpdateTask} from "../../../redux-store/action/actionUser";
 import moment from "moment";
 import {toast} from "react-toastify";
 
@@ -89,17 +89,46 @@ const CreateTaskScreen = (props) => {
             "content": contentTask,
             "priority": priorityTask?.value,
             "project_id": sourceTask?.value,
-            "expired_date": moment(expiredDate).utc().format("YYYY-MM-DDTHH:mm:ss"),
-            "created_date": moment(createDate).utc().format("YYYY-MM-DDTHH:mm:ss"),
+            "expired_date": moment(expiredDate).format("YYYY-MM-DDTHH:mm:ss"),
+            "created_date": moment(createDate).format("YYYY-MM-DDTHH:mm:ss"),
             "combinations": combinationTask?.map((combination) => {
                 return {
                     "combination_department": combination.department_id,
                     "combination_user": combination.value,
-                    "created_date": moment(createDate).utc().format("YYYY-MM-DDTHH:mm:ss"),
+                    "created_date": moment(createDate).format("YYYY-MM-DDTHH:mm:ss"),
                 }
             }) || [],
         }
         dispatch(actionCreateTask(token, taskNew, props.setShowModuleCreateTask, uploadedFiles));
+    }
+
+    const handleUpdateTask = () => {
+        if (!titleTask || !assignDepartment?.value || !targetTask?.department_id || !targetTask?.value || !sourceTask?.value || (!priorityTask?.value && priorityTask.value !== 0)) {
+            toast.error('Vui lòng nhập đủ thông tin cần thiết!');
+            return;
+        }
+
+        const taskNew ={
+            "task_id": props?.dataEdit?.task_id,
+            "title": titleTask,
+            "assign_department": props?.dataEdit?.assign_department_id,
+            "assign_user": props?.dataEdit?.assign_user_id,
+            "target_department": targetTask?.department_id,
+            "target_user": targetTask?.value,
+            "content": contentTask,
+            "priority": priorityTask?.value,
+            "project_id": sourceTask?.value,
+            "expired_date": moment(expiredDate).format("YYYY-MM-DDTHH:mm:ss"),
+            "created_date": moment(createDate).format("YYYY-MM-DDTHH:mm:ss"),
+            "combinations": combinationTask?.map((combination) => {
+                return {
+                    "combination_department": combination.department_id,
+                    "combination_user": combination.value,
+                    "created_date": moment(createDate).format("YYYY-MM-DDTHH:mm:ss"),
+                }
+            }) || [],
+        }
+        dispatch(actionUpdateTask(token, taskNew, props.setShowModuleCreateTask, uploadedFiles));
     }
 
     useEffect(() => {
@@ -382,6 +411,7 @@ const CreateTaskScreen = (props) => {
                             {props.dataEdit ? (
                                 <button
                                     className="btn btn-success d-flex align-items-center me-2"
+                                    onClick={() => handleUpdateTask()}
                                 >
                                     Chỉnh sửa
                                 </button>

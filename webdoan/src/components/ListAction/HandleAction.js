@@ -25,7 +25,7 @@ const HandleAction = (props) => {
     const [targetTask, setTargetTask] = useState('');
     const [combinationTask, setCombinationTask] = useState([]);
     const [contentTask, setContentTask] = useState('');
-    const [expiredDate, setExpiredDate] = useState(moment(new Date).utc().format("YYYY-MM-DDTHH:mm"));
+    const [expiredDate, setExpiredDate] = useState(moment(new Date).format("YYYY-MM-DDTHH:mm"));
     const [progress, setProgress] = useState(props.task.progress);
 
     const [uploadedFiles, setUploadedFiles] = useState([]);

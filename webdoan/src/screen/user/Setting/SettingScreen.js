@@ -51,7 +51,7 @@ const SettingScreen = () => {
             "phone": phone,
             "homeTown": address,
             "gender": gender,
-            "dateOfBirth": moment(dateOfBirth).utc().format('YYYY-MM-DD'),
+            "dateOfBirth": moment(dateOfBirth).format('YYYY-MM-DD'),
         }))
     }
 

@@ -127,10 +127,10 @@ export function actionGetListTaskByMenu (token, menuId) {
     };
 }
 
-export function actionSearchTask (token, title, department_id, user_id, createTo, createFrom, expireTo, expireFrom, task_status, priority) {
+export function actionSearchTask (token, title, department_id, user_id, createFrom, createTo, expireFrom, expireTo, task_status, priority) {
     return async (dispatch, getState) => {
         try {
-            const response = await Api(token).searchTask(title, department_id, user_id, createTo, createFrom, expireTo, expireFrom, task_status, priority);
+            const response = await Api(token).searchTask(title, department_id, user_id, createFrom, createTo, expireFrom, expireTo, task_status, priority);
             if (response && response.data){
                 dispatch(updateData({
                     listTasksSearch: response.data,
@@ -239,6 +239,29 @@ export function actionCreateTask (token, task, setShowModuleCreateTask, uploaded
             }
         } catch (error) {
             console.log("Lỗi api actionCreateTask", error);
+        }
+    };
+}
+
+export function actionUpdateTask (token, task, setShowModuleCreateTask, uploadedFiles) {
+    return async (dispatch, getState) => {
+        try {
+            const response = await Api(token).updateTask(task);
+            if (response && response.data){
+                if(uploadedFiles.length > 0) {
+                    uploadedFiles.forEach((file) => {
+                        dispatch(actionSaveFiles(token, file, task.task_id))
+                    })
+                }
+                dispatch(actionGetListMenu(token));
+                setShowModuleCreateTask(false);
+                toast.success('Chỉnh sửa nhiệm vụ thành công!');
+            } else {
+                toast.error('Chỉnh sửa nhiệm vụ thất bại!');
+                console.log("Lỗi api actionUpdateTask");
+            }
+        } catch (error) {
+            console.log("Lỗi api actionUpdateTask", error);
         }
     };
 }
@@ -378,7 +401,7 @@ export function actionRecallReport (token, id, task) {
 export function actionLuiHanXuLy (token, id, data, closeModule) {
     return async (dispatch, getState) => {
         try {
-            const response = await Api(token).recallReport(id, data);
+            const response = await Api(token).putLeaveProcessingTime(id, data);
             if (response && response.data){
                 closeModule(false);
                 toast.success('Lùi hạn xử lý nhiệm vụ thành công!');
@@ -445,6 +468,7 @@ export default {
     actionGetListTaskOfTheDay,
     actionGetListLeaveProcessingTime,
     actionCreateTask,
+    actionUpdateTask,
     actionSendReport,
     actionProcessingHandover,
     actionEvictTask,
