@@ -256,6 +256,11 @@ const Api = (token) => {
 
     }
 
+    const statistic = (id, data) => {
+        return api.get(`api/statistic/get/${id}`, data);
+
+    }
+
     return {
         getTokenLogin,
         refreshToken,
@@ -304,6 +309,8 @@ const Api = (token) => {
         downloadFile,
         searchTask,
         putLeaveProcessingTime,
+
+        statistic,
     };
 };
 

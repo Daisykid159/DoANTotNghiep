@@ -1,14 +1,15 @@
-.StatisticalAdminScreen {
+
+.StatisticalScreen {
   padding: 90px 60px 10px;
 }
 
-.StatisticalAdminScreen_header {
+.StatisticalScreen_header {
   position: sticky;
-  top: 90px;
+  top: 60px;
 }
 
-.StatisticalAdminScreen_body {
-  max-height: 65vh;
+.StatisticalScreen_body {
+  max-height: 70vh;
   overflow-y: auto;
 }
 
@@ -19,4 +20,8 @@
 .icon_header {
   font-size: 30px;
   color: #085cd4;
+}
+
+.zIndex_100 .react-select__menu {
+  z-index: 200 !important;
 }

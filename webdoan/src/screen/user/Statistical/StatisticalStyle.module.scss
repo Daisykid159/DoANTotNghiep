@@ -20,3 +20,7 @@
   font-size: 30px;
   color: #085cd4;
 }
+
+.zIndex_100 .react-select__menu {
+  z-index: 200 !important;
+}
