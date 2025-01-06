@@ -3,6 +3,7 @@ package org.example.ims_backend.controller;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.example.ims_backend.dto.response.DashBoard;
 import org.example.ims_backend.entity.Statistic;
 import org.example.ims_backend.service.StatisticService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,19 +26,17 @@ public class StatisticController {
     StatisticService statisticService;
 
     @GetMapping("/get")
-    public List<Statistic> getStatistic(
-            @RequestParam(defaultValue = "2",required = false) Integer type,
+    public DashBoard getStatistic(
             @RequestParam(required = false) LocalDateTime from,
             @RequestParam(required = false)LocalDateTime to,
             @RequestParam(required = false)Long department_assign_id,
             @RequestParam(required = false)Long user_assign_id,
             @RequestParam(required = false)Long user_handle_id,
             @RequestParam(required = false)Long department_handle_id,
-            @RequestParam(required = false)Long project_id,
             @RequestParam(required = false)Integer status,
             @RequestParam(required = false)Integer priority,
             @RequestParam(required = false)Long user_id
             ){
-        return statisticService.getStatistic(type, from, to, department_assign_id, user_assign_id, user_handle_id, department_handle_id, project_id, status, priority,user_id);
+        return statisticService.getStatistic(from, to, department_assign_id, user_assign_id, user_handle_id, department_handle_id, status, priority,user_id);
     }
 }

@@ -4,13 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.example.ims_backend.common.State;
+import org.example.ims_backend.dto.response.DashBoard;
+import org.example.ims_backend.dto.response.DashBoardPriority;
+import org.example.ims_backend.dto.response.DashBoardUser;
 import org.example.ims_backend.dto.user.task.response.TaskStatisticResponse;
 import org.example.ims_backend.entity.*;
 import org.example.ims_backend.mapper.StatisticMapper;
-import org.example.ims_backend.repository.DepartmentRepository;
-import org.example.ims_backend.repository.ProjectRepository;
-import org.example.ims_backend.repository.TaskRepository;
-import org.example.ims_backend.repository.UserRepository;
+import org.example.ims_backend.repository.*;
 import org.example.ims_backend.repository.specification.ProjectSpecification;
 import org.example.ims_backend.repository.specification.StatisticSpecification;
 import org.example.ims_backend.repository.specification.TaskSpecification;
@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 
 @Slf4j
@@ -31,12 +32,10 @@ public class StatisticServiceImpl implements StatisticService {
     UserRepository userRepository;
     TaskRepository taskRepository;
     StatisticMapper statisticMapper;
+    TaskUserRepository taskUserRepository;
     @Override
-    public List<Statistic> getStatistic(Integer type, LocalDateTime from, LocalDateTime to, Long department_assign_id, Long user_assign_id, Long user_handle_id, Long department_handle_id, Long project_id, Integer status, Integer priority , Long user_id) {
+    public DashBoard getStatistic(LocalDateTime from, LocalDateTime to, Long department_assign_id, Long user_assign_id, Long user_handle_id, Long department_handle_id, Integer status, Integer priority , Long user_id) {
 
-            Project project = null;
-            if(project_id != null)  project = projectRepository.findById(project_id)
-                                            .orElse(null);
             Department department_assign = null;
             if(department_assign_id != null) department_assign = departmentRepository.findById(department_assign_id)
                     .orElse(null);
@@ -60,18 +59,16 @@ public class StatisticServiceImpl implements StatisticService {
                     .and(StatisticSpecification.getTaskByPriority(priority))
                     .and(StatisticSpecification.getTaskByStatus(status))
                     .and(StatisticSpecification.getTaskByAssign(department_assign,user_assign))
-                    .and(StatisticSpecification.getTaskByHandle(department_handle,user_handle))
-                    .and(StatisticSpecification.getTaskByProject(project)
+                    .and(StatisticSpecification.getTaskByHandle(department_handle,user_handle)
 
             );
             List<Task> tasks = taskRepository.findAll(specification);
-            return switch (type) {
-                case 1 -> StatisticAssign(tasks);
-                case 2 -> StatisticHandle(tasks);
-                case 3 -> StatisticPriority(tasks);
-                case 4 -> StatisticProject(tasks);
-                default -> null;
-            };
+            return  DashBoard.builder()
+                    .Project(StatisticProject(tasks))
+                    .Department(StatisticDepartment(tasks))
+                    .User(StatisticUser(tasks))
+                    .Priority(StatisticPriority(tasks))
+                    .build();
         }catch (Exception e){
             log.error(e.getMessage());
             throw new RuntimeException(e.getMessage());
@@ -83,250 +80,262 @@ public class StatisticServiceImpl implements StatisticService {
             if(map.containsKey(task.getProject().getId())){
                 Statistic statistic = map.get(task.getProject().getId());
                 statistic.setTotal_task(statistic.getTotal_task()+1);
-                List<TaskStatisticResponse> taskStatisticResponses = statistic.getTasks();
-                taskStatisticResponses.add(statisticMapper.toTaskStatisticResponse(task));
-                statistic.setTasks(taskStatisticResponses);
                 if(task.getStatus() == 5){
                     if(task.getCompletedDate().compareTo(task.getExpiredDate()) > 0){
-                        State completed = statistic.getCompleted();
-                        completed.setOver_due(completed.getOver_due()+1);
-                        statistic.setPending(completed);
+                        statistic.setCompleted_overdue(statistic.getCompleted_overdue()+1);
                     }else {
-                        State completed = statistic.getCompleted();
-                        completed.setOn_time(completed.getOn_time()+1);
-                        statistic.setPending(completed);
+                        statistic.setCompleted_on_time(statistic.getCompleted_on_time()+1);
                     }
                 }else {
                     if(task.getExpiredDate().compareTo(new Date()) >= 0){
-                        State pending = statistic.getPending();
-                        pending.setOn_time(pending.getOn_time()+1);
-                        statistic.setPending(pending);
+                        statistic.setPending_on_time(statistic.getPending_on_time()+1);
                     }else {
-                        State pending = statistic.getPending();
-                        pending.setOver_due(pending.getOver_due()+1);
-                        statistic.setPending(pending);
+                        statistic.setPending_overdue(statistic.getPending_overdue()+1);
                     }
                 }
             }else {
-                State pending  = new State(0,0);
-                State completed = new State(0,0);
+                int pending_on_time = 0;
+                int pending_overdue = 0;
+                int completed_on_time = 0;
+                int completed_overdue = 0;
                 if(task.getStatus() == 5){
                     if(task.getCompletedDate().compareTo(task.getExpiredDate()) > 0){
-                        completed.setOver_due(completed.getOver_due()+1);
+                        completed_overdue = 1;
                     }else {
-                        completed.setOn_time(completed.getOn_time()+1);
+                        completed_on_time = 1;
                     }
                 }else {
                     if(task.getExpiredDate().compareTo(new Date()) >= 0){
-                        pending.setOn_time(pending.getOn_time()+1);
+                        pending_on_time = 1;
                     }else {
-                        pending.setOver_due(pending.getOver_due()+1);
+                        pending_overdue = 1;
                     }
                 }
-                TaskStatisticResponse taskStatisticResponse = statisticMapper.toTaskStatisticResponse(task);
-                List<TaskStatisticResponse> taskStatisticResponses = new ArrayList<>();
-                taskStatisticResponses.add(taskStatisticResponse);
                 Statistic statistic = Statistic.builder()
-                        .content_id(task.getProject().getId())
-                        .content(task.getProject().getName())
+                        .id(task.getProject().getId())
+                        .name(task.getProject().getName())
+                        .pending_on_time(pending_on_time)
+                        .pending_overdue(pending_overdue)
+                        .completed_on_time(completed_on_time)
+                        .completed_overdue(completed_overdue)
                         .total_task(1)
-                        .pending(pending)
-                        .completed(completed)
-                        .tasks(taskStatisticResponses)
                         .build();
                 map.put(task.getProject().getId(),statistic);
             }
         }
         return new ArrayList<>(map.values());
     }
-    private List<Statistic> StatisticPriority (List<Task> tasks){
-        Map<Integer,Statistic> map = new HashMap<>();
-        for(Task task : tasks){
-            if(map.containsKey(task.getPriority())){
-                Statistic statistic = map.get(task.getPriority());
-                statistic.setTotal_task(statistic.getTotal_task()+1);
-                List<TaskStatisticResponse> taskStatisticResponses = statistic.getTasks();
-                taskStatisticResponses.add(statisticMapper.toTaskStatisticResponse(task));
-                statistic.setTasks(taskStatisticResponses);
-                if(task.getStatus() == 5){
-                    if(task.getCompletedDate().compareTo(task.getExpiredDate()) > 0){
-                        State completed = statistic.getCompleted();
-                        completed.setOver_due(completed.getOver_due()+1);
-                        statistic.setPending(completed);
-                    }else {
-                        State completed = statistic.getCompleted();
-                        completed.setOn_time(completed.getOn_time()+1);
-                        statistic.setPending(completed);
-                    }
-                }else {
-                    if(task.getExpiredDate().compareTo(new Date()) >= 0){
-                        State pending = statistic.getPending();
-                        pending.setOn_time(pending.getOn_time()+1);
-                        statistic.setPending(pending);
-                    }else {
-                        State pending = statistic.getPending();
-                        pending.setOver_due(pending.getOver_due()+1);
-                        statistic.setPending(pending);
-                    }
-                }
-            }else {
-                State pending  = new State(0,0);
-                State completed = new State(0,0);
-                if(task.getStatus() == 5){
-                    if(task.getCompletedDate().compareTo(task.getExpiredDate()) > 0){
-                        completed.setOver_due(completed.getOver_due()+1);
-                    }else {
-                        completed.setOn_time(completed.getOn_time()+1);
-                    }
-                }else {
-                    if(task.getExpiredDate().compareTo(new Date()) >= 0){
-                        pending.setOn_time(pending.getOn_time()+1);
-                    }else {
-                        pending.setOver_due(pending.getOver_due()+1);
-                    }
-                }
-                TaskStatisticResponse taskStatisticResponse = statisticMapper.toTaskStatisticResponse(task);
-                List<TaskStatisticResponse> taskStatisticResponses = new ArrayList<>();
-                taskStatisticResponses.add(taskStatisticResponse);
-                String content = "";
-                if(task.getPriority() == 1) content = "Quan trong";
-                else if (task.getPriority() == 2) content = "Rat quan trong";
-                else content = "Binh thuong";
-                Statistic statistic = Statistic.builder()
-                        .content_id((long) task.getPriority())
-                        .content(content)
-                        .total_task(1)
-                        .pending(pending)
-                        .completed(completed)
-                        .tasks(taskStatisticResponses)
-                        .build();
-                map.put(task.getPriority(),statistic);
-            }
-        }
-        return new ArrayList<>(map.values());
-    }
-    private List<Statistic> StatisticAssign (List<Task> tasks) {
-        Map<Long, Statistic> map = new HashMap<>();
-        for (Task task : tasks) {
-            if(map.containsKey(task.getAssignDepartment().getId())){
-                Statistic statistic = map.get(task.getAssignDepartment().getId());
-                statistic.setTotal_task(statistic.getTotal_task()+1);
-                List<TaskStatisticResponse> taskStatisticResponses = statistic.getTasks();
-                taskStatisticResponses.add(statisticMapper.toTaskStatisticResponse(task));
-                statistic.setTasks(taskStatisticResponses);
-                if(task.getStatus() == 5){
-                    if(task.getCompletedDate().compareTo(task.getExpiredDate()) > 0){
-                        State completed = statistic.getCompleted();
-                        completed.setOver_due(completed.getOver_due()+1);
-                        statistic.setPending(completed);
-                    }else {
-                        State completed = statistic.getCompleted();
-                        completed.setOn_time(completed.getOn_time()+1);
-                        statistic.setPending(completed);
-                    }
-                }else {
-                    if(task.getExpiredDate().compareTo(new Date()) >= 0){
-                        State pending = statistic.getPending();
-                        pending.setOn_time(pending.getOn_time()+1);
-                        statistic.setPending(pending);
-                    }else {
-                        State pending = statistic.getPending();
-                        pending.setOver_due(pending.getOver_due()+1);
-                        statistic.setPending(pending);
-                    }
-                }
-            }else{
-                State pending  = new State(0,0);
-                State completed = new State(0,0);
-                if(task.getStatus() == 5){
-                    if(task.getCompletedDate().compareTo(task.getExpiredDate()) > 0){
-                        completed.setOver_due(completed.getOver_due()+1);
-                    }else {
-                        completed.setOn_time(completed.getOn_time()+1);
-                    }
-                }else {
-                    if(task.getExpiredDate().compareTo(new Date()) >= 0){
-                        pending.setOn_time(pending.getOn_time()+1);
-                    }else {
-                        pending.setOver_due(pending.getOver_due()+1);
-                    }
-                }
-                TaskStatisticResponse taskStatisticResponse = statisticMapper.toTaskStatisticResponse(task);
-                List<TaskStatisticResponse> taskStatisticResponses = new ArrayList<>();
-                taskStatisticResponses.add(taskStatisticResponse);
-                Statistic statistic = Statistic.builder()
-                        .content_id(task.getAssignDepartment().getId())
-                        .content(task.getAssignDepartment().getDepartmentName())
-                        .total_task(1)
-                        .pending(pending)
-                        .completed(completed)
-                        .tasks(taskStatisticResponses)
-                        .build();
-                map.put(task.getAssignDepartment().getId(),statistic);
-            }
-        }
-        return new ArrayList<>(map.values());
-    }
-    private List<Statistic> StatisticHandle (List<Task> tasks){
+    private List<Statistic> StatisticDepartment (List<Task> tasks) {
         Map<Long,Statistic> map = new HashMap<>();
         for(Task task : tasks){
-            if(map.containsKey(task.getTargetDepartment().getId())){
-                Statistic statistic = map.get(task.getTargetDepartment().getId());
-                statistic.setTotal_task(statistic.getTotal_task()+1);
-                List<TaskStatisticResponse> taskStatisticResponses = statistic.getTasks();
-                taskStatisticResponses.add(statisticMapper.toTaskStatisticResponse(task));
-                statistic.setTasks(taskStatisticResponses);
-                if(task.getStatus() == 5){
-                    if(task.getCompletedDate().compareTo(task.getExpiredDate()) > 0){
-                        State completed = statistic.getCompleted();
-                        completed.setOver_due(completed.getOver_due()+1);
-                        statistic.setPending(completed);
+            List<Department> departments = taskUserRepository.findDistinctDepartmentByTaskId(task.getId());
+            for(Department department : departments){
+                if(map.containsKey(department.getId())){
+                    Statistic statistic = map.get(department.getId());
+                    statistic.setTotal_task(statistic.getTotal_task()+1);
+                    if(task.getStatus() == 5){
+                        if(task.getCompletedDate().compareTo(task.getExpiredDate()) > 0){
+                            statistic.setCompleted_overdue(statistic.getCompleted_overdue()+1);
+                        }else {
+                            statistic.setCompleted_on_time(statistic.getCompleted_on_time()+1);
+                        }
                     }else {
-                        State completed = statistic.getCompleted();
-                        completed.setOn_time(completed.getOn_time()+1);
-                        statistic.setPending(completed);
+                        if(task.getExpiredDate().compareTo(new Date()) >= 0){
+                            statistic.setPending_on_time(statistic.getPending_on_time()+1);
+                        }else {
+                            statistic.setPending_overdue(statistic.getPending_overdue()+1);
+                        }
                     }
                 }else {
-                    if(task.getExpiredDate().compareTo(new Date()) >= 0){
-                        State pending = statistic.getPending();
-                        pending.setOn_time(pending.getOn_time()+1);
-                        statistic.setPending(pending);
+                    int pending_on_time = 0;
+                    int pending_overdue = 0;
+                    int completed_on_time = 0;
+                    int completed_overdue = 0;
+                    if(task.getStatus() == 5){
+                        if(task.getCompletedDate().compareTo(task.getExpiredDate()) > 0){
+                            completed_overdue = 1;
+                        }else {
+                            completed_on_time = 1;
+                        }
                     }else {
-                        State pending = statistic.getPending();
-                        pending.setOver_due(pending.getOver_due()+1);
-                        statistic.setPending(pending);
+                        if(task.getExpiredDate().compareTo(new Date()) >= 0){
+                            pending_on_time = 1;
+                        }else {
+                            pending_overdue = 1;
+                        }
                     }
+                    Statistic statistic = Statistic.builder()
+                            .id(department.getId())
+                            .name(department.getDepartmentName())
+                            .pending_on_time(pending_on_time)
+                            .pending_overdue(pending_overdue)
+                            .completed_on_time(completed_on_time)
+                            .completed_overdue(completed_overdue)
+                            .total_task(1)
+                            .build();
+                    map.put(department.getId(),statistic);
                 }
-            }else {
-                State pending  = new State(0,0);
-                State completed = new State(0,0);
-                if(task.getStatus() == 5){
-                    if(task.getCompletedDate().compareTo(task.getExpiredDate()) > 0){
-                        completed.setOver_due(completed.getOver_due()+1);
-                    }else {
-                        completed.setOn_time(completed.getOn_time()+1);
-                    }
-                }else {
-                    if(task.getExpiredDate().compareTo(new Date()) >= 0){
-                        pending.setOn_time(pending.getOn_time()+1);
-                    }else {
-                        pending.setOver_due(pending.getOver_due()+1);
-                    }
-                }
-                TaskStatisticResponse taskStatisticResponse = statisticMapper.toTaskStatisticResponse(task);
-                List<TaskStatisticResponse> taskStatisticResponses = new ArrayList<>();
-                taskStatisticResponses.add(taskStatisticResponse);
-                Statistic statistic = Statistic.builder()
-                        .content_id(task.getTargetDepartment().getId())
-                        .content(task.getTargetDepartment().getDepartmentName())
-                        .total_task(1)
-                        .pending(pending)
-                        .completed(completed)
-                        .tasks(taskStatisticResponses)
-                        .build();
-                map.put(task.getTargetDepartment().getId(),statistic);
             }
+
         }
         return new ArrayList<>(map.values());
+    }
+    private DashBoardUser StatisticUser (List<Task> tasks){
+        DashBoardUser dashBoardUser = DashBoardUser.builder()
+                .total_task(0)
+                .pending_on_time(0)
+                .pending_overdue(0)
+                .completed_on_time(0)
+                .completed_overdue(0)
+                .statistics(null)
+                .build();
+        Map<Long,Statistic> map = new HashMap<>();
+        for(Task task : tasks){
+            List<User> users = taskUserRepository.findDistinctUserByTaskId(task.getId());
+            for(User user : users){
+                dashBoardUser.setTotal_task(dashBoardUser.getTotal_task()+1);
+                if(map.containsKey(user.getId())){
+                    Statistic statistic = map.get(user.getId());
+                    statistic.setTotal_task(statistic.getTotal_task()+1);
+
+                    if(task.getStatus() == 5){
+                        if(task.getCompletedDate().compareTo(task.getExpiredDate()) > 0){
+                            statistic.setCompleted_overdue(statistic.getCompleted_overdue()+1);
+                            dashBoardUser.setCompleted_overdue(dashBoardUser.getCompleted_overdue()+1);
+                        }else {
+                            statistic.setCompleted_on_time(statistic.getCompleted_on_time()+1);
+                            dashBoardUser.setCompleted_on_time(dashBoardUser.getCompleted_on_time()+1);
+                        }
+                    }else {
+                        if(task.getExpiredDate().compareTo(new Date()) >= 0){
+                            statistic.setPending_on_time(statistic.getPending_on_time()+1);
+                            dashBoardUser.setPending_on_time(dashBoardUser.getPending_on_time()+1);
+                        }else {
+                            statistic.setPending_overdue(statistic.getPending_overdue()+1);
+                            dashBoardUser.setPending_overdue(dashBoardUser.getPending_overdue()+1);
+                        }
+                    }
+                }else {
+                    int pending_on_time = 0;
+                    int pending_overdue = 0;
+                    int completed_on_time = 0;
+                    int completed_overdue = 0;
+                    if(task.getStatus() == 5){
+                        if(task.getCompletedDate().compareTo(task.getExpiredDate()) > 0){
+                            dashBoardUser.setPending_overdue(dashBoardUser.getPending_overdue()+1);
+                            completed_overdue = 1;
+                        }else {
+                            dashBoardUser.setCompleted_on_time(dashBoardUser.getCompleted_on_time()+1);
+                            completed_on_time = 1;
+                        }
+                    }else {
+                        if(task.getExpiredDate().compareTo(new Date()) >= 0){
+                            dashBoardUser.setPending_on_time(dashBoardUser.getPending_on_time()+1);
+                            pending_on_time = 1;
+                        }else {
+                            dashBoardUser.setPending_overdue(dashBoardUser.getPending_overdue()+1);
+                            pending_overdue = 1;
+                        }
+                    }
+                    Statistic statistic = Statistic.builder()
+                            .id(user.getId())
+                            .name(user.getFullName())
+                            .pending_on_time(pending_on_time)
+                            .pending_overdue(pending_overdue)
+                            .completed_on_time(completed_on_time)
+                            .completed_overdue(completed_overdue)
+                            .total_task(1)
+                            .build();
+                    map.put(user.getId(),statistic);
+                }
+            }
+        }
+        dashBoardUser.setStatistics(new ArrayList<>(map.values()));
+        return dashBoardUser;
+    }
+    private List<DashBoardPriority> StatisticPriority (List<Task> tasks){
+        Map<Integer,List<Task>> map = new HashMap<>();
+        Set<Integer> set = new HashSet<>();
+        for (Task task : tasks){
+         if(task.getCompletedDate() == null) {
+             if(map.containsKey(LocalDate.now().getYear())){
+                 List<Task> list = map.get(LocalDate.now().getYear());
+                 list.add(task);
+                 map.put(LocalDate.now().getYear(),list);
+
+             }else {
+                    List<Task> list = new ArrayList<>();
+                    list.add(task);
+                    map.put(LocalDate.now().getYear(),list);
+             }
+             set.add(LocalDate.now().getYear());
+         }else {
+                if(map.containsKey(task.getCompletedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().getYear())){
+                    List<Task> list = map.get(task.getCompletedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().getYear());
+                    list.add(task);
+                    map.put(task.getCompletedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().getYear(),list);
+                }else {
+                    List<Task> list = new ArrayList<>();
+                    list.add(task);
+                    map.put(task.getCompletedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().getYear(),list);
+                }
+                set.add(task.getCompletedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().getYear());
+         }
+        }
+        List<DashBoardPriority> dashBoardPriorities = new ArrayList<>();
+        for (Integer year : set){
+            List<Task> list = map.get(year);
+            Map<Long,Statistic> mapS = new HashMap<>();
+            mapS.put(0L,Statistic.builder()
+                            .id(0L)
+                            .name("Binh thuong")
+                            .total_task(0)
+                            .pending_on_time(0)
+                            .pending_overdue(0)
+                            .completed_on_time(0)
+                            .completed_overdue(0)
+                    .build());
+            mapS.put(1L,Statistic.builder()
+                    .id(1L)
+                    .name("Trong tam")
+                    .total_task(0)
+                    .pending_on_time(0)
+                    .pending_overdue(0)
+                    .completed_on_time(0)
+                    .completed_overdue(0)
+                    .build());
+            mapS.put(2L,Statistic.builder()
+                    .id(2L)
+                    .name("Rat trong tam")
+                    .total_task(0)
+                    .pending_on_time(0)
+                    .pending_overdue(0)
+                    .completed_on_time(0)
+                    .completed_overdue(0)
+                    .build());
+            for(Task task : list){
+                Statistic statistic = mapS.get((long) task.getPriority());
+                statistic.setTotal_task(statistic.getTotal_task()+1);
+                if(task.getStatus() == 5){
+                    if(task.getCompletedDate().compareTo(task.getExpiredDate()) > 0){
+                        statistic.setCompleted_overdue(statistic.getCompleted_overdue()+1);
+                    }else {
+                        statistic.setCompleted_on_time(statistic.getCompleted_on_time()+1);
+                    }
+                }else {
+                    if(task.getExpiredDate().compareTo(new Date()) >= 0){
+                        statistic.setPending_on_time(statistic.getPending_on_time()+1);
+                    }else {
+                        statistic.setPending_overdue(statistic.getPending_overdue()+1);
+                    }
+                }
+            }
+            dashBoardPriorities.add(
+                    DashBoardPriority.builder()
+                    .year(Long.valueOf(year))
+                    .statistics(new ArrayList<>(mapS.values()))
+                    .build());
+        }
+        return dashBoardPriorities;
     }
 }
