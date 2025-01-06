@@ -3,10 +3,7 @@ package org.example.ims_backend.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.example.ims_backend.common.State;
-import org.example.ims_backend.common.StatusTask;
 import org.hibernate.annotations.CreationTimestamp;
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 

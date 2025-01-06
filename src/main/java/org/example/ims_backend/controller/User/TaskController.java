@@ -36,7 +36,7 @@ public class TaskController {
             @RequestParam (required = false) Integer task_status,
             @RequestParam (required = false) Integer priority
             ) {
-        System.out.println(createFrom + " " + createTo);
+        System.out.println(expireFrom + " " + createTo);
         return taskService.searchTask(title, department_id, user_id, createTo, createFrom, expireTo, expireFrom, task_status, priority);
     }
     @PutMapping("/evictTask")
