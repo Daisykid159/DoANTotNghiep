@@ -86,6 +86,10 @@ const Api = (token) => {
         });
     }
 
+    const createProject = (data) => {
+        return api.post(`/api/admin/createProject`, data);
+    }
+
     const updateDepartment = (department_id, departmentName, department_parent_id, isActive) => {
         return api.put(`/api/admin/updateDepartment/${department_id}`, {
             department_id, department_name: departmentName, parent_department_id: department_parent_id, isActive
@@ -275,6 +279,7 @@ const Api = (token) => {
         updateListUsersOfDepartment,
         updateDepartment,
         createDepartment,
+        createProject,
         updateDepartmentOfProject,
         getListPositions,
         updatePosition,

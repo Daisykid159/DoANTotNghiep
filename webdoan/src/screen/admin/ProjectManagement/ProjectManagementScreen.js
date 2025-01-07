@@ -3,7 +3,7 @@ import classNames from "classnames/bind";
 import styles from "./ProjectManagementStyle.module.scss";
 import { useNavigate } from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {actionGetListProject} from "../../../redux-store/action/actionProjectManagement";
+import {actionCreateProject, actionGetListProject} from "../../../redux-store/action/actionProjectManagement";
 import {formatDate} from "../../../utils";
 import moment from "moment";
 
@@ -41,6 +41,14 @@ const ProjectManagementScreen = () => {
         setToExpiredDate('');
         setFromExpiredDate('');
         dispatch(actionGetListProject(token, pageCurrent - 1, sizePage));
+    }
+
+    const hanldeCreateProject = () => {
+        dispatch(actionCreateProject(token, {
+            project_name: nameProjectNew,
+            content: contentProjectNew,
+            expired_date: moment(expiredDateNew).format("YYYY-MM-DDTHH:mm:ss"),
+        }, setShowCreateModal));
     }
 
     useEffect(() => {
@@ -269,6 +277,7 @@ const ProjectManagementScreen = () => {
                             <div className={cx('row', 'align-items-center', 'justify-content-end', 'col-md-12')}>
                                 <button
                                     className="btn btn-primary col-md-3 mb-3"
+                                    onClick={() => hanldeCreateProject()}
                                 >
                                     Tạo dự án
                                 </button>

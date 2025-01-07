@@ -50,6 +50,26 @@ export function actionGetDetailProject (token, projectId) {
     };
 }
 
+export function actionCreateProject (token, project, setShowModuleCreateTask) {
+    return async (dispatch, getState) => {
+        try {
+            const response = await Api(token).createProject(project);
+            if (response && response.data){
+                dispatch(actionGetListProject(token, 0, 15))
+                toast.success('Tạo dự án thành công!');
+                setShowModuleCreateTask(false);
+            } else {
+                setShowModuleCreateTask(false);
+                dispatch(actionGetListProject(token))
+                toast.error('Tạo dự án thất bại!');
+                console.log("Lỗi api actionCreateProject");
+            }
+        } catch (error) {
+            console.log("Lỗi api actionCreateProject", error);
+        }
+    };
+}
+
 export function actionUpdateProject (token, id, projectName, createDate, expiredDate, projectStatus, projectContent) {
     return async (dispatch, getState) => {
         try {
@@ -89,6 +109,7 @@ export function actionUpdateDepartmentOfProject (token, projectId, listDepartmen
 export default {
     actionGetListProject,
     actionGetDetailProject,
+    actionCreateProject,
     actionUpdateProject,
     actionUpdateDepartmentOfProject,
 };
