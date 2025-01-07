@@ -6,6 +6,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {actionCreateProject, actionGetListProject} from "../../../redux-store/action/actionProjectManagement";
 import {formatDate} from "../../../utils";
 import moment from "moment";
+import {toast} from "react-toastify";
 
 const cx = classNames.bind(styles);
 
@@ -44,12 +45,22 @@ const ProjectManagementScreen = () => {
     }
 
     const hanldeCreateProject = () => {
-        dispatch(actionCreateProject(token, {
-            project_name: nameProjectNew,
-            content: contentProjectNew,
-            expired_date: moment(expiredDateNew).format("YYYY-MM-DDTHH:mm:ss"),
-        }, setShowCreateModal));
+        if(!nameProjectNew || !expiredDateNew || !contentProjectNew) {
+            toast.error("Vui lòng nhập đủ thông tin!")
+        } else {
+            dispatch(actionCreateProject(token, {
+                project_name: nameProjectNew,
+                content: contentProjectNew,
+                expired_date: moment(expiredDateNew).format("YYYY-MM-DDTHH:mm:ss"),
+            }, setShowCreateModal));
+        }
     }
+
+    useEffect(() => {
+        setNameProjectNew("");
+        setExpiredDateNew(moment(new Date()).utc().format("YYYY-MM-DDTHH:mm"));
+        setContentProjectNew("");
+    }, [showCreateModal])
 
     useEffect(() => {
         dispatch(actionGetListProject(token, pageCurrent - 1, sizePage))
