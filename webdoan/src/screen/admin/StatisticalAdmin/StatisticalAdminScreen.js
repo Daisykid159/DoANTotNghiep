@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import styles from './StatisticalAdminStyle.module.scss';
 import classNames from "classnames/bind";
 import TaskOverview from "../../../components/TaskOverview/TaskOverview";
@@ -7,6 +7,7 @@ import TableComponent from "../../../components/TableComponent/TableComponent";
 import {useDispatch, useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import Select from "react-select";
+import {actionGetStatistic} from "../../../redux-store/action/actionUser";
 
 const cx = classNames.bind(styles);
 
@@ -20,7 +21,7 @@ const StatisticalAdminScreen = () => {
 
     const flattenTreeForSelect = (tree, level = 0, parentLabel = "") => {
         let flatList = [];
-        tree.forEach((node) => {
+        tree?.forEach((node) => {
             flatList.push({
                 value: node.departmentId,
                 label: `${parentLabel}${node.departmentName}`,
@@ -85,6 +86,15 @@ const StatisticalAdminScreen = () => {
             [name]: value,
         }));
     };
+
+    useEffect(() => {
+        dispatch(actionGetStatistic(token,
+            dateRange?.fromDate || "", dateRange?.toDate || "",
+            assignDepartment?.value || "", "", "",
+            tagetDepartment?.value || "", trangThai?.value || "",
+            priorityTask?.value || "", "",
+        ))
+    }, [dateRange, assignDepartment, tagetDepartment, trangThai, priorityTask]);
 
     return (
         <div className={cx('StatisticalScreen')}>

@@ -11,10 +11,10 @@ const TaskOverview = () => {
 
     const stats = [
         { label: "Tổng số nhiệm vụ đã giao", value: staticResponse?.user?.total_task, bgColor: "bg-primary" },
-        { label: "Nhiệm vụ hoàn thành đúng hạn", value: staticResponse?.user?.pending_on_time, bgColor: "bg-success" },
-        { label: "Nhiệm vụ hoàn thành quá hạn", value: staticResponse?.user?.pending_overdue, bgColor: "bg-warning" },
-        { label: "Nhiệm vụ chưa hoàn thành quá hạn", value: staticResponse?.user?.completed_on_time, bgColor: "bg-danger" },
-        { label: "Nhiệm vụ chưa hoàn thành còn hạn", value: staticResponse?.user?.completed_overdue, bgColor: "bg-danger" },
+        { label: "Nhiệm vụ hoàn thành đúng hạn", value: staticResponse?.user?.completed_on_time, bgColor: "bg-success" },
+        { label: "Nhiệm vụ hoàn thành quá hạn", value: staticResponse?.user?.completed_overdue, bgColor: "bg-warning" },
+        { label: "Nhiệm vụ chưa hoàn thành còn hạn", value: staticResponse?.user?.pending_on_time, bgColor: "bg-danger" },
+        { label: "Nhiệm vụ chưa hoàn thành quá hạn", value: staticResponse?.user?.pending_overdue, bgColor: "bg-danger" },
     ];
 
     return (

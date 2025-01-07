@@ -16,7 +16,7 @@ const TableComponent = ({ data }) => {
                 </tr>
                 </thead>
                 <tbody>
-                {data.length > 0 ? (
+                {data?.length > 0 ? (
                     data.map((row, index) => (
                         <tr key={index}>
                             <td>{index + 1}</td>

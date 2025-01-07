@@ -24,10 +24,10 @@ export function actionLogin (username, password, nextToScreen) {
                 }))
 
                 if(decoded.scope === 'ADMIN') {
-                    dispatch(actionGetGeneralAdmin(response.data.result.token));
-                    dispatch(actionGetFullUser(response.data.result.token));
+                    await dispatch(actionGetGeneralAdmin(response.data.result.token));
+                    await dispatch(actionGetFullUser(response.data.result.token));
                 } else {
-                    dispatch(actionGetOverViewUser(response.data.result.token));
+                    await dispatch(actionGetOverViewUser(response.data.result.token));
                 }
                 localStorage.setItem('token', response.data.result.token);
                 localStorage.setItem('username', username);
