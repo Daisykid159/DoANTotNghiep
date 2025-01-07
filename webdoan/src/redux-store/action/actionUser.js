@@ -455,6 +455,23 @@ export function actionDownloadFile (token, file) {
     };
 }
 
+export function actionGetStatistic (token, from, to, department_assign_id, user_assign_id, user_handle_id, department_handle_id, status, priority, user_id) {
+    return async (dispatch, getState) => {
+        try {
+            const response = await Api(token).statistic(from, to, department_assign_id, user_assign_id, user_handle_id, department_handle_id, status, priority, user_id);
+            if (response && response.data){
+                dispatch(updateData({
+                    staticResponse: response.data
+                }))
+            } else {
+                console.log("Lỗi api actionGetStatistic");
+            }
+        } catch (error) {
+            console.log("Lỗi api actionGetStatistic", error);
+        }
+    };
+}
+
 export default {
     actionGetListMenu,
     actionGetMyInfo,
@@ -479,4 +496,5 @@ export default {
     actionSaveFiles,
     actionDownloadFile,
     actionLuiHanXuLy,
+    actionGetStatistic,
 };

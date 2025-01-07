@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import styles from './StatisticalStyle.module.scss';
 import classNames from "classnames/bind";
 import TaskOverview from "../../../components/TaskOverview/TaskOverview";
@@ -7,6 +7,7 @@ import TableComponent from "../../../components/TableComponent/TableComponent";
 import {useDispatch, useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import Select from "react-select";
+import {actionGetStatistic} from "../../../redux-store/action/actionUser";
 
 const cx = classNames.bind(styles);
 
@@ -23,6 +24,7 @@ const StatisticalScreen = () => {
     const [tagetDepartment, setTagetDepartment] = useState('');
     const [trangThai, setTrangThai] = useState('');
 
+    const staticResponse = useSelector(state => state.reducerUser.staticResponse);
     const data = [
         {
             name: "Ban điều hành",
@@ -59,7 +61,7 @@ const StatisticalScreen = () => {
         { value: 5, label: "Thu hồi" },
     ]
 
-    const optionsAssignDepartment = overViewUser.userCurrent.departments.map((department) => ({
+    const optionsAssignDepartment = overViewUser?.userCurrent?.departments.map((department) => ({
         value: department.department_id,
         label: department.department_name,
         description: department, // Mô tả bổ sung
@@ -72,6 +74,15 @@ const StatisticalScreen = () => {
             [name]: value,
         }));
     };
+
+    useEffect(() => {
+        dispatch(actionGetStatistic(token,
+            dateRange?.fromDate || "", dateRange?.toDate || "",
+            assignDepartment?.value || "", "", "",
+            tagetDepartment?.value || "", trangThai?.value || "",
+            priorityTask?.value || "", overViewUser?.userCurrent?.user_id
+        ))
+    }, [dateRange, assignDepartment, tagetDepartment, trangThai, priorityTask])
 
     return (
         <div className={cx('StatisticalScreen')}>
@@ -207,7 +218,7 @@ const StatisticalScreen = () => {
                         Xuất báo cáo
                     </button>
                 </div>
-                <TableComponent data={data}/>
+                <TableComponent data={staticResponse?.department}/>
             </div>
         </div>
     )

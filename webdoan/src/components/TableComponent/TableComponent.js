@@ -21,11 +21,11 @@ const TableComponent = ({ data }) => {
                         <tr key={index}>
                             <td>{index + 1}</td>
                             <td>{row.name}</td>
-                            <td>{row.totalTasks}</td>
-                            <td>{row.unfinishedInTime}</td>
-                            <td>{row.unfinishedOverdue}</td>
-                            <td>{row.finishedInTime}</td>
-                            <td>{row.finishedOverdue}</td>
+                            <td>{row.total_task}</td>
+                            <td>{row.pending_on_time}</td>
+                            <td>{row.pending_overdue}</td>
+                            <td>{row.completed_on_time}</td>
+                            <td>{row.completed_overdue}</td>
                         </tr>
                     ))
                 ) : (

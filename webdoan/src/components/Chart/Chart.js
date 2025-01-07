@@ -2,10 +2,13 @@ import React, { useState } from "react";
 import ReactApexChart from "react-apexcharts";
 import styles from "./ChartStyle.module.scss";
 import classNames from "classnames/bind";
+import {useSelector} from "react-redux";
 
 const cx = classNames.bind(styles);
 
 const Chart = () => {
+
+    const staticResponse = useSelector(state => state.reducerUser.staticResponse);
 
     const [state1, setState1] = useState({
         series: [
@@ -15,13 +18,13 @@ const Chart = () => {
                 data: [1.4, 2, 2.5],
             },
             {
-                name: "Trọng tâm",
+                name: "Quan trọng",
                 type: "column",
                 data: [1.1, 3, 3.1],
             },
             {
-                name: "Rất trọng tâm",
-                type: "line",
+                name: "Rất quan trọng",
+                type: "column",
                 data: [20, 29, 37],
             },
         ],
@@ -108,7 +111,7 @@ const Chart = () => {
         },
     });
     const [state2, setState2] = React.useState({
-        series: [44, 55, 13, 43],
+        series: [staticResponse?.user?.pending_on_time, staticResponse?.user?.pending_overdue, staticResponse?.user?.completed_on_time, staticResponse?.user?.completed_overdue],
         options: {
             chart: {
                 width: 380,

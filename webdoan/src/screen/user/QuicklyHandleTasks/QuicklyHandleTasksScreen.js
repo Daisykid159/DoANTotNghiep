@@ -34,6 +34,12 @@ const QuicklyHandleTasksScreen = (props) => {
         })
     }
 
+    const handleNotLuiHanXuLy = () => {
+        leaveProcessingTime.map(item => {
+            dispatch(actionLuiHanXuLy(token, item?.taskImportant?.task_id, [], props.setShowModule));
+        })
+    }
+
     useEffect(() => {
         const getAdviceMessage = (overtimeInHours) => {
             if (overtimeInHours > 8 && overtimeInHours <= 10) {
@@ -97,6 +103,13 @@ const QuicklyHandleTasksScreen = (props) => {
                                 </div>
                             </div>
                             <div className={cx('col-md-12', 'container', 'd-flex', 'justify-content-end', 'mb-5')}>
+                                <button
+                                    className={cx("btn btn-light", 'btn_footer')}
+                                    onClick={() => handleNotLuiHanXuLy()}
+                                >
+                                    Không lùi hạn xử lý
+                                </button>
+
                                 <button
                                     className={cx("btn btn-primary", 'btn_footer')}
                                     onClick={() => handleLuiHanXuLy()}

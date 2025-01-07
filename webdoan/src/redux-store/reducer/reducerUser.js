@@ -6,7 +6,8 @@ const INITIAL_STATE = {
     taskOfTheDay: {},
     leaveProcessingTime: [],
     detailTask: {},
-    myInfo: {}
+    myInfo: {},
+    staticResponse: {},
 };
 
 const reducerUser = (state = INITIAL_STATE, action) => {

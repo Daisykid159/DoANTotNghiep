@@ -69,7 +69,6 @@ const PersonnelManagementScreen = () => {
                             <i className="bx bx-plus me-1"></i>
                             TẠO MỚI
                         </button>
-                        <button className="btn btn-success me-2">XUẤT FILE EXCEL</button>
                     </div>
                 </div>
             </div>

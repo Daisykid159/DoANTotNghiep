@@ -1,16 +1,20 @@
 import React from "react";
 import styles from './TaskOverViewStyle.module.scss';
 import classNames from "classnames/bind";
+import {useSelector} from "react-redux";
 
 const cx = classNames.bind(styles);
 
 const TaskOverview = () => {
+
+    const staticResponse = useSelector(state => state.reducerUser.staticResponse);
+
     const stats = [
-        { label: "Tổng số nhiệm vụ đã giao", value: 21, bgColor: "bg-primary" },
-        { label: "Nhiệm vụ hoàn thành đúng hạn", value: 1, bgColor: "bg-success" },
-        { label: "Nhiệm vụ hoàn thành quá hạn", value: 6, bgColor: "bg-warning" },
-        { label: "Nhiệm vụ chưa hoàn thành quá hạn", value: 14, bgColor: "bg-danger" },
-        { label: "Nhiệm vụ chưa hoàn thành còn hạn", value: 14, bgColor: "bg-danger" },
+        { label: "Tổng số nhiệm vụ đã giao", value: staticResponse?.user?.total_task, bgColor: "bg-primary" },
+        { label: "Nhiệm vụ hoàn thành đúng hạn", value: staticResponse?.user?.pending_on_time, bgColor: "bg-success" },
+        { label: "Nhiệm vụ hoàn thành quá hạn", value: staticResponse?.user?.pending_overdue, bgColor: "bg-warning" },
+        { label: "Nhiệm vụ chưa hoàn thành quá hạn", value: staticResponse?.user?.completed_on_time, bgColor: "bg-danger" },
+        { label: "Nhiệm vụ chưa hoàn thành còn hạn", value: staticResponse?.user?.completed_overdue, bgColor: "bg-danger" },
     ];
 
     return (
