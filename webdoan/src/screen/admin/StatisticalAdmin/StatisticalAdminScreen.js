@@ -18,6 +18,7 @@ const StatisticalAdminScreen = () => {
     const token = useSelector(state => state.reducerAuth.token);
 
     const overViewAdmin = useSelector(state => state.reducerAuth.overViewAdmin);
+    const staticResponse = useSelector(state => state.reducerUser.staticResponse);
 
     const flattenTreeForSelect = (tree, level = 0, parentLabel = "") => {
         let flatList = [];
@@ -43,24 +44,6 @@ const StatisticalAdminScreen = () => {
     const [tagetDepartment, setTagetDepartment] = useState('');
     const [trangThai, setTrangThai] = useState('');
 
-    const data = [
-        {
-            name: "Ban điều hành",
-            totalTasks: 40,
-            unfinishedInTime: 10,
-            unfinishedOverdue: 20,
-            finishedInTime: 5,
-            finishedOverdue: 5,
-        },
-        {
-            name: "Team LGSP",
-            totalTasks: 55,
-            unfinishedInTime: 15,
-            unfinishedOverdue: 20,
-            finishedInTime: 10,
-            finishedOverdue: 10,
-        }
-    ];
     const [priorityTask, setPriorityTask] = useState("");
 
     const listPriorityTask = [
@@ -88,12 +71,24 @@ const StatisticalAdminScreen = () => {
     };
 
     useEffect(() => {
-        dispatch(actionGetStatistic(token,
-            dateRange?.fromDate || "", dateRange?.toDate || "",
-            assignDepartment?.value || "", "", "",
-            tagetDepartment?.value || "", trangThai?.value || "",
-            priorityTask?.value || "", "",
-        ))
+        const timer = setTimeout(() => {
+            dispatch(
+                actionGetStatistic(
+                    token,
+                    dateRange?.fromDate || "",
+                    dateRange?.toDate || "",
+                    assignDepartment?.value || "",
+                    "",
+                    "",
+                    tagetDepartment?.value || "",
+                    trangThai?.value || "",
+                    priorityTask?.value || "",
+                    ""
+                )
+            );
+        }, 10000);
+
+        return () => clearTimeout(timer);
     }, [dateRange, assignDepartment, tagetDepartment, trangThai, priorityTask]);
 
     return (
@@ -230,7 +225,7 @@ const StatisticalAdminScreen = () => {
                         Xuất báo cáo
                     </button>
                 </div>
-                <TableComponent data={data}/>
+                <TableComponent data={staticResponse?.department}/>
             </div>
         </div>
     )
