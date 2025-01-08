@@ -442,26 +442,7 @@ export function actionSaveFiles (token, file, taskId) {
 export function actionDownloadFile (token, file) {
     return async (dispatch, getState) => {
         try {
-            const response = await Api(token).downloadFile(file.file_id);
-            if (response && response.data){
-                const arrayBuffer = new Uint8Array([response.data]);
-                const blob = new Blob([arrayBuffer]);
-                const url = URL.createObjectURL(blob);
-
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = file.file_name; // Tên file khi tải xuống
-                document.body.appendChild(link);
-                link.click();
-
-                link.remove();
-                window.URL.revokeObjectURL(url);
-
-                // toast.success('Tải xuống file thành công!');
-            } else {
-                toast.error('Tải xuống file thất bại!');
-                console.log("Lỗi api actionDownloadFile");
-            }
+            const response = await Api(token).downloadFile(file);
         } catch (error) {
             console.log("Lỗi api actionDownloadFile", error);
         }
@@ -489,25 +470,6 @@ export function actionDownloadFileStatistic (token, from, to, department_assign_
     return async (dispatch, getState) => {
         try {
             const response = await Api(token).statisticGenerate(from, to, department_assign_id, user_assign_id, user_handle_id, department_handle_id, status, priority, user_id);
-            if (response && response.data){
-                const arrayBuffer = new Uint8Array([response.data]);
-                const blob = new Blob([arrayBuffer]);
-                const url = URL.createObjectURL(blob);
-
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = "BaoCao.xlsx"; // Tên file khi tải xuống
-                document.body.appendChild(link);
-                link.click();
-
-                link.remove();
-                window.URL.revokeObjectURL(url);
-
-                // toast.success('Tải xuống file thành công!');
-            } else {
-                toast.error('Tải xuống file thất bại!');
-                console.log("Lỗi api actionDownloadFile");
-            }
         } catch (error) {
             console.log("Lỗi api actionDownloadFile", error);
         }

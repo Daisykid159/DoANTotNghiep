@@ -251,8 +251,27 @@ const Api = (token) => {
         }
     }
 
-    const downloadFile = (id) => {
-        return api.get(`api/user/downloadFile/${id}`);
+    const downloadFile = async (file) => {
+        const response = await fetch(`${BASEURL}/api/user/downloadFile/${file.file_id}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+        if (response.ok) {
+            const blob = await response.blob(); // Chuyển dữ liệu response thành blob
+            const fileURL = URL.createObjectURL(blob); // Tạo URL từ blob
+
+            // Tạo link để tải file
+            const link = document.createElement('a');
+            link.href = fileURL;
+            link.download = file.file_name;
+            link.click(); // Kích hoạt tải xuống
+        } else {
+            console.error('Error fetching file');
+        }
+
+        return response
     }
 
     const searchTask = (title, department_id, user_id, createFrom, createTo, expireFrom, expireTo, task_status, priority) => {
@@ -268,8 +287,25 @@ const Api = (token) => {
         return api.get(`api/statistic/get?from=${from}&to=${to}&department_assign_id=${department_assign_id}&user_assign_id=${user_assign_id}&user_handle_id=${user_handle_id}&department_handle_id=${department_handle_id}&status=${status}&priority=${priority}&user_id=${user_id}`);
     }
 
-    const statisticGenerate = (from, to, department_assign_id, user_assign_id, user_handle_id, department_handle_id, status, priority, user_id) => {
-        return api.get(`api/statistic/generate?from=${from}&to=${to}&department_assign_id=${department_assign_id}&user_assign_id=${user_assign_id}&user_handle_id=${user_handle_id}&department_handle_id=${department_handle_id}&status=${status}&priority=${priority}&user_id=${user_id}&type=1`);
+    const statisticGenerate = async (from, to, department_assign_id, user_assign_id, user_handle_id, department_handle_id, status, priority, user_id) => {
+        const response = await fetch(`${BASEURL}/api/statistic/generate?from=${from}&to=${to}&department_assign_id=${department_assign_id}&user_assign_id=${user_assign_id}&user_handle_id=${user_handle_id}&department_handle_id=${department_handle_id}&status=${status}&priority=${priority}&user_id=${user_id}&type=1`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+        if (response.ok) {
+            const blob = await response.blob();
+            const fileURL = URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = fileURL;
+            link.download = "BaoCao.xlsx";
+            link.click();
+        } else {
+            console.error('Error fetching file');
+        }
+        return response;
     }
 
     return {
