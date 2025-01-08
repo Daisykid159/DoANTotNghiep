@@ -7,7 +7,7 @@ import Select from "react-select";
 import {toast} from "react-toastify";
 import {
     actionEvictTask,
-    actionProcessingHandover, actionReturnTask, actionSaveFiles,
+    actionProcessingHandover, actionReturnTask, actionRevokeTask, actionSaveFiles,
     actionSendReport,
     actionUpdateProcessing
 } from "../../redux-store/action/actionUser";
@@ -86,6 +86,8 @@ const HandleAction = (props) => {
             dispatch(actionUpdateProcessing(token, props.task, parseInt(progress, 10)));
         } else if (props.reportType === 104) { //// Trả lại nhiệm vụ
             dispatch(actionReturnTask(token, props.task, contentTask));
+        } else if (props.reportType === 105) { //// Thu hồi nhiệm vụ
+            dispatch(actionRevokeTask(token, props.task));
         }
 
         if(uploadedFiles?.length > 0) {

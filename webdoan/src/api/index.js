@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {actionRevokeTask} from "../redux-store/action/actionUser";
 
 const BASEURL = 'http://localhost:8080'
 
@@ -216,6 +217,10 @@ const Api = (token) => {
         return api.put(`/api/user/returnTask?task_id=${task_id}&content=${content}`)
     }
 
+    const revokeTask = (task_id) => {
+        return api.put(`/api/user/finalTask?task_id=${task_id}`)
+    }
+
     const updateProcessing = (task_user_id, progress) => {
         return api.put(`/api/user/updateProcessing?task_user_id=${task_user_id}&processing=${progress}`);
     }
@@ -351,6 +356,7 @@ const Api = (token) => {
         processingHandover,
         evictTask,
         returnTask,
+        revokeTask,
         updateProcessing,
         reviewReport,
         recallReport,

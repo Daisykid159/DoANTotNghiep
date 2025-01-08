@@ -60,8 +60,8 @@ const ListActionAssign = (props) => {
                 onClick={() => {
                     setTypeAction("Kết thúc nhiệm vụ")
                     setShowHandleAction(true);
-                    setShowComment(true);
-                    setReportType(null)
+                    setShowComment(false);
+                    setReportType(105)
                 }}
             >
                 <i className={cx('bx bx-check-double', 'icon_action', 'me-2')}></i>

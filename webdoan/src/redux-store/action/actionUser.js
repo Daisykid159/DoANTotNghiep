@@ -351,6 +351,24 @@ export function actionReturnTask (token, task, content) {
     };
 }
 
+export function actionRevokeTask (token, task) {
+    return async (dispatch, getState) => {
+        try {
+            const response = await Api(token).revokeTask(task.task_id);
+            if (response && response.data){
+                dispatch(actionGetListMenu(token));
+                dispatch(actionGetOverViewUser(token));
+                toast.success('Kết thúc nhiệm vụ thành công!');
+            } else {
+                toast.error('Kết thúc nhiệm vụ thất bại!');
+                console.log("Lỗi api actionRevokeTask");
+            }
+        } catch (error) {
+            console.log("Lỗi api actionRevokeTask", error);
+        }
+    };
+}
+
 export function actionUpdateProcessing (token, task, updateProcessing) {
     return async (dispatch, getState) => {
         try {
@@ -372,7 +390,7 @@ export function actionUpdateProcessing (token, task, updateProcessing) {
 export function actionReviewReport (token, report_id, user_review_id, isApprove, task) {
     return async (dispatch, getState) => {
         try {
-            const response = await Api(token).reviewReport(report_id, task.user_review_id, isApprove);
+            const response = await Api(token).reviewReport(report_id, user_review_id, isApprove);
             if (response && response.data){
                 dispatch(actionGetDetailTask(token, task.task_id));
                 if(isApprove) {
@@ -495,6 +513,7 @@ export default {
     actionProcessingHandover,
     actionEvictTask,
     actionReturnTask,
+    actionRevokeTask,
     actionUpdateProcessing,
     actionReviewReport,
     actionRecallReport,
