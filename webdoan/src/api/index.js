@@ -150,6 +150,10 @@ const Api = (token) => {
         return api.get(`api/user/getNotificationList`);
     }
 
+    const readNotification = (id) => {
+        return api.get(`api/user/readNotification?notification_id=${id}`);
+    }
+
     const updateMyInfo = (newInfo) => {
         return api.put(`api/user/updateMyInfo`, newInfo);
     }
@@ -262,7 +266,10 @@ const Api = (token) => {
 
     const statistic = (from, to, department_assign_id, user_assign_id, user_handle_id, department_handle_id, status, priority, user_id) => {
         return api.get(`api/statistic/get?from=${from}&to=${to}&department_assign_id=${department_assign_id}&user_assign_id=${user_assign_id}&user_handle_id=${user_handle_id}&department_handle_id=${department_handle_id}&status=${status}&priority=${priority}&user_id=${user_id}`);
+    }
 
+    const statisticGenerate = (from, to, department_assign_id, user_assign_id, user_handle_id, department_handle_id, status, priority, user_id) => {
+        return api.get(`api/statistic/generate?from=${from}&to=${to}&department_assign_id=${department_assign_id}&user_assign_id=${user_assign_id}&user_handle_id=${user_handle_id}&department_handle_id=${department_handle_id}&status=${status}&priority=${priority}&user_id=${user_id}&type=1`);
     }
 
     return {
@@ -297,6 +304,7 @@ const Api = (token) => {
         getFullUser,
         myInfo,
         getNotificationList,
+        readNotification,
         updateMyInfo,
         changePassword,
         createTask,
@@ -316,6 +324,7 @@ const Api = (token) => {
         putLeaveProcessingTime,
 
         statistic,
+        statisticGenerate,
     };
 };
 

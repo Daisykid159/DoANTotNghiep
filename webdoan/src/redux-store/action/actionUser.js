@@ -72,6 +72,19 @@ export function actionGetNotificationList (token) {
     };
 }
 
+export function actionReadNotification (token, notification_id) {
+    return async (dispatch, getState) => {
+        try {
+            const response = await Api(token).readNotification(notification_id);
+            if (!(response && response.data)){
+                console.log("Lỗi api actionReadNotification");
+            }
+        } catch (error) {
+            console.log("Lỗi api actionReadNotification", error);
+        }
+    };
+}
+
 export function actionUpdateMyInfo (token, newInfo) {
     return async (dispatch, getState) => {
         try {
@@ -472,10 +485,40 @@ export function actionGetStatistic (token, from, to, department_assign_id, user_
     };
 }
 
+export function actionDownloadFileStatistic (token, from, to, department_assign_id, user_assign_id, user_handle_id, department_handle_id, status, priority, user_id) {
+    return async (dispatch, getState) => {
+        try {
+            const response = await Api(token).statisticGenerate(from, to, department_assign_id, user_assign_id, user_handle_id, department_handle_id, status, priority, user_id);
+            if (response && response.data){
+                const arrayBuffer = new Uint8Array([response.data]);
+                const blob = new Blob([arrayBuffer]);
+                const url = URL.createObjectURL(blob);
+
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = "BaoCao.xlsx"; // Tên file khi tải xuống
+                document.body.appendChild(link);
+                link.click();
+
+                link.remove();
+                window.URL.revokeObjectURL(url);
+
+                // toast.success('Tải xuống file thành công!');
+            } else {
+                toast.error('Tải xuống file thất bại!');
+                console.log("Lỗi api actionDownloadFile");
+            }
+        } catch (error) {
+            console.log("Lỗi api actionDownloadFile", error);
+        }
+    };
+}
+
 export default {
     actionGetListMenu,
     actionGetMyInfo,
     actionGetNotificationList,
+    actionReadNotification,
     actionUpdateMyInfo,
     actionChangePassword,
     actionGetListTaskByMenu,
@@ -497,4 +540,5 @@ export default {
     actionDownloadFile,
     actionLuiHanXuLy,
     actionGetStatistic,
+    actionDownloadFileStatistic,
 };

@@ -38,6 +38,7 @@
   padding: 5px;
   border-radius: 10px;
   margin: 0 15px;
+  position: relative;
 }
 
 .user {
@@ -137,4 +138,18 @@
 .icon_user_notify {
   font-size: 35px;
   color: #338BEB;
+}
+
+.number_notify {
+  position: absolute;
+  top: -5px;
+  right: -15px;
+  background-color: #ef1818;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50px;
+  font-size: 14px;
 }

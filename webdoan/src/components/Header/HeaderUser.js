@@ -11,7 +11,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {actionLogout} from "../../redux-store/action/actionAuth";
 import SettingScreen from "../../screen/user/Setting/SettingScreen";
 import StatisticalScreen from "../../screen/user/Statistical/StatisticalScreen";
-import {actionGetNotificationList} from "../../redux-store/action/actionUser";
+import {actionGetNotificationList, actionReadNotification} from "../../redux-store/action/actionUser";
 import {formatDate} from "../../utils";
 
 const cx = classNames.bind(styles);
@@ -24,6 +24,7 @@ function HeaderUser () {
 
     const dataNotification = useSelector(state => state.reducerUser.listNotification);
 
+    const [numberNotify, setNumberNotify] = useState(0);
     const [textSearch, setTextSearch] = useState('');
     const [showNotification, setShowNotification] = useState(false);
     const [showCNUser, setShowCNUser] = useState(false);
@@ -31,6 +32,16 @@ function HeaderUser () {
     useEffect(() => {
         dispatch(actionGetNotificationList(token))
     }, []);
+
+    useEffect(() => {
+        let number  = 0
+        dataNotification?.map(notify => {
+            if(notify?.has_read) {
+                number++;
+            }
+        })
+        setNumberNotify(number);
+    }, [dataNotification])
 
     return (
         <Router>
@@ -60,6 +71,7 @@ function HeaderUser () {
                             setShowNotification(!showNotification)
                         }}
                     >
+                        {numberNotify !== 0 && (<div className={cx('number_notify')}>{numberNotify}</div>)}
                         <IconBell />
                     </div>
 
@@ -119,6 +131,7 @@ function HeaderUser () {
                                 key={index}
                                 className={cx('item_notification')}
                                 onClick={() => {
+                                    dispatch(actionReadNotification(token, item?.notification_id));
                                     window.open(`/user/TaskDetail?itemID=${item.task_id}&title=${item.task_title}`, '_blank');
                                 }}
                             >

@@ -7,7 +7,7 @@ import TableComponent from "../../../components/TableComponent/TableComponent";
 import {useDispatch, useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import Select from "react-select";
-import {actionGetStatistic} from "../../../redux-store/action/actionUser";
+import {actionDownloadFileStatistic, actionGetStatistic} from "../../../redux-store/action/actionUser";
 
 const cx = classNames.bind(styles);
 
@@ -57,6 +57,21 @@ const StatisticalScreen = () => {
             [name]: value,
         }));
     };
+
+    const handleDownloadFileStatistic = () => {
+        dispatch(actionDownloadFileStatistic(
+            token,
+            dateRange?.fromDate || "",
+            dateRange?.toDate || "",
+            assignDepartment?.value || "",
+            "",
+            "",
+            tagetDepartment?.value || "",
+            trangThai?.value || "",
+            priorityTask?.value || "",
+            overViewUser?.userCurrent?.user_id || ""
+        ))
+    }
 
     useEffect(() => {
         if(overViewUser?.userCurrent?.user_id) {
@@ -211,7 +226,10 @@ const StatisticalScreen = () => {
                 <Chart/>
 
                 <div className={cx('col-md-12', 'd-flex', 'align-items-center', 'justify-content-end', 'mt-4', 'mb-3')}>
-                    <button className="btn btn-primary btn-lg me-2">
+                    <button
+                        className="btn btn-primary btn-lg me-2"
+                        onClick={() => handleDownloadFileStatistic()}
+                    >
                         Xuất báo cáo
                     </button>
                 </div>
