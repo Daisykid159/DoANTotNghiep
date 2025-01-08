@@ -24,4 +24,5 @@ public interface TaskService {
     boolean leaveProcessingTime(List<ProcessingTimeRequest> processingTimeRequests , Long id);
     List<TaskLeaveProcessingTimeResponse> leaveProcessingTimeDetail();
     boolean updateTask(UpdateTaskResponse updateTaskResponse);
+    boolean finalTask(Long task_id);
 }

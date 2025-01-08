@@ -82,6 +82,9 @@ public class TaskController {
     public boolean updateTask(@RequestBody UpdateTaskResponse updateTaskResponse) {
         return taskService.updateTask(updateTaskResponse);
     }
-
+    @PutMapping("/finalTask")
+    public boolean finalTask(@RequestParam Long task_id ) {
+        return taskService.finalTask(task_id);
+    }
 
 }

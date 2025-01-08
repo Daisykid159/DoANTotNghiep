@@ -51,6 +51,7 @@ public class TaskServiceImpl implements TaskService {
     CommentService commentService;
     ReportService reportService;
     NotificationService notificationService;
+    ReportRepository reportRepository;
     @Override
     public List<TaskResponse> getListMuneById( Long menu_id) {
         List<TaskResponse> taskResponses = new ArrayList<>();
@@ -528,6 +529,28 @@ public class TaskServiceImpl implements TaskService {
           return true;
         }catch (Exception e){
             log.error("Error while updating task", e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean finalTask(Long task_id) {
+        try {
+            Task task = taskRepository.findById(task_id).orElseThrow(() -> new RuntimeException("Task not found"));
+            List<Report> reports = reportRepository.findAllByTaskAndType(task, 2);
+            boolean check = false;
+            for(Report report : reports){
+                if(report.getStatus() == 1){
+                    check = true;
+                    break;
+                }
+            }
+            if(!check) return false;
+            task.setStatus(5);
+            taskRepository.save(task);
+            return true;
+        }catch (Exception e){
+            log.error("Error while final task", e);
             return false;
         }
     }
