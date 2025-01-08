@@ -75,4 +75,28 @@ public class NotificationServiceImpl implements NotificationService {
         return notificationUsers.stream().map(notificationMapper::toNotificationResponse).toList();
     }
 
+    @Override
+    public boolean readNotification(Long notification_id) {
+        try {
+            var context = SecurityContextHolder.getContext();
+            String username = context.getAuthentication().getName();
+            User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+            if (notification_id == null) {
+                List<NotificationUser> notificationUsers = notificationUserRepository.findAllByReceiverUser(user);
+                for (NotificationUser notificationUser : notificationUsers) {
+                    notificationUser.setHasRead(1);
+                    notificationUserRepository.save(notificationUser);
+                }
+            } else {
+                Notification notification = notificationReqository.findById(notification_id).orElseThrow(() -> new RuntimeException("Notification not found"));
+                NotificationUser notificationUser = notificationUserRepository.findByNotificationAndReceiverUser(notification, user);
+                notificationUser.setHasRead(1);
+                notificationUserRepository.save(notificationUser);
+            }
+            return true;
+        } catch (Exception e) {
+            log.error("Error in readNotification", e);
+            return false;
+        }
+    }
 }

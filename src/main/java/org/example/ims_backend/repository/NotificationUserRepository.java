@@ -14,4 +14,5 @@ public interface NotificationUserRepository extends JpaRepository<NotificationUs
     Integer countByReceiverUserAndHasRead(User toUser, int hasRead);
     void deleteAllByNotification(Notification notification);
     List<NotificationUser> findAllByReceiverUser(User toUser);
+    NotificationUser findByNotificationAndReceiverUser(Notification notification, User toUser);
 }

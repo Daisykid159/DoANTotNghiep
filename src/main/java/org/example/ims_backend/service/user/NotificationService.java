@@ -10,4 +10,5 @@ public interface NotificationService {
     void deleteNotification(Task task);
     void addNotification(Task task, User CreateUser, User toUser, String content, Integer type);
     List<NotificationResponse> getNotificationList();
+    boolean readNotification(Long notification_id);
 }
