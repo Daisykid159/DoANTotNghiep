@@ -395,10 +395,10 @@ const Chart = () => {
         const tmp5 = [];
         staticResponse?.department?.map(dep => {
             tmp1.push(dep?.name);
-            tmp2.push(dep?.pending_on_time);
-            tmp3.push(dep?.pending_overdue);
-            tmp4.push(dep?.completed_on_time);
-            tmp5.push(dep?.completed_overdue);
+            tmp2.push(dep?.completed_on_time);
+            tmp3.push(dep?.completed_overdue);
+            tmp4.push(dep?.pending_on_time);
+            tmp5.push(dep?.pending_overdue);
         })
         setState3({
             series: [
@@ -477,10 +477,10 @@ const Chart = () => {
         const tmp5 = [];
         staticResponse?.project?.map(pro => {
             tmp1.push(pro?.name);
-            tmp2.push(pro?.pending_on_time);
-            tmp3.push(pro?.pending_overdue);
-            tmp4.push(pro?.completed_on_time);
-            tmp5.push(pro?.completed_overdue);
+            tmp2.push(pro?.completed_on_time);
+            tmp3.push(pro?.completed_overdue);
+            tmp4.push(pro?.pending_on_time);
+            tmp5.push(pro?.pending_overdue);
         })
         setState4({
             series: [{
